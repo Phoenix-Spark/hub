@@ -22,5 +22,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTableIfExists('cell');
+  return knex.schema.dropTableIfExists('cell');
 }

@@ -3,13 +3,13 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-    return knex.schema.createTable('project_users', (table) => {
-        table.increments('id');
-        table.integer('project_id');
-        table.foreign('project_id').references('project.id');
-        table.integer('users_id');
-        table.foreign('users_id').references('users.id');
-    })
+  return knex.schema.createTable('project_users', table => {
+    table.increments('id');
+    table.integer('project_id');
+    table.foreign('project_id').references('project.id');
+    table.integer('users_id');
+    table.foreign('users_id').references('users.id');
+  });
 }
 
 /**
@@ -17,5 +17,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTableIfExists('project_users');
+  return knex.schema.dropTableIfExists('project_users');
 }
