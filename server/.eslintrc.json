@@ -21,6 +21,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "lines-between-class-members": "off",
     "jsx-quotes": [1, "prefer-double"],
     "react/jsx-filename-extension": [
       1,

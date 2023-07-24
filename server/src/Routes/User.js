@@ -6,25 +6,15 @@ import db from '../db.js';
 
 class User {
   id;
-
   baseId;
-
   cellId;
-
   username;
-
   password;
-
   firstName;
-
   lastName;
-
   email;
-
   photo;
-
   contactNumbers;
-
   bio;
 
   /**
