@@ -1,20 +1,22 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-//import { AppContext } from '../App.js'
-//import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom'
-import './Header.css';
-
+import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button } from "react-bootstrap";
 
 export default function Header() {
-    //const { user } = useContext(AppContext);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <div id="HeaderWrapper">
-            <button className="NavButton" onClick={()=>{navigate("/")}}>Home</button>
-            <button className="NavButton" onClick={()=>{navigate("/cell")}}>Cell</button>
-            <button className="NavButton" onClick={()=>{navigate("/project")}}>Project</button>
-        </div>
-    )
+  return (
+    <Row id="HeaderWrapper" className="buttonContainer">
+      <Col>
+        <Button className="NavButton" onClick={()=>{navigate("/")}}>Spark Hub</Button>
+      </Col>
+      <Col>
+        <Button className="NavButton" onClick={()=>{navigate("/cell")}}>Cell</Button>
+      </Col>
+      <Col>
+        <Button className="NavButton" onClick={()=>{navigate("/project")}}>Project</Button>
+      </Col>
+    </Row>
+  )
 }

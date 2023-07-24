@@ -7,6 +7,7 @@ export function up(knex) {
         table.increments('id');
         table.integer('base_id');
         table.foreign('base_id').references('base.id');
+        table.string('cell_name', 64);
         table.string('external_website', 128);
         table.string('cell_mission', 256);
         table.string('contact_number1', 16);

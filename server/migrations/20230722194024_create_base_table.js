@@ -5,7 +5,7 @@
 export function up(knex) {
     return knex.schema.createTable('base', (table) => {
         table.increments('id');
-        table.string('name', 64);
+        table.string('base_name', 64);
         table.double('lat');
         table.double('lng');
     })
