@@ -1,29 +1,108 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { v4 as uuid, validate as validateUuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 import db from '../db.js';
 
+class User {
+  id;
+
+  baseId;
+
+  cellId;
+
+  username;
+
+  password;
+
+  firstName;
+
+  lastName;
+
+  email;
+
+  photo;
+
+  contactNumbers;
+
+  bio;
+
+  /**
+   *
+   * @param {string} username
+   * @param {string} password
+   * @param {string} firstName
+   * @param {string} lastName
+   * @param {string} email
+   * @param {number} baseId
+   * @param {number} cellId
+   * @param {string} photo
+   * @param {Array} contactNumbers
+   * @param {string} bio
+   */
+  constructor(
+    username,
+    firstName,
+    lastName,
+    email,
+    baseId = 1,
+    cellId = 1,
+    photo = '',
+    contactNumbers = [],
+    bio = '',
+    password = null,
+    id = undefined
+  ) {
+    this.baseId = baseId;
+    this.cellId = cellId;
+    this.username = username;
+    this.password = password;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.photo = photo;
+    this.contactNumbers = contactNumbers;
+    this.bio = bio;
+    this.id = id;
+  }
+}
+
 /**
  *
- * @param {*} username
- * @param {*} genUuid
- * @param {*} prevUuid
+ * @param {User} user
  * @returns { token: JWT, jwtid: UUID}
  */
-const generateAccessToken = (username, genUuid = true, prevUuid = null) => {
-  const admin = username === 'Jon M';
-  const tokenUuid = genUuid ? uuid() : prevUuid;
+const generateAccessToken = (user, roles) => {
+  const tokenUuid = uuid();
   return {
-    token: jwt.sign({ username, permissions: { admin } }, process.env.TOKEN_SECRET || 'secret', {
+    token: jwt.sign({ user: user.id, roles }, process.env.TOKEN_SECRET || 'secret', {
       issuer: 'tankvana', // where was the JWT issued
-      subject: username, // the user of the JWT
-      audience: `${username} at tankvana`, // the intended recipient of the JWT
+      subject: user.username, // the user of the JWT
+      audience: `${user.email} at capstone`, // the intended recipient of the JWT
       expiresIn: 1800,
       jwtid: tokenUuid, // UUID of the JWT
     }),
     jwtid: tokenUuid,
   };
+};
+
+const getUser = async username => {
+  const dbUser = await db('users').where('username', username).first();
+  if (!dbUser) return undefined;
+
+  return new User(
+    dbUser.username,
+    dbUser.first_name,
+    dbUser.last_name,
+    dbUser.email,
+    dbUser.base_id,
+    dbUser.cell_id,
+    dbUser.photo_url,
+    [dbUser.contact_number1, dbUser.contact_number2],
+    dbUser.bio,
+    dbUser.password,
+    dbUser.id
+  );
 };
 
 const pwHash = pw => bcrypt.hashSync(pw, 10);
@@ -72,26 +151,43 @@ router.get('/', async (req, res, next) => {
 //  insert new user
 //  generate token
 //  respond with token
-router.post('/signup', async (req, res, next) => {
-  const newUser = (await db('users').select('*').where({ username: req.body.un })).length === 0;
-  if (newUser) {
-    const { token, jwtid } = generateAccessToken(req.body.un);
-    // db call to insert username and id...
-    const hash = pwHash(req.body.pw);
-    try {
-      await db('users').insert({
-        username: req.body.un,
-        password: hash,
-        issued_jwt_id: jwtid,
-        issued_jwt_expiration: '',
-      });
-
-      res.status(201).json(token);
-    } catch (e) {
-      next(e);
+router.post('/signup', async (req, res) => {
+  // does the user exist?
+  try {
+    if (!req.body.username || !req.body.password) {
+      throw new Error('missing required arguments');
     }
-  } else {
-    res.status(401).json(null);
+    const userDoesNotExist = (await getUser(req.body.username)) === undefined;
+
+    // User does not exist keep going
+    if (userDoesNotExist) {
+      // const { token, jwtid } = generateAccessToken(req.body.username);
+      // db call to insert username and id...
+      const { baseId, cellId, username, password, firstName, lastName, email, photo, contactNumbers, bio } = req.body;
+      const hash = pwHash(password);
+      const user = new User(username, firstName, lastName, email, baseId, cellId, photo, contactNumbers, bio, hash);
+      const newUser = await db('users').insert({
+        base_id: user.baseId,
+        cell_id: user.cellId,
+        username: user.username,
+        password: user.password,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        email: user.email,
+        photo_url: user.photo,
+        contact_number1: user.contactNumbers[0] ?? '',
+        contact_number2: user.contactNumbers[1] ?? '',
+        bio: user.bio,
+      });
+      user.id = newUser.id;
+      console.log({ ...user });
+      res.status(201).json(user);
+    } else {
+      res.status(401).json('User already exists');
+    }
+  } catch (e) {
+    console.error('There was an error. ', e);
+    res.status(500).send({ error: e.message });
   }
 });
 
@@ -105,31 +201,48 @@ router.post(
   '/signin',
   /* eslint-disable-next-line consistent-return */
   async (req, res) => {
-    // req.body.pw
-    // req.body.un
+    const { username, password } = req.body;
 
-    if (!req.body.un || !req.body.pw) {
+    if (!username || !password) {
       return res.status(400).json('Username and password required');
     }
-
-    const user = await db('users').where('username', req.body.un).first();
+    const user = await getUser(username);
 
     if (user === undefined) {
-      res.status(404).json('Incorrect username');
+      res.status(401).json('Incorrect username or password');
     } else {
-      bcrypt.compare(req.body.pw, user.password, async (err, valid) => {
+      bcrypt.compare(password, user.password, async (err, valid) => {
+        if (err) {
+          throw new Error(err);
+        }
         if (valid) {
-          let token;
-          let jwtid;
-          if (user.issued_jwt_id && validateUuid(user.issued_jwt_id)) {
-            ({ token } = generateAccessToken(req.body.un, false, user.issued_jwt_id));
-          } else {
-            ({ token, jwtid } = generateAccessToken(req.body.un));
-            await db('users').where({ id: user.id }).update({ issued_jwt_id: jwtid });
+          const roles = await db('permissions').select().where('users_id', user.id);
+          const token = generateAccessToken(user, roles);
+
+          console.log('user', user, roles);
+
+          try {
+            req.session.regenerate(regenErr => {
+              console.log('session regen');
+              if (regenErr) throw new Error(regenErr);
+              // store user information in session, typically a user id
+              req.session.user = user.id;
+              // save the session before redirection to ensure page
+              // load does not happen before session is saved
+              /* eslint-disable-next-line consistent-return */
+              req.session.save(saveErr => {
+                console.log('session save');
+                console.log(req.session);
+                if (saveErr) throw new Error(saveErr);
+                res.status(200).json(token);
+              });
+            });
+          } catch (e) {
+            console.error(e);
+            res.status(500).send({ error: e.message });
           }
-          res.status(200).json(token);
         } else {
-          res.status(401).json('Incorrect password');
+          res.status(401).json('Incorrect username or password');
         }
       });
     }

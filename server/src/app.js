@@ -25,7 +25,7 @@ const redisStore = new RedisStore({
 
 const sessionOptions = {
   secret: 'changethis',
-  cookie: { /** domain: '', */ httpOnly: true, /** sameSite: 'strict', */ maxAge: 38600 },
+  cookie: { /** domain: '', */ httpOnly: true, /** sameSite: 'strict', */ maxAge: 3600000 },
   genid: () => uuid(),
   resave: false,
   rolling: true,
