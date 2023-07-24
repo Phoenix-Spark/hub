@@ -76,7 +76,7 @@ const generateAccessToken = (user, roles) => {
   const tokenUuid = uuid();
   return {
     token: jwt.sign({ user: user.id, roles }, process.env.TOKEN_SECRET || 'secret', {
-      issuer: 'tankvana', // where was the JWT issued
+      issuer: 'capstone', // where was the JWT issued
       subject: user.username, // the user of the JWT
       audience: `${user.email} at capstone`, // the intended recipient of the JWT
       expiresIn: 1800,
@@ -217,7 +217,7 @@ router.post(
         }
         if (valid) {
           const roles = await db('permissions').select().where('users_id', user.id);
-          const token = generateAccessToken(user, roles);
+          const { token } = generateAccessToken(user, roles);
 
           console.log('user', user, roles);
 
@@ -234,7 +234,7 @@ router.post(
                 console.log('session save');
                 console.log(req.session);
                 if (saveErr) throw new Error(saveErr);
-                res.status(200).json(token);
+                res.status(200).json({ token });
               });
             });
           } catch (e) {
