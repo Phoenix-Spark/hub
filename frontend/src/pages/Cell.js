@@ -2,6 +2,7 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom'; // Import the Link component
 
 export default function Cell() {
   const { server } = useContext(AppContext);
@@ -24,6 +25,7 @@ export default function Cell() {
       <div>This is the Cell Component!</div>
       <br />
       {JSON.stringify(cellData)}
+      <Link to="/proposedprojects">Proposed Projects</Link>
     </>
   );
 }
