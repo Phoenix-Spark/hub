@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Project } from './pages';
+import { Cell, Hub, Project } from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
