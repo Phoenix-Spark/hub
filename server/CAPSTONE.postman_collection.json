@@ -1,0 +1,255 @@
+{
+	"info": {
+		"_postman_id": "6613ebdc-69b8-4f34-8fb2-360314cb3d63",
+		"name": "CAPSTONE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28220031",
+		"_collection_link": "https://lively-space-848096.postman.co/workspace/Group-1~c19317a2-7c84-4d77-a1b1-d3e57484ec88/collection/28220031-6613ebdc-69b8-4f34-8fb2-360314cb3d63?action=share&creator=28220031&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spark List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/spark_list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"spark_list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "News Feed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/news",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"news"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cell 1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cell/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cell",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cell 1 Team",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cell/1/team",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cell",
+						"1",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cell 1 Proposed Projects",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cell/1/proposed_projects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cell",
+						"1",
+						"proposed_projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cell 1 Current Projects",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cell/1/current_projects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cell",
+						"1",
+						"current_projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cell 1 Previous Projects",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cell/1/previous_projects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cell",
+						"1",
+						"previous_projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Project 1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/project/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"project",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Project 1 Team",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/project/1/team",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"project",
+						"1",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Project 1 Tags",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/project/1/tags",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"project",
+						"1",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Project 1 Photos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/project/1/photos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"project",
+						"1",
+						"photos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
