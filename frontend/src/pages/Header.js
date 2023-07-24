@@ -5,16 +5,36 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom'
 import './Header.css';
 
-
 export default function Header() {
-    //const { user } = useContext(AppContext);
-    const navigate = useNavigate();
+  //const { user } = useContext(AppContext);
+  const navigate = useNavigate();
 
-    return (
-        <div id="HeaderWrapper">
-            <button className="NavButton" onClick={()=>{navigate("/")}}>Home</button>
-            <button className="NavButton" onClick={()=>{navigate("/cell")}}>Cell</button>
-            <button className="NavButton" onClick={()=>{navigate("/project")}}>Project</button>
-        </div>
-    )
+  return (
+    <div id="HeaderWrapper">
+      <button
+        className="NavButton"
+        onClick={() => {
+          navigate('/');
+        }}
+      >
+        Home
+      </button>
+      <button
+        className="NavButton"
+        onClick={() => {
+          navigate('/cell');
+        }}
+      >
+        Cell
+      </button>
+      <button
+        className="NavButton"
+        onClick={() => {
+          navigate('/project');
+        }}
+      >
+        Project
+      </button>
+    </div>
+  );
 }

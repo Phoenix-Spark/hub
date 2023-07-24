@@ -3,12 +3,12 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-    return knex.schema.createTable('base', (table) => {
-        table.increments('id');
-        table.string('name', 64);
-        table.double('lat');
-        table.double('lng');
-    })
+  return knex.schema.createTable('base', table => {
+    table.increments('id');
+    table.string('name', 64);
+    table.double('lat');
+    table.double('lng');
+  });
 }
 
 /**
@@ -16,5 +16,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTableIfExists('base');
+  return knex.schema.dropTableIfExists('base');
 }
