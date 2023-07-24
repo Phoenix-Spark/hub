@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+export function up(knex) {
     return knex.schema.createTable('cell', (table) => {
         table.increments('id');
         table.integer('base_id');
@@ -14,12 +14,12 @@ exports.up = function(knex) {
         table.string('email', 64);
         table.string('logo_url', 128);
     })
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export function down(knex) {
     return knex.schema.dropTableIfExists('cell');
-};
+}
