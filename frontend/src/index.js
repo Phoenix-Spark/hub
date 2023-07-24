@@ -12,13 +12,13 @@ const router = createBrowserRouter(
       path="/"
       element={<App />}>
         <Route index
-        element={Hub}/>
+        element={<Hub />}/>
         <Route path='/cell/'
-        element={Cell}/>
+        element={<Cell />}/>
         <Route path='/project/'
-        element={Project}/>
+        element={<Project />}/>
         <Route path='/*'
-        element={Hub}/>
+        element={<Hub />}/>
     </Route>
   )
 );

@@ -1,6 +1,6 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AppContext } from '../AppContext.js';
+import AppContext from '../AppContext.js';
 import { useState, useEffect, useContext } from 'react';
 
 export default function Cell() {
