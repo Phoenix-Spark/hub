@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Project } from './pages';
+import { Cell, Hub, Project, ProposedProjects } from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -12,13 +12,15 @@ const router = createBrowserRouter(
       path="/"
       element={<App />}>
         <Route index
-        element={Hub}/>
+        element={<Hub />}/>
         <Route path='/cell/'
-        element={Cell}/>
+        element={<Cell />}/>
         <Route path='/project/'
-        element={Project}/>
+        element={<Project />}/>
+        <Route path='/proposedprojects/' 
+        element={<ProposedProjects />} />
         <Route path='/*'
-        element={Hub}/>
+        element={<Hub />}/>
     </Route>
   )
 );

@@ -1,0 +1,10 @@
+#HeaderWrapper {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.NavButton {
+    background-color: transparent;
+    border: none;
+    color: white;
+}
