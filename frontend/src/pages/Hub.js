@@ -4,13 +4,13 @@ import AppContext from '../AppContext.js';
 import { useContext } from 'react';
 
 export default function Hub() {
-    const { sparkList } = useContext(AppContext);
+  const { sparkList } = useContext(AppContext);
 
-    return (
-        <>
-            <div>This is the Hub Component!</div>
-            <br/>
-            {JSON.stringify(sparkList)}
-        </>
-    )
+  return (
+    <>
+      <div>This is the Hub Component!</div>
+      <br />
+      {JSON.stringify(sparkList)}
+    </>
+  );
 }
