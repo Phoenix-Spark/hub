@@ -99,6 +99,8 @@ const pwHash = pw => bcrypt.hashSync(pw, 10);
 
 const router = express.Router();
 
+// This is a test route
+// TODO: Remove it
 // :3001/user/
 router.get('/', async (req, res, next) => {
   // login logic to validate req.body.user and req.body.pass
@@ -170,8 +172,11 @@ router.post('/signup', async (req, res) => {
         bio: user.bio,
       });
       user.id = newUser.id;
-      console.log({ ...user });
-      res.status(201).json(user);
+
+      // new user has no real permissions
+      const { token } = generateAccessToken(user, []);
+
+      res.status(201).json({ token });
     } else {
       res.status(401).json('User already exists');
     }
