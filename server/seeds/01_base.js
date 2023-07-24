@@ -7,8 +7,8 @@ export async function seed(knex) {
   //await knex.schema.raw('TRUNCATE base CASCADE')
   await knex('base').del()
   await knex('base').insert([
-    {name: 'Base Name 1', lat: 1.23456, lng: 1.23456},
-    {name: 'Base Name 2', lat: 1.23456, lng: 1.23456},
-    {name: 'Base Name 3', lat: 1.23456, lng: 1.23456}
+    {base_name: 'Travis AFB', lat: 1.23456, lng: 1.23456},
+    {base_name: 'Base Name 2', lat: 1.23456, lng: 1.23456},
+    {base_name: 'Base Name 3', lat: 1.23456, lng: 1.23456}
   ]);
 }
