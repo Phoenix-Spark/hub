@@ -3,21 +3,42 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-function App() {
+import { useState, useEffect, createContext } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Header, Hub, Cell, Project } from './pages/index.js';
+export const AppContext = createContext();
+
+const server = process.env.REACT_APP_SERVER_STRING || "http://localhost:8080";
+
+export default function App() {
+  const [user, setUser] = useState({})
+  const [sparkList, setSparkList] = useState([])
+
+  const ContextObject = { server, user, setUser, sparkList}
+
+  useEffect(() => {
+    fetch(`${server}/spark_list`)
+        .then(res=>{console.log(res);
+                    return res.json();})
+        .then(data=>setSparkList(data))
+        .catch(err=>console.log(`Fetch failed. Error: ${err}`))
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        Spark Hub
-      </header>
-      <body>
-        <Routes>
-          <Route>
-            
-          </Route>
-        </Routes>
-      </body>
+    <div id="AppWrapper">
+      <AppContext.Provider value={ContextObject}>
+        <BrowserRouter>
+          <div id="HeaderContainer"><Header /></div>
+          <div id="BodyContainer">
+            <Routes>
+              <Route path='/' element={<Hub />} />
+              <Route path='/cell/*' element={<Cell />} />
+              <Route path='/project/*' element={<Project />} />
+              <Route path='/*' element={<Hub />} /> {/*catch all*/}
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </AppContext.Provider>
     </div>
   );
 }
-
-export default App;
