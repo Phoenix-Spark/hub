@@ -1,61 +1,8 @@
 import express from 'express';
-import { v4 as uuid } from 'uuid';
-import {
-  addUser,
-  comparePassword,
-  doesUserExist,
-  findUser,
-  findUserRoles,
-  generateUserToken,
-  validUser,
-} from '../Services/LoginService.js';
+import { addUser, comparePassword, doesUserExist, findUser, generateUserToken, loginUser, validUser } from '../Services/LoginService.js';
 
 const router = express.Router();
 
-// This is a test route
-// TODO: Remove it
-// :3001/user/
-router.get('/', async (req, res, next) => {
-  // login logic to validate req.body.user and req.body.pass
-  // would be implemented here. for this example any combo works
-
-  // regenerate the session, which is good practice to help
-  // guard against forms of session fixation
-  try {
-    req.session.regenerate(err => {
-      console.log(process.env.DEBUG);
-      console.log('session regen');
-      console.log(req.session);
-      if (err) next(err);
-
-      // store user information in session, typically a user id
-      req.session.user = uuid();
-
-      // save the session before redirection to ensure page
-      // load does not happen before session is saved
-      /* eslint-disable-next-line consistent-return */
-      req.session.save(e => {
-        console.log('session save');
-        console.log(req.session);
-        if (e) return next(e);
-        res.redirect('/user/protected');
-      });
-    });
-    // const users = await db('users').select();
-    // const token = generateAccessToken('Jon M');
-    // res.send(token);
-  } catch (e) {
-    res.status(500);
-    next(e);
-  }
-});
-
-// signup
-//  - post
-//  check db for username
-//  insert new user
-//  generate token
-//  respond with token
 router.post('/signup', async (req, res) => {
   if (!req.body.username || !req.body.password) {
     throw new Error('missing required arguments');
@@ -67,6 +14,7 @@ router.post('/signup', async (req, res) => {
     // User does not exist keep going
     if (userDoesNotExist) {
       const { user, token } = await addUser(req.body);
+      await loginUser(user, req.session);
 
       res.status(201).json({ token });
     } else {
@@ -78,12 +26,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// 3001/users/signin
-// - post
-// check db for user
-// check password
-// verify jwtid
-// send token
 router.post(
   '/signin',
   /* eslint-disable-next-line consistent-return */
@@ -102,20 +44,10 @@ router.post(
         const validPass = await comparePassword(password, user.password);
 
         if (validPass) {
-          req.session.regenerate(async regenErr => {
-            if (regenErr) throw new Error(regenErr);
+          await loginUser(user, req.session);
+          const { token } = await generateUserToken(user);
 
-            req.session.roles = await findUserRoles(user.id);
-            req.session.user = user.id;
-
-            req.session.save(async saveErr => {
-              if (saveErr) throw new Error(saveErr);
-
-              const { token } = await generateUserToken(user);
-
-              res.status(200).json({ token });
-            });
-          });
+          res.status(200).json({ token });
         } else {
           res.status(401).json('Incorrect username or password');
         }

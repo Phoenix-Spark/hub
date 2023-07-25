@@ -5,7 +5,9 @@ import generateAccessToken from './TokenService.js';
 class User {
   id;
   baseId;
+  base;
   cellId;
+  cell;
   username;
   password;
   firstName;
@@ -53,6 +55,28 @@ class User {
     this.contactNumbers = contactNumbers;
     this.bio = bio;
     this.id = id;
+    this.setBaseString();
+    this.setCellString();
+  }
+
+  setBaseString() {
+    db('base')
+      .select('base_name')
+      .where('id', this.baseId)
+      .first()
+      .then(result => {
+        this.base = result.base_name;
+      });
+  }
+
+  setCellString() {
+    db('cell')
+      .select('cell_name')
+      .where('id', this.cellId)
+      .first()
+      .then(result => {
+        this.cell = result.cell_name;
+      });
   }
 }
 
@@ -82,10 +106,10 @@ export async function findUser(username) {
 /**
  *
  * @param userId
- * @returns {Promise<Array>}
+ * @returns {Promise<string>}
  */
 export async function findUserRoles(userId) {
-  return db('permissions').select().where('users_id', userId);
+  return db('permissions').select().where('users_id', userId).first();
 }
 
 /**
@@ -106,28 +130,36 @@ export async function comparePassword(plaintext, hashed) {
   return bcrypt.compare(plaintext, hashed);
 }
 
+/**
+ *
+ * @param {User}
+ * @returns {Promise<{user: User, token: string}>}
+ */
 export async function addUser({ baseId, cellId, username, password, firstName, lastName, email, photo, contactNumbers, bio }) {
   const hash = await hashPassword(password);
   const user = new User(username, firstName, lastName, email, baseId, cellId, photo, contactNumbers, bio, hash);
 
-  // const newUser = await db('users').insert({
-  //   base_id: user.baseId,
-  //   cell_id: user.cellId,
-  //   username: user.username,
-  //   password: user.password,
-  //   first_name: user.firstName,
-  //   last_name: user.lastName,
-  //   email: user.email,
-  //   photo_url: user.photo,
-  //   contact_number1: user.contactNumbers[0] ?? '',
-  //   contact_number2: user.contactNumbers[1] ?? '',
-  //   bio: user.bio,
-  // });
+  const newUser = await db('users').insert(
+    {
+      base_id: user.baseId,
+      cell_id: user.cellId,
+      username: user.username,
+      password: user.password,
+      first_name: user.firstName,
+      last_name: user.lastName,
+      email: user.email,
+      photo_url: user.photo,
+      contact_number1: user.contactNumbers[0] ?? '',
+      contact_number2: user.contactNumbers[1] ?? '',
+      bio: user.bio,
+    },
+    ['id']
+  );
 
-  user.id = 10; // newUser.id;
+  user.id = newUser[0].id;
 
   // new user has no real permissions
-  const { token } = generateAccessToken(user, []);
+  const { token } = generateAccessToken(user, '');
   return { user, token };
 }
 
@@ -141,4 +173,23 @@ export async function generateUserToken(user) {
 export async function validUser(userId) {
   const dbUser = await db('users').select().where('id', userId).first();
   return !!dbUser;
+}
+
+export async function loginUser(user, session) {
+  session.regenerate(async regenErr => {
+    if (regenErr) throw new Error(regenErr);
+
+    try {
+      // eslint-disable-next-line no-param-reassign
+      session.roles = await findUserRoles(user.id);
+      // eslint-disable-next-line no-param-reassign
+      session.user = user.id;
+
+      session.save(async saveErr => {
+        if (saveErr) throw new Error(saveErr);
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  });
 }
