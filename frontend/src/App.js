@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './pages/index.js';
 import AppContext from './AppContext.js';
+import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, Navbar } from 'react-bootstrap';
 
 const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 
@@ -24,15 +25,15 @@ export default function App() {
   }, []);
 
   return (
-    <div id="AppWrapper">
+    <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }} className="app-container-css">
       <AppContext.Provider value={ContextObject}>
-        <div id="HeaderContainer">
+        <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }} id="HeaderContainer">
           <Header />
-        </div>
-        <div id="BodyContainer">
+        </Container>
+        <Container fluid id="BodyContainer">
           <Outlet />
-        </div>
+        </Container>
       </AppContext.Provider>
-    </div>
+    </Container>
   );
 }

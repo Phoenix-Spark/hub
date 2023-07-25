@@ -1,4 +1,19 @@
-#AppWrapper{
+.header-css {
+  background-color: #1C1C1C;
+  color: white;
+  height: 8vh;
+}
+
+.app-container-css {
+  background-color: rgb(61, 58, 58);
+}
+
+.no-right-margin {
+  margin-right: 0 !important;
+}
+
+
+/* #AppWrapper{
   position: absolute;
   inset: 0;
   overflow-y: hidden;
@@ -9,17 +24,26 @@
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-#HeaderContainer{
+} */
+
+/* #HeaderContainer{
   grid-row: 1 / 2;
   background-color: #1C1C1C;
+} */
+
+/* #HeaderContainer{
+  background-color: red;
+  color: black;
 }
+
 #BodyContainer{
   grid-row: 2 / 3;
   background-color: #0E0E0E;
   color: #EFEFEF;
-}
-#HeaderWrapper{
+  overflow-y: auto;
+} */
+
+/* #HeaderWrapper{
   height: 100%;
   width: 100%;
   display: flex;
@@ -48,7 +72,8 @@
 }
 .buttonContainer .NavButton:hover {
   background-color: #808080;
-}
-.App-link {
+} */
+
+/* .App-link {
   color: #61dafb;
-}
+} */
