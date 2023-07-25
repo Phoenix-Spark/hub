@@ -1,15 +1,15 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './pages/index.js';
 import AppContext from './AppContext.js';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, Navbar } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 
 export default function App() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [sparkList, setSparkList] = useState([]);
 
   const ContextObject = { server, user, setUser, sparkList };
@@ -40,7 +40,7 @@ export default function App() {
         </Container>
         <Container
           fluid
-          style={{ paddingTop: 106}}
+          style={{ paddingTop: 106 }}
           id="BodyContainer"
         >
           <Outlet />

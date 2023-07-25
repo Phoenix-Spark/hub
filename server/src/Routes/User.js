@@ -41,9 +41,9 @@ export async function loginHandler(req, res) {
     return res.status(400).json('Username and password required');
   }
   // const user = await findUser(username);
-
+  console.log(username, password);
   const validUser = await validateLogin(username, password);
-
+  console.log(validUser);
   if (validUser === undefined) {
     return res.status(401).json('Incorrect username or password');
   }

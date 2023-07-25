@@ -9,7 +9,6 @@ class User {
   cellId;
   cell;
   username;
-  password;
   firstName;
   lastName;
   email;
@@ -46,6 +45,7 @@ class User {
   }
 
   setBaseString() {
+    console.log(this.baseId);
     db('base')
       .select('base_name')
       .where('id', this.baseId)
@@ -73,7 +73,7 @@ async function getUserByField(value = null, field = 'username') {
 
 async function findUser(username) {
   const dbUser = await getUserByField(username);
-  if (!dbUser) return undefined;
+  if (!dbUser) return { user: undefined, password: undefined };
 
   return {
     user: new User(
@@ -145,14 +145,14 @@ async function comparePassword(plaintext, hashed) {
  */
 export async function addUser({ baseId, cellId, username, password, firstName, lastName, email, photo, contactNumbers, bio }) {
   const hash = await hashPassword(password);
-  const user = new User(username, firstName, lastName, email, baseId, cellId, photo, contactNumbers, bio, hash);
+  const user = new User(username, firstName, lastName, email, baseId ?? 1, cellId ?? 1, photo, contactNumbers, bio);
 
   const newUser = await db('users').insert(
     {
-      base_id: user.baseId,
-      cell_id: user.cellId,
+      base_id: user.baseId ?? 1,
+      cell_id: user.cellId ?? 1,
       username: user.username,
-      password: user.password,
+      password: hash,
       first_name: user.firstName,
       last_name: user.lastName,
       email: user.email,
@@ -205,6 +205,7 @@ export async function loginUser(user, session) {
 
 export async function validateLogin(username, plaintext) {
   const { user, password } = await findUser(username);
+  console.log(user, password);
 
   if (user && password) {
     const validPass = await comparePassword(plaintext, password);

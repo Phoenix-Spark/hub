@@ -4,23 +4,42 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Project, ProposedProjects } from './pages/index.js';
+import { Cell, Hub, Login, Project, ProposedProjects, SignUp } from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
-      element={<App />}>
-        <Route index
-        element={<Hub />}/>
-        <Route path='/cell/'
-        element={<Cell />}/>
-        <Route path='/project/'
-        element={<Project />}/>
-        <Route path='/proposedprojects/' 
-        element={<ProposedProjects />} />
-        <Route path='/*'
-        element={<Hub />}/>
+      element={<App />}
+    >
+      <Route
+        index
+        element={<Hub />}
+      />
+      <Route
+        path="/cell/"
+        element={<Cell />}
+      />
+      <Route
+        path="/project/"
+        element={<Project />}
+      />
+      <Route
+        path="/proposedprojects/"
+        element={<ProposedProjects />}
+      />
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+      <Route
+        path="/signup"
+        element={<SignUp />}
+      />
+      <Route
+        path="/*"
+        element={<Hub />}
+      />
     </Route>
   )
 );
@@ -30,7 +49,6 @@ root.render(
     <RouterProvider router={router} />
   </React.StrictMode>
 );
-
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
