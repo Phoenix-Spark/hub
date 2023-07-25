@@ -1,13 +1,5 @@
 import express from 'express';
-import {
-  addUser,
-  comparePassword,
-  doesUserExist,
-  findUser,
-  findUserById,
-  generateSession,
-  generateUserToken,
-} from '../Services/LoginService.js';
+import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
 
 const router = express.Router();
 
@@ -21,8 +13,9 @@ export async function signUpHandler(req, res) {
   try {
     // User does not exist keep going
     if (userDoesNotExist) {
-      const { user, token } = await addUser(req.body);
-      await generateSession(user, req.session);
+      const user = await addUser(req.body);
+
+      const { token } = await loginUser(user, req.session);
 
       res.status(201).json({ token });
     } else {
@@ -36,28 +29,22 @@ export async function signUpHandler(req, res) {
 
 export async function loginHandler(req, res) {
   const { username, password } = req.body;
-  console.log(req.body);
 
   if (!username || !password) {
     return res.status(400).json('Username and password required');
   }
-  const user = await findUser(username);
+  // const user = await findUser(username);
 
-  if (user === undefined) {
+  const validUser = await validateLogin(username, password);
+
+  if (validUser === undefined) {
     return res.status(401).json('Incorrect username or password');
   }
   try {
-    const validPass = await comparePassword(password, user.password);
+    const { token } = await loginUser(validUser, req.session);
 
-    if (validPass) {
-      await generateSession(user, req.session);
-      const { token } = await generateUserToken(user);
-      console.log(req.session);
-      return res.status(200).json({ token });
-    }
-    return res.status(401).json('Incorrect username or password');
+    return res.status(200).json({ token });
   } catch (e) {
-    console.error(e);
     return res.status(500).send({ error: e.message });
   }
 }
@@ -87,8 +74,9 @@ router.use(async (req, res, next) => {
     return res.sendStatus(401);
   }
   req.user = user;
-  next();
+  return next();
 });
+
 router.get('/test', async (req, res) => {
   // const user = await findUserById(req.session.user);
   console.log('after auth');

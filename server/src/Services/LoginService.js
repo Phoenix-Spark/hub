@@ -28,26 +28,12 @@ class User {
    * @param {string} photo
    * @param {Array} contactNumbers
    * @param {string} bio
-   * @param {string|null} password
    * @param {number|undefined} id
    */
-  constructor(
-    username,
-    firstName,
-    lastName,
-    email,
-    baseId = 1,
-    cellId = 1,
-    photo = '',
-    contactNumbers = [],
-    bio = '',
-    password = null,
-    id = undefined
-  ) {
+  constructor(username, firstName, lastName, email, baseId = 1, cellId = 1, photo = '', contactNumbers = [], bio = '', id = undefined) {
     this.baseId = baseId;
     this.cellId = cellId;
     this.username = username;
-    this.password = password;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -80,31 +66,35 @@ class User {
   }
 }
 
-async function getUser(username) {
-  return db('users').where('username', username).first();
+async function getUserByField(value = null, field = 'username') {
+  if (!value) throw new Error('Value required.');
+  return db('users').where(field, value).first();
 }
 
-export async function findUser(username) {
-  const dbUser = await getUser(username);
+async function findUser(username) {
+  const dbUser = await getUserByField(username);
   if (!dbUser) return undefined;
 
-  return new User(
-    dbUser.username,
-    dbUser.first_name,
-    dbUser.last_name,
-    dbUser.email,
-    dbUser.base_id,
-    dbUser.cell_id,
-    dbUser.photo_url,
-    [dbUser.contact_number1, dbUser.contact_number2],
-    dbUser.bio,
-    dbUser.password,
-    dbUser.id
-  );
+  return {
+    user: new User(
+      dbUser.username,
+      dbUser.first_name,
+      dbUser.last_name,
+      dbUser.email,
+      dbUser.base_id,
+      dbUser.cell_id,
+      dbUser.photo_url,
+      [dbUser.contact_number1, dbUser.contact_number2],
+      dbUser.bio,
+      dbUser.id
+    ),
+    password: dbUser.password,
+  };
 }
 
 export async function findUserById(id) {
-  const dbUser = await db('users').where('id', id).first();
+  // const dbUser = await db('users').where('id', id).first();
+  const dbUser = await getUserByField(id, 'id');
   if (!dbUser) return undefined;
 
   return new User(
@@ -117,7 +107,6 @@ export async function findUserById(id) {
     dbUser.photo_url,
     [dbUser.contact_number1, dbUser.contact_number2],
     dbUser.bio,
-    null,
     dbUser.id
   );
 }
@@ -127,7 +116,7 @@ export async function findUserById(id) {
  * @param userId
  * @returns {Promise<string>}
  */
-export async function findUserRoles(userId) {
+async function findUserRoles(userId) {
   return db('permissions').select().where('users_id', userId).first();
 }
 
@@ -136,23 +125,23 @@ export async function findUserRoles(userId) {
  * @param {string} username
  */
 export async function doesUserExist(username) {
-  const dbUser = await getUser(username);
+  const dbUser = await getUserByField(username);
   return !!dbUser;
 }
 
-export async function hashPassword(plaintext) {
+async function hashPassword(plaintext) {
   const saltRounds = 10;
   return bcrypt.hash(plaintext, saltRounds);
 }
 
-export async function comparePassword(plaintext, hashed) {
+async function comparePassword(plaintext, hashed) {
   return bcrypt.compare(plaintext, hashed);
 }
 
 /**
  *
  * @param {User}
- * @returns {Promise<{user: User, token: string}>}
+ * @returns {Promise<User>}>}
  */
 export async function addUser({ baseId, cellId, username, password, firstName, lastName, email, photo, contactNumbers, bio }) {
   const hash = await hashPassword(password);
@@ -177,24 +166,10 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
 
   user.id = newUser[0].id;
 
-  // new user has no real permissions
-  const { token } = generateAccessToken(user, '');
-  return { user, token };
+  return user;
 }
 
-export async function generateUserToken(user) {
-  const roles = await findUserRoles(user.id);
-  const { token } = generateAccessToken(user, roles);
-
-  return { token };
-}
-
-export async function validUser(userId) {
-  const dbUser = await db('users').select().where('id', userId).first();
-  return !!dbUser;
-}
-
-export async function generateSession(user, session) {
+async function generateSession(user, session) {
   const roles = await findUserRoles(user.id);
 
   session.regenerate(regenErr => {
@@ -213,4 +188,30 @@ export async function generateSession(user, session) {
       throw new Error(e);
     }
   });
+}
+
+export async function generateUserToken(user) {
+  const roles = await findUserRoles(user.id);
+  const { token } = generateAccessToken(user, roles);
+
+  return { token };
+}
+
+export async function loginUser(user, session) {
+  await generateSession(user, session);
+  const { token } = await generateUserToken(user);
+  return { token };
+}
+
+export async function validateLogin(username, plaintext) {
+  const { user, password } = await findUser(username);
+
+  if (user && password) {
+    const validPass = await comparePassword(plaintext, password);
+    if (validPass) {
+      return user;
+    }
+  }
+
+  return undefined;
 }
