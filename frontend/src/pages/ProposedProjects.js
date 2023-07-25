@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProposedProjects = () => {
+export default function ProposedProjects () {
   const proposedProjects = [
     { id: 1, title: 'Project 1', description: 'Description for Project 1' },
     { id: 2, title: 'Project 2', description: 'Description for Project 2' },
@@ -20,5 +20,3 @@ const ProposedProjects = () => {
     </div>
   );
 };
-
-export default ProposedProjects;
