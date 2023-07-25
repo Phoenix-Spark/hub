@@ -1,5 +1,13 @@
 import express from 'express';
-import { addUser, comparePassword, doesUserExist, findUser, generateUserToken, loginUser, validUser } from '../Services/LoginService.js';
+import {
+  addUser,
+  comparePassword,
+  doesUserExist,
+  findUser,
+  findUserById,
+  generateSession,
+  generateUserToken,
+} from '../Services/LoginService.js';
 
 const router = express.Router();
 
@@ -14,7 +22,7 @@ router.post('/signup', async (req, res) => {
     // User does not exist keep going
     if (userDoesNotExist) {
       const { user, token } = await addUser(req.body);
-      await loginUser(user, req.session);
+      await generateSession(user, req.session);
 
       res.status(201).json({ token });
     } else {
@@ -44,9 +52,9 @@ router.post(
         const validPass = await comparePassword(password, user.password);
 
         if (validPass) {
-          await loginUser(user, req.session);
+          await generateSession(user, req.session);
           const { token } = await generateUserToken(user);
-
+          console.log(req.session);
           res.status(200).json({ token });
         } else {
           res.status(401).json('Incorrect username or password');
@@ -78,17 +86,23 @@ router.get(
     console.log('after auth');
     console.log(req.session);
     if (req.session.user) {
-      const valid = await validUser(req.session.user);
-      if (valid) {
-        return res.status(200).send(`Welcome!, ${req.session.user}`);
+      const user = await findUserById(req.session.user);
+      console.log('user', user);
+      if (user === undefined) {
+        return res.status(401).json('Not logged in.');
       }
+
+      const { token } = await generateUserToken(user);
+      return res.status(200).json({ message: `Welcome!, ${user.firstName}`, token });
     }
     return res.sendStatus(401);
   },
   (err, req, res, next) => {
     if (err.name === 'UnauthorizedError') {
+      console.log(err);
       res.status(401).send('Token was invalid.');
     } else {
+      console.log(err);
       next(err);
     }
   }

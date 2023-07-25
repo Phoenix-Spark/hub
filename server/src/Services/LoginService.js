@@ -103,6 +103,25 @@ export async function findUser(username) {
   );
 }
 
+export async function findUserById(id) {
+  const dbUser = await db('users').where('id', id).first();
+  if (!dbUser) return undefined;
+
+  return new User(
+    dbUser.username,
+    dbUser.first_name,
+    dbUser.last_name,
+    dbUser.email,
+    dbUser.base_id,
+    dbUser.cell_id,
+    dbUser.photo_url,
+    [dbUser.contact_number1, dbUser.contact_number2],
+    dbUser.bio,
+    null,
+    dbUser.id
+  );
+}
+
 /**
  *
  * @param userId
@@ -175,17 +194,19 @@ export async function validUser(userId) {
   return !!dbUser;
 }
 
-export async function loginUser(user, session) {
-  session.regenerate(async regenErr => {
+export async function generateSession(user, session) {
+  const roles = await findUserRoles(user.id);
+
+  session.regenerate(regenErr => {
     if (regenErr) throw new Error(regenErr);
 
     try {
       // eslint-disable-next-line no-param-reassign
-      session.roles = await findUserRoles(user.id);
+      session.roles = roles;
       // eslint-disable-next-line no-param-reassign
       session.user = user.id;
 
-      session.save(async saveErr => {
+      session.save(saveErr => {
         if (saveErr) throw new Error(saveErr);
       });
     } catch (e) {
