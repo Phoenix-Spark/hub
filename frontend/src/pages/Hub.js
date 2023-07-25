@@ -21,8 +21,14 @@ function Hub() {
         console.log(res);
         return res.json();
       })
-      .then(data => setNewsList(data))
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
+      .then(data => {
+        if (Array.isArray(data)) {
+          setNewsList(data);
+        } else {
+          console.error("Data is not an array:", data);
+          setNewsList([]); // Set an empty array or handle the data not in the expected format
+        }
+      });
   }, []);
 
   // const handleSearchInputChange = event => {

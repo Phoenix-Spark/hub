@@ -1,7 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { Header } from './pages/index.js';
 import AppContext from './AppContext.js';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, Navbar } from 'react-bootstrap';
@@ -20,7 +20,13 @@ export default function App() {
         console.log(res);
         return res.json();
       })
-      .then(data => setSparkList(data))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSparkList(data);
+        } else {
+          console.error("Data is not an array:", data);
+        }
+      })
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, []);
 
@@ -31,6 +37,9 @@ export default function App() {
           <Header />
         </Container>
         <Container fluid id="BodyContainer">
+        <Routes>
+          <Route />   
+        </Routes>
           <Outlet />
         </Container>
       </AppContext.Provider>

@@ -3,5 +3,6 @@ import Hub from './Hub.js';
 import Cell from './Cell.js';
 import Project from './Project.js';
 import ProposedProjects from './ProposedProjects.js';
+import ProposalForm from './ProposalForm.js';
 
-export { Header, Hub, Cell, Project, ProposedProjects };
+export { Header, Hub, Cell, Project, ProposedProjects, ProposalForm };
