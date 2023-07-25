@@ -8,12 +8,13 @@ import express, { json } from 'express';
 import { v4 as uuid } from 'uuid';
 import db from './db.js';
 import { CellRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
 
 const redisClient = createClient();
 try {
-  redisClient.connect();
+  await redisClient.connect();
 } catch (e) {
   console.error(e);
 }
@@ -44,6 +45,10 @@ app.use(session(sessionOptions));
 app.use(cors());
 app.use(cookieParser());
 app.use(json());
+
+app.post('/signup', signUpHandler);
+app.post('/login', loginHandler);
+app.get('/logout', logoutHandler);
 
 app.use('/cell', CellRouter);
 app.use('/project', ProjectRouter);
