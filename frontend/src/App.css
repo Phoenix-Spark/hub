@@ -4,12 +4,12 @@
   height: 8vh;
 }
 
-.app-container-css {
-  background-color: rgb(61, 58, 58);
+.header-css.scrolled {
+  background-color: #FF8900;
 }
 
-.no-right-margin {
-  margin-right: 0 !important;
+.app-container-css {
+  background-color: rgb(61, 58, 58);
 }
 
 
