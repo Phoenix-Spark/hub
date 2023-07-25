@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './pages/index.js';
 import AppContext from './AppContext.js';
@@ -40,7 +40,7 @@ export default function App() {
         </Container>
         <Container
           fluid
-          style={{ paddingTop: 106 }}
+          style={{ paddingTop: 105}}
           id="BodyContainer"
         >
           <Outlet />

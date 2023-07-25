@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
-import { useState, useContext } from 'react';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, InputGroup, Navbar, Card, ListGroup } from 'react-bootstrap';
-import { DropdownSubmenu, NavDropdownMenu } from 'react-bootstrap-submenu';
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import MapChart from '../components/MapChart.js';
 import HubNavBar from '../components/HubNavBar.js';
 
@@ -42,6 +39,19 @@ function Hub() {
   );
 
   function MissionNewsRow() {
+    const [missionCardHeight, setMissionCardHeight] = useState('600px');
+
+    useEffect(() => {
+      function handleResize() {
+        const height = document.getElementById('mission-card') ? `${document.getElementById('mission-card').clientHeight + 2}px` : '600px';
+        setMissionCardHeight(height);
+      }
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
     return (
       <Container
         fluid
@@ -49,10 +59,13 @@ function Hub() {
       >
         <Row className="mt-4 align-items-stretch">
           <Col>
-            <Card class="card">
-              <Card.Body className="card-body">
+            <Card id="mission-card">
+              <Card.Body style={{ backgroundColor: '#F4F4F4', borderRadius: '10px' }}>
                 <Card.Title className="card-title">Mission</Card.Title>
-                <Card.Text className="border px-3 py-2 mb-0 rounded fw-medium">
+                <Card.Text
+                  className="border px-3 py-2 mb-0 rounded fw-medium"
+                  style={{ backgroundColor: '#FCFCFC' }}
+                >
                   At the Air Force Spark Hub, our mission is to ignite a culture of innovation and collaboration throughout the Air Force by
                   providing a dynamic and interactive platform that showcases and empowers Spark Cells. We are committed to fostering a
                   thriving ecosystem where Spark Cells can share their groundbreaking ideas, ongoing projects, and achievements, propelling
@@ -64,32 +77,33 @@ function Hub() {
               </Card.Body>
             </Card>
           </Col>
-          <Col class="h-100">
-            <Card class="card h-100">
-              <Card.Body className="card-body">
-                <Card.Title className="card-title">News</Card.Title>
-                <ListGroup
-                  className="list-group"
-                  style={{ height: '275px', overflowY: 'scroll' }}
-                >
+          <Col>
+            <Card style={{ height: missionCardHeight, backgroundColor: '#F4F4F4' }}>
+              <Card.Body className="d-flex flex-column h-100">
+                <Card.Title>News</Card.Title>
+                <ListGroup style={{ overflowY: 'auto' }}>
                   {newsList.map((item, index) => (
                     <ListGroup.Item
+                      action
+                      href={'/'}
                       key={index}
-                      className="list-group-item"
+                      // style={{ backgroundColor: '#FCFCFC' }} This breaks the nice on hover effect... stretch goal
                     >
-                      <div class="row align-items-center">
-                        <div class="col-auto">
+                      <Row>
+                        <Col md="auto">
                           <img
                             style={{ height: '64px', width: '64px' }}
                             src="./images/placeholder_logo.svg"
                             alt=""
                           />
-                        </div>
-                        <div class="col">
-                          <p>{item.date}</p>
-                          <p>{item.news}</p>
-                        </div>
-                      </div>
+                        </Col>
+                        <Col class="col">
+                          <div>
+                            <div style={{ fontSize: '10px', fontWeight: "bold" }}>{new Date(item.date).toString()}</div>
+                            {item.news}
+                          </div>
+                        </Col>
+                      </Row>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
@@ -104,40 +118,38 @@ function Hub() {
   function SparkyList() {
     return (
       <Container
-      fluid
-      style={{ paddingLeft: 0, paddingRight: 0 }}
-    >
-      <div className="row mt-4 mx-1">
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Spark List</h5>
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              <ul className="list-group">
+        fluid
+        style={{ paddingLeft: 12, paddingRight: 12 }}
+      >
+        <Row className="mt-4">
+          <Card>
+            <Card.Body>
+              <Card.Title>Spark List</Card.Title>
+              <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <a
                     href={`/cell/`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >
-                    <div class="row align-items-center">
-                      <div class="col-auto">
+                    <Row>
+                      <Col md="auto">
                         <img
                           style={{ height: '64px', width: '64px' }}
                           src={spark.logo_url}
                           alt=""
                         />
-                      </div>
-                      <div class="col pl-5">
+                      </Col>
+                      <Col classList="pl-5">
                         {spark.cell_name} at {spark.base_name}
-                      </div>
-                    </div>
+                      </Col>
+                    </Row>
                   </a>
                 ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Row>
       </Container>
     );
   }
