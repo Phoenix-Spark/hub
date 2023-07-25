@@ -9,6 +9,13 @@ export async function seed(knex) {
   await knex('news_feed').insert([
     {news: 'value', date: '2020-01-01'},
     {news: 'value', date: '2020-01-02'},
-    {news: 'value', date: '2020-01-03'}
+    {news: 'value', date: '2020-01-03'},
+    {news: 'value', date: '2020-01-04'},
+    {news: 'value', date: '2020-01-05'},
+    {news: 'value', date: '2020-01-06'},
+    {news: 'value', date: '2020-01-07'},
+    {news: 'value', date: '2020-01-08'},
+    {news: 'value', date: '2020-01-09'},
+    {news: 'value', date: '2020-01-10'}
   ]);
 }
