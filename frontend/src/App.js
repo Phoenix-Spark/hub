@@ -40,7 +40,7 @@ export default function App() {
         </Container>
         <Container
           fluid
-          style={{ paddingTop: 106}}
+          style={{ paddingTop: 105}}
           id="BodyContainer"
         >
           <Outlet />

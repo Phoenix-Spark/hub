@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { useState, useContext } from 'react';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button } from "react-bootstrap";
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps"
+import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Marker } from "react-simple-maps"
 
 const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json"
 
@@ -25,8 +25,9 @@ export default function MapChart() {
     setPosition(position);
   };
   return (
-    <div classname= 'row'>
-      <ComposableMap>
+    <Container style={{paddingLeft: 0, paddingRight: 0}}>
+      <Row style={{paddingLeft: 0, paddingRight: 0}}>
+      <ComposableMap style={{ height: '90vh', width: '100vw' }}  projectionConfig={{ center: [20, 40] }} >
         <ZoomableGroup
           zoom={1}
           //{position.zoom}
@@ -34,6 +35,7 @@ export default function MapChart() {
           //{position.coordinates}
           onMoveEnd={handleMoveEnd}
         >
+          <Sphere stroke="#FF5533" strokeWidth={2} />
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -41,6 +43,9 @@ export default function MapChart() {
               ))
             }
           </Geographies>
+          <Marker coordinates={[ -121.94443455546879, 38.273198309851736]}>
+            <circle r={2} fill="#F53" />
+          </Marker>
         </ZoomableGroup>
       </ComposableMap>
       <div className="controls">
@@ -70,7 +75,7 @@ export default function MapChart() {
           </svg>
         </button>
       </div>
-    </div>
-
+      </Row>
+    </Container>
   );
 };

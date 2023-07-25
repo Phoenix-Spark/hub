@@ -1,11 +1,11 @@
 .header-css {
   background-color: #1C1C1C;
   color: white;
-  height: 8vh;
+  height: 105px;
 }
 
 .header-css.scrolled {
-  background-color: #FF8900;
+  background-color: #252525;
 }
 
 .app-container-css {
