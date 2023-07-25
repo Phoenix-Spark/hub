@@ -4,6 +4,10 @@ import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, val
 const router = express.Router();
 
 export async function signUpHandler(req, res) {
+  if (req.session.user) {
+    return res.status(200).json({ message: 'You are already logged in. Did you mean to do that?' });
+  }
+
   if (!req.body.username || !req.body.password) {
     throw new Error('missing required arguments');
   }
@@ -17,17 +21,20 @@ export async function signUpHandler(req, res) {
 
       const { token } = await loginUser(user, req.session);
 
-      res.status(201).json({ token });
-    } else {
-      res.status(401).json('User already exists');
+      return res.status(201).json({ token });
     }
+    return res.status(401).json('User already exists');
   } catch (e) {
     console.error('There was an error. ', e);
-    res.status(500).send({ error: e.message });
+    return res.status(500).send({ error: e.message });
   }
 }
 
 export async function loginHandler(req, res) {
+  if (req.session.user) {
+    return res.status(200).json({ message: 'You are already logged in.' });
+  }
+
   const { username, password } = req.body;
 
   if (!username || !password) {
