@@ -97,7 +97,7 @@ function Hub() {
                             alt=""
                           />
                         </Col>
-                        <Col class="col">
+                        <Col>
                           <div>
                             <div style={{ fontSize: '10px', fontWeight: "bold" }}>{new Date(item.date).toString()}</div>
                             {item.news}
@@ -140,7 +140,7 @@ function Hub() {
                           alt=""
                         />
                       </Col>
-                      <Col classList="pl-5">
+                      <Col className="pl-5">
                         {spark.cell_name} at {spark.base_name}
                       </Col>
                     </Row>

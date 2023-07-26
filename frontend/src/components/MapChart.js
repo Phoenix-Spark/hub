@@ -3,13 +3,17 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { useState, useContext } from 'react';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Marker } from "react-simple-maps"
+import { useNavigate } from 'react-router-dom';
 
 const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json"
 
 export default function MapChart() {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+  const { sparkList } = useContext(AppContext);
+  const [toolTipOpen, setToolTipOpen] = useState(false);
+  const navigate = useNavigate();
 
   function handleZoomIn() {
     if (position.zoom >= 4) return;
@@ -43,9 +47,9 @@ export default function MapChart() {
               ))
             }
           </Geographies>
-          <Marker coordinates={[ -121.94443455546879, 38.273198309851736]}>
-            <circle r={2} fill="#F53" />
-          </Marker>
+          {sparkList.map(spark=>
+            <MarkerWithTooltip key={spark.id} spark={spark}/>
+          )}
         </ZoomableGroup>
       </ComposableMap>
       <div className="controls">
@@ -78,4 +82,32 @@ export default function MapChart() {
       </Row>
     </Container>
   );
+
+  function MarkerWithTooltip({spark}) {
+    return (
+        <Marker key={spark.id} coordinates={[ spark.lng, spark.lat ]} onClick={()=>{alert("click");navigate(`/cell/${spark.id}`)}}>
+          <OverlayTrigger
+            placement={"top"}
+            overlay={
+            <Tooltip id={`tooltip-${spark.id}`}>
+              <Row>
+                <Col md="auto">
+                  <img
+                    style={{ height: '64px', width: '64px' }}
+                    src={spark.logo_url}
+                    alt=""
+                  />
+                </Col>
+                <Col className="pl-5">
+                  {spark.cell_name} at {spark.base_name}
+                </Col>
+              </Row>
+            </Tooltip>
+            }
+          >
+              <circle r={4/position.zoom} fill="#F53"/>
+          </OverlayTrigger>
+        </Marker>
+    )
+  }
 };
