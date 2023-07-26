@@ -17,7 +17,11 @@ export async function signUpHandler(req, res) {
   try {
     // User does not exist keep going
     if (userDoesNotExist) {
-      const user = await addUser(req.body);
+      for (const item in req.body) {
+        req.body[item] = encodeURIComponent(req.body[item]);
+      }
+
+      const user = await addUser(req.body, req.file);
 
       const { token } = await loginUser(user, req.session);
 

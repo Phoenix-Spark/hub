@@ -2,6 +2,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import session from 'express-session';
+import multer from 'multer';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
@@ -32,6 +33,11 @@ const sessionOptions = {
   store: redisStore,
 };
 
+const corsOptions = {
+  origin: [/(http:\/\/localhost)(:(\d{4}))/, 'http://localhost:3000'],
+  credentials: true,
+};
+
 // Set secure cookie only in production
 // Hopefully it's a fully setup HTTPS connection
 if (process.env.NODE_ENV === 'production') {
@@ -49,7 +55,20 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(json());
 
-app.post('/signup', signUpHandler);
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = process.env.UPLOAD_PATH || '/tmp/uploads/';
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const fileType = file.mimetype === 'image/jpeg' ? '.jpg' : '.png';
+    cb(null, `profile-${uniqueSuffix}${fileType}`);
+  },
+});
+const profileUpload = multer({ dest: 'uploads/', storage: profileStorage });
+
+app.post('/signup', profileUpload.single('photo'), signUpHandler);
 app.post('/login', loginHandler);
 app.get('/logout', logoutHandler);
 
