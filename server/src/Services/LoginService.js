@@ -45,7 +45,6 @@ class User {
   }
 
   setBaseString() {
-    console.log(this.baseId);
     db('base')
       .select('base_name')
       .where('id', this.baseId)
@@ -205,7 +204,6 @@ export async function loginUser(user, session) {
 
 export async function validateLogin(username, plaintext) {
   const { user, password } = await findUser(username);
-  console.log(user, password);
 
   if (user && password) {
     const validPass = await comparePassword(plaintext, password);
