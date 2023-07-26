@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import jwtDecode from 'jwt-decode';
+import * as jose from 'jose';
 import AppContext from '../AppContext.js';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -32,11 +32,12 @@ export default function Login() {
       });
       const data = await response.json();
       if (response.ok) {
-        const payload = jwtDecode(data.token);
-
-        if (payload.aud.search(/.*(at capstone)$/) === -1 || payload.iss !== 'capstone' || payload.sub !== username) {
-          throw new Error('invalid token');
-        }
+        const secret = process.env.REACT_APP_SECRET || 'secret';
+        const secretUInt = new TextEncoder().encode(secret);
+        const { payload } = await jose.jwtVerify(data.token, secretUInt, {
+          issuer: 'capstone',
+          subject: username,
+        });
 
         for (let key of Object.keys(payload.user)) {
           payload.user[key] = decodeURIComponent(payload.user[key]);
