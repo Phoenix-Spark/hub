@@ -13,7 +13,7 @@ const generateAccessToken = (user, roles) => {
   return {
     token: jwt.sign(
       { user: { email, firstName, lastName, cellId, cell, baseId, base, photo }, roles },
-      process.env.TOKEN_SECRET || 'secret',
+      process.env.TOKEN_SECRET || new TextEncoder().encode('secret'),
       {
         issuer: 'capstone', // where was the JWT issued
         subject: user.username, // the user of the JWT
