@@ -1,14 +1,14 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Nav, Navbar, Row, Image} from 'react-bootstrap';
+import { Button, Col, Container, Image, Nav, Navbar, Row } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 import { Link, useLocation } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
 
 export default function Header() {
   const { server, user, setUser } = useContext(AppContext);
-  const [ showLogin, setShowLogin ] = useState(true);
+  const [showLogin, setShowLogin] = useState(true);
 
   const location = useLocation();
 
@@ -26,14 +26,13 @@ export default function Header() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (location.pathname === '/signup') {
       setShowLogin(false);
     } else {
@@ -43,9 +42,9 @@ export default function Header() {
 
   async function handleLogout() {
     const response = await fetch(`${server}/logout`, {
-      credentials: "include",
+      credentials: 'include',
     });
-    
+
     if (response.ok) {
       setUser(null);
     }
@@ -62,29 +61,34 @@ export default function Header() {
         className="d-flex"
         id="HeaderWrapper"
       >
-        <Row className="w-100">
+        <Row className="w-100 align-items-center">
           <Col xs="auto">
             <Nav.Link
               as={Link}
               to="/"
               className="mx-2 text-nowrap"
             >
-            <Image
-              src="/frontend/public/images/travis.png"
-              alt="Spark Hub Logo" 
-              style={{ width: '150px', height: 'auto' }}
-            />
+              <Image
+                src="http://localhost:3000/images/travis.png"
+                alt="Spark Hub Logo"
+                style={{ width: '90px', height: 'auto' }}
+              />
             </Nav.Link>
           </Col>
           <Col
             xs="auto"
             className="ms-auto"
           >
-            {showLogin && user === null && (
-              <LoginButton />
-            )}
+            {showLogin && user === null && <LoginButton />}
             {showLogin && user && (
               <p>
+                <Image
+                  alt="User Profile"
+                  src={`http://localhost:3000/uploads/${user.photo}`}
+                  height={80}
+                  roundedCircle
+                  className="me-2"
+                />
                 Welcome, {`${user.firstName} ${user.lastName} ${user.email}`}!
                 <Button
                   onClick={handleLogout}

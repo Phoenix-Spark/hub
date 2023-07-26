@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as jose from 'jose';
 import { Outlet } from 'react-router-dom';
 import { Header } from './pages/index.js';
@@ -20,23 +20,24 @@ export default function App() {
 
     const fetchSparkList = async () => {
       try {
-      const response = await fetch(`${server}/spark_list`);
-      const data = await response.json();
-      if(!ignore){
-        setSparkList(data);
-      }} catch (e) {
+        const response = await fetch(`${server}/spark_list`);
+        const data = await response.json();
+        if (!ignore) {
+          setSparkList(data);
+        }
+      } catch (e) {
         console.error('Fetch failed. ', e);
       }
-    }
+    };
 
     const checkUserSession = async () => {
       try {
         const response = await fetch(`${server}/user/refresh`, {
-            credentials: "include"
+          credentials: 'include',
         });
 
         // verify jwt
-        if(response.ok) {
+        if (response.ok) {
           const data = await response.json();
           const secret = process.env.REACT_APP_SECRET || 'secret';
           const secretUInt = new TextEncoder().encode(secret);
@@ -52,12 +53,16 @@ export default function App() {
         }
       } catch (e) {
         console.error('There was an error checking user session. ', e);
-      }    
+      }
+    };
+    if (!user) {
+      checkUserSession();
     }
-    checkUserSession();
     fetchSparkList();
 
-      return () => { ignore = true; }
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return (
@@ -76,7 +81,7 @@ export default function App() {
         </Container>
         <Container
           fluid
-          style={{ paddingTop: 105}}
+          style={{ paddingTop: 105 }}
           id="BodyContainer"
         >
           <Outlet />

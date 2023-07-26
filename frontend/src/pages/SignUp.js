@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
+import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
-import jwtDecode from 'jwt-decode';
 
 // TODO: Photo upload
 export default function SignUp() {
@@ -19,46 +19,33 @@ export default function SignUp() {
     setValidated(true);
 
     if (formIsValid) {
+      e.stopPropagation();
       try {
-        const userDetails = {
-          baseId: parseInt(form.baseId.value, 10),
-          cellId: parseInt(form.cellId.value, 10),
-          username: encodeURIComponent(form.username.value),
-          password: encodeURIComponent(form.password.value),
-          firstName: encodeURIComponent(form.firstName.value),
-          lastName: encodeURIComponent(form.lastName.value),
-          email: encodeURIComponent(form.email.value),
-          photo: encodeURIComponent(form.photo.value),
-          contactNumbers: [encodeURIComponent(form.contactNumber1.value), encodeURIComponent(form.contactNumber2.value)],
-          bio: encodeURIComponent(form.bio.value),
-        };
+        const formData = new FormData(form);
+
+        console.log(formData);
 
         const response = await fetch(`${server}/signup`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userDetails),
+          body: formData,
         });
 
-        const data = await response.json();
         if (response.ok) {
-          const payload = jwtDecode(data.token);
-
-          if (payload.aud.search(/.*(at capstone)$/) === -1 || payload.iss !== 'capstone' || payload.sub !== form.username.value) {
-            throw new Error('invalid token');
-          }
+          const data = await response.json();
+          const secret = process.env.REACT_APP_SECRET || 'secret';
+          const secretUInt = new TextEncoder().encode(secret);
+          const { payload } = await jose.jwtVerify(data.token, secretUInt, {
+            issuer: 'capstone',
+          });
 
           for (let key of Object.keys(payload.user)) {
             payload.user[key] = decodeURIComponent(payload.user[key]);
           }
 
           setUser(payload.user);
-        } else {
-          console.error(data);
         }
       } catch (e) {
-        console.error(e);
+        console.error('There was an error.', e);
       }
     }
   }
@@ -82,6 +69,7 @@ export default function SignUp() {
               required
               type="text"
               placeholder="Enter a username"
+              name="username"
             ></Form.Control>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">Please enter a username.</Form.Control.Feedback>
@@ -96,6 +84,7 @@ export default function SignUp() {
               required
               type="password"
               placeholder="Enter a password"
+              name="password"
             ></Form.Control>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">Please enter a password.</Form.Control.Feedback>
@@ -106,12 +95,14 @@ export default function SignUp() {
             as={Col}
             className="mb-3"
             controlId="firstName"
+            name="username"
           >
             <Form.Label>First Name</Form.Label>
             <Form.Control
               required
               type="text"
               placeholder="Enter your first name"
+              name="firstName"
             ></Form.Control>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">Please enter your first name.</Form.Control.Feedback>
@@ -126,6 +117,7 @@ export default function SignUp() {
               required
               type="text"
               placeholder="Enter your last name"
+              name="lastName"
             ></Form.Control>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">Please enter your last name.</Form.Control.Feedback>
@@ -140,6 +132,7 @@ export default function SignUp() {
             required
             type="email"
             placeholder="Enter your email address"
+            name="email"
           ></Form.Control>
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           <Form.Control.Feedback type="invalid">Please enter a valid email address.</Form.Control.Feedback>
@@ -154,6 +147,7 @@ export default function SignUp() {
               type="tel"
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               placeholder="555-555-5555"
+              name="contactNumber1"
             ></Form.Control>
           </Form.Group>
           <Form.Group
@@ -165,6 +159,7 @@ export default function SignUp() {
               type="tel"
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               placeholder="555-555-5555"
+              name="contactNumber2"
             ></Form.Control>
           </Form.Group>
         </Row>
@@ -173,7 +168,10 @@ export default function SignUp() {
           controlId="photo"
         >
           <Form.Label>Photo</Form.Label>
-          <Form.Control type="file"></Form.Control>
+          <Form.Control
+            type="file"
+            name="photo"
+          ></Form.Control>
         </Form.Group>
         <Form.Group
           className="mb-3"
@@ -184,6 +182,7 @@ export default function SignUp() {
             as="textarea"
             rows={3}
             placeholder="Tell us a little about yourself"
+            name="bio"
           ></Form.Control>
         </Form.Group>
         <Form.Group
