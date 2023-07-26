@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap'
 
 const ProposalForm = () => {
   const [projectName, setProjectName] = useState('');
@@ -19,7 +20,7 @@ const ProposalForm = () => {
   return (
     <div className="container">
       <h2>Create a New Project Proposal</h2>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="projectName" className="form-label">Project Name</label>
           <input type="text" className="form-control" id="projectName" value={projectName} onChange={(e) => setProjectName(e.target.value)} required />
@@ -41,7 +42,7 @@ const ProposalForm = () => {
           <input type="file" className="form-control" id="photos" onChange={(e) => setPhotos(e.target.files[0])} />
         </div>
         <button type="submit" className="btn btn-primary">Submit Proposal</button>
-      </form>
+      </Form>
     </div>
   );
 };

@@ -31,7 +31,6 @@ export default function Cell() {
         <StayUpToDateRow />
 
       {JSON.stringify(cellData)}
-      <Link to="/proposedprojects">Proposed Projects</Link>
     </>
   );
 
@@ -86,42 +85,41 @@ export default function Cell() {
   }
 
   function MissionProposeRow () {
-    return(
-        <Container
-          fluid
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-        >
-          <Row className="mt-4 align-items-stretch">
-            <Col md="8">
-              <Card>
-                <Card.Body className="d-flex flex-column h-100">
-                  <Card.Title>Cell Mission</Card.Title>
-                  <Row>
-                    <Col md="auto">
-                      <img
-                        style={{ height: '64px', width: '64px' }}
-                        src="../images/placeholder_logo.svg"
-                        alt=""
-                      />
-                    </Col>
-                    <Col>
-                      {cellData.cell_mission}
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md="4">
-              <Card className="h-100">
-                <Card.Body className="d-flex flex-column h-100">
-                  <Card.Title>Project Proposal</Card.Title>
-                    Button or whatever to Form
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-    )
+    return (
+      <Container
+        fluid
+        style={{ paddingLeft: 0, paddingRight: 0 }}
+      >
+        <Row className="mt-4 align-items-stretch">
+          <Col md="8">
+            <Card>
+              <Card.Body className="d-flex flex-column h-100">
+                <Card.Title>Cell Mission</Card.Title>
+                <Row>
+                  <Col md="auto">
+                    <img
+                      style={{ height: '64px', width: '64px' }}
+                      src="../images/placeholder_logo.svg"
+                      alt=""
+                    />
+                  </Col>
+                  <Col>{cellData.cell_mission}</Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md="4">
+            <Card className="h-100">
+              <Card.Body className="d-flex flex-column h-100">
+                <Card.Title>Project Proposal</Card.Title>
+                <Button variant="primary" as={Link} to="/proposed-projects"> Proposed Projects </Button>
+                <Button variant="success" as={Link} to="/new-proposal" className="mt-3"> Submit New Proposal </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    );
   }
 
   function TeamContactRow () {

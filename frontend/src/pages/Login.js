@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode';
 import AppContext from '../AppContext.js';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Login() {
+export default function Login({setModalShow}) {
   const { server, setUser, user } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -93,6 +93,7 @@ export default function Login() {
             variant="secondary"
             className="ms-3"
             disabled={isLoading}
+            onClick={() => {setModalShow(false);}}
           >
             Cancel
           </Button>
@@ -102,6 +103,7 @@ export default function Login() {
       <Button
         type="button"
         as={Link}
+        onClick={() => {setModalShow(false);}}
         to="/signup"
       >
         Create an Account

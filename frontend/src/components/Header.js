@@ -1,10 +1,17 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect } from 'react'
-// import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, Navbar, Image } from 'react-bootstrap';
+import { useContext, useEffect, useState } from 'react';
+import { Button, Col, Container, Nav, Navbar, Row, Image} from 'react-bootstrap';
+import AppContext from '../AppContext.js';
+import { Link, useLocation } from 'react-router-dom';
+import LoginModal from '../pages/LoginModal.js';
+import LoginButton from '../pages/LoginButton.js';
 
 export default function Header() {
+  const { server, user, setUser } = useContext(AppContext);
+  const [ showLogin, setShowLogin ] = useState(true);
+
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,17 +24,37 @@ export default function Header() {
           header.classList.remove('scrolled');
         }
       }
-    }
+    };
 
     window.addEventListener('scroll', handleScroll);
+    
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-    }
+    };
   }, []);
 
+  useEffect(()=>{
+    if (location.pathname === '/signup') {
+      setShowLogin(false);
+    } else {
+      setShowLogin(true);
+    }
+  }, [location]);
+
+  async function handleLogout() {
+    const response = await fetch(`${server}/logout`);
+    if (response.ok) {
+      setUser(null);
+    }
+  }
+
   return (
-    <Navbar id="header" fixed="top" className="header-css">
+    <Navbar
+      id="header"
+      fixed="top"
+      className="header-css"
+    >
       <Container
         fluid
         className="d-flex"
@@ -36,11 +63,15 @@ export default function Header() {
         <Row className="w-100">
           <Col xs="auto">
             <Nav.Link
-              href="/"
+              as={Link}
+              to="/"
               className="mx-2 text-nowrap"
             >
-              
-              Spark Hub Logo
+            <Image
+              src="/frontend/public/images/travis.png"
+              alt="Spark Hub Logo" 
+              style={{ width: '150px', height: 'auto' }}
+            />
             </Nav.Link>
           </Col>
           {/* <Col>
@@ -59,13 +90,31 @@ export default function Header() {
               Project
             </Nav.Link>
           </Col> */}
-          <Col xs="auto" className="ms-auto">
-            <Button
-              variant="dark"
-              href="http://localhost:3000/"
-            >
-              Login/Register
-            </Button>
+          <Col
+            xs="auto"
+            className="ms-auto"
+          >
+            {showLogin && user === null && (
+              <LoginButton />
+              // <Button
+              //   variant="dark"
+              //   as={Link}
+              //   to="/login"
+              // >
+              //   Login/Register
+              // </Button>
+            )}
+            {showLogin && user && (
+              <p>
+                Welcome, {`${user.firstName} ${user.lastName} ${user.email}`}!
+                <Button
+                  onClick={handleLogout}
+                  variant="link"
+                >
+                  Logout
+                </Button>
+              </p>
+            )}
           </Col>
         </Row>
       </Container>

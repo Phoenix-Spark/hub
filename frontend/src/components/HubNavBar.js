@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Nav, NavDropdown, Form, Dropdown, Button, Navbar } from 'react-bootstrap';
-//import { BsSearch } from "react-icons/bs";
+import { Search } from 'react-bootstrap-icons';
 
 export default function HubNavBar() {
   return (
@@ -57,8 +57,8 @@ export default function HubNavBar() {
                 variant="dark"
                 type="submit"
               >
-                Submit
-               
+                <Search />
+        
               </Button>
             </Col>
           </Row>

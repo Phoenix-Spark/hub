@@ -11,7 +11,12 @@
 .app-container-css {
   background-color: rgb(61, 58, 58);
 }
-
+.login-modal {
+  background-color: rgba(61, 58, 58, .7);
+}
+.login-modal-body {
+  background-color:rgb(25, 27, 37);
+}
 
 /* #AppWrapper{
   position: absolute;
