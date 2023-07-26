@@ -39,6 +39,7 @@ export default function Header() {
               href="/"
               className="mx-2 text-nowrap"
             >
+              
               Spark Hub Logo
             </Nav.Link>
           </Col>
