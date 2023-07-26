@@ -27,9 +27,24 @@ class User {
    * @param {string} photo
    * @param {Array} contactNumbers
    * @param {string} bio
+   * @param base
+   * @param cell
    * @param {number|undefined} id
    */
-  constructor(username, firstName, lastName, email, baseId = 1, cellId = 1, photo = '', contactNumbers = [], bio = '', id = undefined) {
+  constructor(
+    username,
+    firstName,
+    lastName,
+    email,
+    baseId = 1,
+    cellId = 1,
+    photo = '',
+    contactNumbers = [],
+    bio = '',
+    base = undefined,
+    cell = undefined,
+    id = undefined
+  ) {
     this.baseId = baseId;
     this.cellId = cellId;
     this.username = username;
@@ -40,8 +55,8 @@ class User {
     this.contactNumbers = contactNumbers;
     this.bio = bio;
     this.id = id;
-    this.setBaseString();
-    this.setCellString();
+    this.base = base;
+    this.cell = cell;
   }
 
   setBaseString() {
@@ -70,9 +85,19 @@ async function getUserByField(value = null, field = 'username') {
   return db('users').where(field, value).first();
 }
 
+async function getBaseAndCell(baseId, cellId) {
+  const base = await db('base').select('base_name').where('id', baseId).first();
+
+  const cell = await db('cell').select('cell_name').where('id', cellId).first();
+
+  return { base: base.base_name, cell: cell.cell_name };
+}
+
 async function findUser(username) {
   const dbUser = await getUserByField(username);
   if (!dbUser) return { user: undefined, password: undefined };
+
+  const { base, cell } = await getBaseAndCell(dbUser.base_id, dbUser.cell_id);
 
   return {
     user: new User(
@@ -85,6 +110,8 @@ async function findUser(username) {
       dbUser.photo_url,
       [dbUser.contact_number1, dbUser.contact_number2],
       dbUser.bio,
+      base,
+      cell,
       dbUser.id
     ),
     password: dbUser.password,
@@ -94,7 +121,10 @@ async function findUser(username) {
 export async function findUserById(id) {
   // const dbUser = await db('users').where('id', id).first();
   const dbUser = await getUserByField(id, 'id');
+
   if (!dbUser) return undefined;
+
+  const { base, cell } = await getBaseAndCell(dbUser.base_id, dbUser.cell_id);
 
   return new User(
     dbUser.username,
@@ -106,6 +136,8 @@ export async function findUserById(id) {
     dbUser.photo_url,
     [dbUser.contact_number1, dbUser.contact_number2],
     dbUser.bio,
+    base,
+    cell,
     dbUser.id
   );
 }
@@ -140,11 +172,19 @@ async function comparePassword(plaintext, hashed) {
 /**
  *
  * @param {User}
+ * @param filename
  * @returns {Promise<User>}>}
  */
-export async function addUser({ baseId, cellId, username, password, firstName, lastName, email, photo, contactNumbers, bio }) {
+export async function addUser({ baseId, cellId, username, password, firstName, lastName, email, contactNumbers, bio }, { filename }) {
+  // eslint-disable-next-line no-param-reassign
+  baseId = baseId ?? 1;
+  // eslint-disable-next-line no-param-reassign
+  cellId = cellId ?? 1;
   const hash = await hashPassword(password);
-  const user = new User(username, firstName, lastName, email, baseId ?? 1, cellId ?? 1, photo, contactNumbers, bio);
+  const { base, cell } = await getBaseAndCell(baseId, cellId);
+  const user = new User(username, firstName, lastName, email, baseId, cellId, filename, contactNumbers, bio, base, cell);
+
+  console.log(user);
 
   const newUser = await db('users').insert(
     {
@@ -204,6 +244,7 @@ export async function loginUser(user, session) {
 
 export async function validateLogin(username, plaintext) {
   const { user, password } = await findUser(username);
+  console.log('validate', user);
 
   if (user && password) {
     const validPass = await comparePassword(plaintext, password);
