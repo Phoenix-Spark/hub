@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=spark_hub
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db-data-capstone:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: docker.io/redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    
+volumes:
+  db-data-capstone:
+  redis-data:
