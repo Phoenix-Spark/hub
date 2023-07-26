@@ -128,7 +128,7 @@ function Hub() {
               <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <a
-                    href={`/cell/`}
+                    href={`/cell/${spark.id}`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >

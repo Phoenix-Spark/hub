@@ -13,6 +13,7 @@ export default function MapChart() {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const { sparkList } = useContext(AppContext);
   const [toolTipOpen, setToolTipOpen] = useState(false);
+  const [zoomFactor, setZoomFactor] = useState(1);
   const navigate = useNavigate();
 
   function handleZoomIn() {
@@ -28,18 +29,24 @@ export default function MapChart() {
   function handleMoveEnd(position) {
     setPosition(position);
   };
+
   return (
     <Container style={{paddingLeft: 0, paddingRight: 0}}>
       <Row style={{paddingLeft: 0, paddingRight: 0}}>
-      <ComposableMap style={{ height: '90vh', width: '100vw' }}  projectionConfig={{ center: [20, 40] }} >
+      <ComposableMap /*style={{ height: '90vh', width: '100vw' }}*/
+        projectionConfig={{ 
+          center: [0, -20],
+          scale: 148
+          }} >
         <ZoomableGroup
-          zoom={1}
+          //zoom={1}
           //{position.zoom}
-          center={[0, 0]}
+          //center={[0, 0]}
           //{position.coordinates}
-          onMoveEnd={handleMoveEnd}
+          //onMoveEnd={()=>handleMoveEnd}
+          onMove={({zoom}) =>{setZoomFactor(zoom)}}
         >
-          <Sphere stroke="#FF5533" strokeWidth={2} />
+          <Sphere stroke="#ff8900" strokeWidth={2} />
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -83,9 +90,9 @@ export default function MapChart() {
     </Container>
   );
 
-  function MarkerWithTooltip({spark}) {
+  function MarkerWithTooltip({spark, onClick}) {
     return (
-        <Marker key={spark.id} coordinates={[ spark.lng, spark.lat ]} onClick={()=>{alert("click");navigate(`/cell/${spark.id}`)}}>
+        <Marker key={spark.id} coordinates={[ spark.lng, spark.lat ]} onClick={()=>navigate(`/cell/${spark.id}`)}>
           <OverlayTrigger
             placement={"top"}
             overlay={
@@ -105,9 +112,9 @@ export default function MapChart() {
             </Tooltip>
             }
           >
-              <circle r={4/position.zoom} fill="#F53"/>
+              <circle r={4/zoomFactor} fill="#F53"/>
           </OverlayTrigger>
         </Marker>
     )
   }
-};
+}

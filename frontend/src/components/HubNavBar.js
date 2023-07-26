@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Nav, NavDropdown, Form, Dropdown, Button, Navbar } from 'react-bootstrap';
+//import { BaSearch } from "react-icons/ba";
 
 export default function HubNavBar() {
   return (
@@ -57,6 +58,7 @@ export default function HubNavBar() {
                 type="submit"
               >
                 Submit
+               
               </Button>
             </Col>
           </Row>
