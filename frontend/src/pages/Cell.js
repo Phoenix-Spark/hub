@@ -23,7 +23,7 @@ export default function Cell() {
 
   return (
     <>
-      <div>This is the Cell Component! We should add an error catch JSX if cell fetch doesn't work because cell doesnt exist.</div>
+      <div style={{color: "white"}}>This is the Cell Component! We should add an error catch JSX if cell fetch doesn't work because cell doesnt exist.</div>
         <CellNavBar />
         <MissionProposeRow />
         <TeamContactRow />
@@ -147,7 +147,7 @@ export default function Cell() {
                   <Card.Title>Meet the Team</Card.Title>
                   <Row>
                     {teamList.map((member, index) => (
-                          <Col md="auto">
+                          <Col md="auto" key={`${member}-${index}`}>
                             <img
                               style={{ height: '64px', width: '64px' }}
                               src="../images/placeholder_logo.svg"

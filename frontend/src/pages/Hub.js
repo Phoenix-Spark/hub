@@ -3,6 +3,7 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, InputGroup, Navbar, Card, ListGroup } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import MapChart from '../components/MapChart.js';
 import HubNavBar from '../components/HubNavBar.js';
 
@@ -85,7 +86,8 @@ function Hub() {
                   {newsList.map((item, index) => (
                     <ListGroup.Item
                       action
-                      href={'/'}
+                      to={'/'}
+                      as={Link}
                       key={index}
                       // style={{ backgroundColor: '#FCFCFC' }} This breaks the nice on hover effect... stretch goal
                     >
@@ -127,8 +129,8 @@ function Hub() {
               <Card.Title>Spark List</Card.Title>
               <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
-                  <a
-                    href={`/cell/${spark.id}`}
+                  <Link
+                    to={`/cell/${spark.id}`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >
@@ -144,7 +146,7 @@ function Hub() {
                         {spark.cell_name} at {spark.base_name}
                       </Col>
                     </Row>
-                  </a>
+                  </Link>
                 ))}
               </ListGroup>
             </Card.Body>
