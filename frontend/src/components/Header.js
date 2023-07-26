@@ -25,12 +25,14 @@ export default function Header() {
         }
       }
     };
+    };
 
     window.addEventListener('scroll', handleScroll);
     
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+    };
     };
   }, []);
 
@@ -55,6 +57,11 @@ export default function Header() {
       fixed="top"
       className="header-css"
     >
+    <Navbar
+      id="header"
+      fixed="top"
+      className="header-css"
+    >
       <Container
         fluid
         className="d-flex"
@@ -63,6 +70,8 @@ export default function Header() {
         <Row className="w-100">
           <Col xs="auto">
             <Nav.Link
+              as={Link}
+              to="/"
               as={Link}
               to="/"
               className="mx-2 text-nowrap"
