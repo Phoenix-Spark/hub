@@ -209,46 +209,6 @@ export async function seed(knex) {
       bio: '',
     },
   ]);
-    {
-      base_id: 3,
-      cell_id: 3,
-      username: 'james',
-      password: bcrypt.hashSync('value', 10),
-      first_name: 'James',
-      last_name: 'A',
-      email: 'some@email.com',
-      photo_url: '',
-      contact_number1: '',
-      contact_number2: '',
-      bio: '',
-    },
-    {
-      base_id: 3,
-      cell_id: 3,
-      username: 'dean',
-      password: bcrypt.hashSync('value', 10),
-      first_name: 'Dean',
-      last_name: 'G',
-      email: 'some@email.com',
-      photo_url: '',
-      contact_number1: '',
-      contact_number2: '',
-      bio: '',
-    },
-    {
-      base_id: 3,
-      cell_id: 3,
-      username: 'joe',
-      password: bcrypt.hashSync('value', 10),
-      first_name: 'Joe',
-      last_name: 'S',
-      email: 'some@email.com',
-      photo_url: '',
-      contact_number1: '',
-      contact_number2: '',
-      bio: '',
-    },
-  ]);
 }
 
 export default seed;
