@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Nav, NavDropdown, Form, Dropdown, Button, Navbar } from 'react-bootstrap';
-//import { BaSearch } from "react-icons/ba";
+//import { BsSearch } from "react-icons/bs";
 
 export default function HubNavBar() {
   return (

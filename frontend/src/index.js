@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Login, Project, ProposedProjects, SignUp } from './pages/index.js';
+import { Cell, Hub, Login, Project, ProposedProjects, ProposalForm, SignUp } from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,8 +17,10 @@ const router = createBrowserRouter(
         element={<Cell />} />
         <Route path='/project/'
         element={<Project />} />
-        <Route path='/proposedprojects/'
+        <Route path='/proposed-projects/'
         element={<ProposedProjects />} />
+        <Route path='/new-proposal/'
+        element={<ProposalForm />} />
         <Route
           path="/login"
           element={<Login />} />
