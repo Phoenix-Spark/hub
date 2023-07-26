@@ -32,17 +32,12 @@ export default function Login() {
       });
       const data = await response.json();
       if (response.ok) {
-        const secret = new TextEncoder().encode('secret');
-        const { payload, protectedHeader } = await jose.jwtVerify(data.token, secret, {
+        const secret = process.env.REACT_APP_SECRET || 'secret';
+        const secretUInt = new TextEncoder().encode(secret);
+        const { payload } = await jose.jwtVerify(data.token, secretUInt, {
           issuer: 'capstone',
           subject: username,
         });
-
-        // if (payload.aud.search(/.*(at capstone)$/) === -1 || payload.iss !== 'capstone' || payload.sub !== username) {
-        //   throw new Error('invalid token');
-        // }
-
-        console.log(payload);
 
         for (let key of Object.keys(payload.user)) {
           payload.user[key] = decodeURIComponent(payload.user[key]);
