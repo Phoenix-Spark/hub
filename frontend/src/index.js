@@ -13,11 +13,11 @@ const router = createBrowserRouter(
       element={<App />}>
         <Route index
         element={<Hub />}/>
-        <Route path='/cell/'
+        <Route path='/cell/:cellId'
         element={<Cell />}/>
         <Route path='/project/'
         element={<Project />}/>
-        <Route path='/proposedprojects/' 
+        <Route path='/proposedprojects/'
         element={<ProposedProjects />} />
         <Route path='/*'
         element={<Hub />}/>

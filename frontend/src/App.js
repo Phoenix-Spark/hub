@@ -31,15 +31,24 @@ export default function App() {
   }, []);
 
   return (
-    <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }} className="app-container-css">
+    <Container
+      fluid
+      style={{ paddingLeft: 0, paddingRight: 0 }}
+      className="app-container-css"
+    >
       <AppContext.Provider value={ContextObject}>
-        <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }} id="HeaderContainer">
+        <Container
+          fluid
+          style={{ paddingLeft: 0, paddingRight: 0 }}
+          id="HeaderContainer"
+        >
           <Header />
         </Container>
-        <Container fluid id="BodyContainer">
-        <Routes>
-          <Route />   
-        </Routes>
+        <Container
+          fluid
+          style={{ paddingTop: 105}}
+          id="BodyContainer"
+        >
           <Outlet />
         </Container>
       </AppContext.Provider>

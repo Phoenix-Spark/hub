@@ -1,13 +1,33 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect } from 'react'
 // import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, Navbar } from 'react-bootstrap';
 
 export default function Header() {
-  //   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = document.getElementById('header');
+      if (header) {
+        const scrolled = window.scrollY > 0;
+        if (scrolled) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   return (
-    <Navbar fixed="top" className="header-css">
+    <Navbar id="header" fixed="top" className="header-css">
       <Container
         fluid
         className="d-flex"
