@@ -40,10 +40,8 @@ export async function loginHandler(req, res) {
   if (!username || !password) {
     return res.status(400).json('Username and password required');
   }
-  // const user = await findUser(username);
-  console.log(username, password);
+
   const validUser = await validateLogin(username, password);
-  console.log(validUser);
   if (validUser === undefined) {
     return res.status(401).json('Incorrect username or password');
   }
@@ -85,9 +83,6 @@ router.use(async (req, res, next) => {
 });
 
 router.get('/test', async (req, res) => {
-  // const user = await findUserById(req.session.user);
-  console.log('after auth');
-
   res.status(200).json({ message: `Welcome, ${req.user.firstName}!` });
 });
 
