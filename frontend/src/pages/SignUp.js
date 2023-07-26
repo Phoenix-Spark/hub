@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import AppContext from '../AppContext.js';
 import jwtDecode from 'jwt-decode';
 
@@ -7,6 +8,10 @@ import jwtDecode from 'jwt-decode';
 export default function SignUp() {
   const { server, setUser } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
+  const navigate = useNavigate();
+  const handleCancel = () => {
+    navigate(-1);
+  };
   // TODO: Move validation to input changes
   async function handleSignup(e) {
     e.preventDefault();
@@ -216,6 +221,7 @@ export default function SignUp() {
           <Button
             variant="secondary"
             className="ms-3"
+            onClick={handleCancel}
           >
             Cancel
           </Button>

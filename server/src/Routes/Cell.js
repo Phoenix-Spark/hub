@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 
 router.get('/:cellId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').where('id', req.params.cellId);
+    const data = await db.select('*').from('cell').join('cell', 'cell.id', 'users.cell_id').where('cell.cell_endpoint', req.params.cellId);
 
     res.status(200).json(data);
   } catch (e) {

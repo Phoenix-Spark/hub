@@ -5,7 +5,6 @@ import session from 'express-session';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
-import { v4 as uuid } from 'uuid';
 import db from './db.js';
 import { CellRouter, ProjectRouter, UserRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
@@ -27,10 +26,9 @@ const redisStore = new RedisStore({
 const sessionOptions = {
   secret: 'changethis',
   cookie: { /** domain: '', */ httpOnly: true, /** sameSite: 'strict', */ maxAge: 3600000 },
-  genid: () => uuid(),
   resave: false,
   rolling: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: redisStore,
 };
 
@@ -40,9 +38,14 @@ if (process.env.NODE_ENV === 'production') {
   sessionOptions.cookie.secure = true;
 }
 
+const corsOptions = {
+  origin: [/(http:\/\/localhost)(:(\d{4}))/, 'http://localhost:3000'],
+  credentials: true,
+};
+
 app.use(logger('dev'));
 app.use(session(sessionOptions));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(json());
 

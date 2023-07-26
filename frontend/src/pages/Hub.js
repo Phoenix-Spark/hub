@@ -130,7 +130,7 @@ function Hub() {
               <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <Link
-                    to={`/cell/${spark.id}`}
+                    to={`/cell/${spark.base_endpoint}`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >

@@ -25,7 +25,6 @@ export default function HubNavBar() {
                 <Dropdown.Menu>
                   <Dropdown.Item href="http://localhost:3000/">Proposal Guidelines</Dropdown.Item>
                   <Dropdown.Item href="http://localhost:3000/">Submission FAQ</Dropdown.Item>
-                  <Dropdown.Item href="http://localhost:3000/">Sparklist</Dropdown.Item>
                   <Dropdown.Item href="http://localhost:3000/">Alex's "Homework" Folder</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

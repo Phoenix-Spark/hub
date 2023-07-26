@@ -13,7 +13,7 @@ const router = createBrowserRouter(
       element={<App />}>
         <Route index
         element={<Hub />} />
-        <Route path='/cell/:cellId'
+        <Route path='/cell/:cell_endpoint'
         element={<Cell />} />
         <Route path='/project/:projectId'
         element={<Project />} />

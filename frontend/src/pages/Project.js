@@ -1,7 +1,7 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
-import { Container, Row, Col, Form, Dropdown, Button, Navbar, Card, ListGroup, Carousel } from 'react-bootstrap';
+import { Container, Row, Col, Card, ListGroup, Carousel } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 
@@ -109,15 +109,15 @@ export default function Project() {
               </Card>
             </Col>
             <Col>
-              {/* <Card className="h-100">
+              <Card className="h-100">
                 <Card.Body className="d-flex flex-column h-100">
-                  <Card.Title>Photos</Card.Title> */}
+                  <Card.Title>Photos</Card.Title>
                   <Carousel className="h-100">
-                    {photoList.map(photo=>{
-                      <Carousel.Item>
+                    {photoList.map((photo, index)=>(
+                      <Carousel.Item key={index}>
                         <img
                         className="d-block w-100"
-                        src="../images/placeholder_logo.svg"
+                        src="../logo512.png"
                         alt=""
                         />
                         <Carousel.Caption>
@@ -125,13 +125,14 @@ export default function Project() {
                           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                         </Carousel.Caption>
                       </Carousel.Item>
-                    })}
+                    ))}
                   </Carousel>
-                {/* </Card.Body>
-              </Card> */}
+                </Card.Body>
+              </Card>
             </Col>
           </Row>
         </Container>
+        
     )
   }
 
