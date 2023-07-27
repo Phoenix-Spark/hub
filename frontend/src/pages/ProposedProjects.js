@@ -46,7 +46,7 @@ const ProposedProjects = () => {
     //   .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, [user]);
 
-  const renderTooltip = () => <Tooltip id="tooltip">The review proces may take up to five business days</Tooltip>;
+  const renderTooltip = () => <Tooltip id="tooltip">The review process may take up to five business days</Tooltip>;
 
   return (
     <Container>

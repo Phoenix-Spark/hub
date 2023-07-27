@@ -20,7 +20,7 @@ const router = createBrowserRouter(
         <Route path='/cell/:cell_endpoint/proposed-projects/'
         element={<ProposedProjects />} />
         <Route path='/cell/:cell_endpoint/new-proposal/'
-        element={<ProposalForm />} />
+        element={<ProposalForm />} />  {/*addProjectToProposedList={addProjectToProposedList}*/}
         <Route
           path="/login"
           element={<Login />} />
