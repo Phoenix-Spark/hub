@@ -32,7 +32,6 @@ function Hub() {
 
   return (
     <>
-      <HubNavBar />
       <MissionNewsRow />
       <SparkyList />
       <MapChart />
@@ -49,13 +48,13 @@ function Hub() {
       hour: '2-digit',
       minute: '2-digit',
       timeZoneName: 'short',
-      hour12: false
+      hour12: false,
     };
     let formattedDate = date.toLocaleString('en-US', options);
     formattedDate = formattedDate.replace('24:00', '00:00');
 
     return formattedDate;
-  };
+  }
 
   function MissionNewsRow() {
     const [missionCardHeight, setMissionCardHeight] = useState('600px');
@@ -79,11 +78,10 @@ function Hub() {
         <Row className="mt-4 align-items-stretch">
           <Col>
             <Card id="mission-card">
-              <Card.Body style={{ backgroundColor: '#F4F4F4', borderRadius: '10px' }}>
+              <Card.Body style={{ borderRadius: '10px' }}>
                 <Card.Title className="card-title">Mission</Card.Title>
                 <Card.Text
                   className="border px-3 py-2 mb-0 rounded fw-medium"
-                  style={{ backgroundColor: '#FCFCFC' }}
                 >
                   At the Air Force Spark Hub, our mission is to ignite a culture of innovation and collaboration throughout the Air Force by
                   providing a dynamic and interactive platform that showcases and empowers Spark Cells. We are committed to fostering a
@@ -97,7 +95,7 @@ function Hub() {
             </Card>
           </Col>
           <Col>
-            <Card style={{ height: missionCardHeight, backgroundColor: '#F4F4F4' }}>
+            <Card style={{ height: missionCardHeight }}>
               <Card.Body className="d-flex flex-column h-100">
                 <Card.Title>News</Card.Title>
                 <ListGroup style={{ overflowY: 'auto' }}>
@@ -107,7 +105,6 @@ function Hub() {
                       to={'/'}
                       as={Link}
                       key={index}
-                      // style={{ backgroundColor: '#FCFCFC' }} This breaks the nice on hover effect... stretch goal
                     >
                       <Row>
                         <Col md="auto">
@@ -119,7 +116,7 @@ function Hub() {
                         </Col>
                         <Col>
                           <div>
-                            <div style={{ fontSize: '10px', fontWeight: "bold" }}>{formatDate(new Date(item.date).toString())}</div>
+                            <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{formatDate(new Date(item.date).toString())}</div>
                             {item.news}
                           </div>
                         </Col>
@@ -143,9 +140,17 @@ function Hub() {
       >
         <Row className="mt-4">
           <Card>
-            <Card.Body>
-              <Card.Title>Spark List</Card.Title>
-              <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <Card.Body style={{ borderRadius: '10px' }}>
+              <Card.Title className="d-flex justify-content-between w-100">
+                <div>Spark List</div>
+                <Button
+                  variant="light"
+                  href="http://localhost:3000/"
+                >
+                  Don't see your cell?
+                </Button>
+              </Card.Title>
+              <ListGroup style={{ maxHeight: '25vh', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <Link
                     to={`/cell/${spark.cell_endpoint}`}

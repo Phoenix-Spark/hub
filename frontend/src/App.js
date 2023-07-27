@@ -45,8 +45,6 @@ export default function App() {
             issuer: 'capstone',
           });
 
-          console.log(payload);
-
           for (let key of Object.keys(payload.user)) {
             payload.user[key] = decodeURIComponent(payload.user[key]);
           }
@@ -67,27 +65,16 @@ export default function App() {
   }, []);
 
   return (
-    <Container
-      fluid
-      style={{ paddingLeft: 0, paddingRight: 0 }}
-      className="app-container-css"
-    >
       <AppContext.Provider value={ContextObject}>
-        <Container
-          fluid
-          style={{ paddingLeft: 0, paddingRight: 0 }}
-          id="HeaderContainer"
-        >
           <Header />
-        </Container>
         <Container
           fluid
           style={{ paddingTop: 105 }}
+          className='bg-body-secondary'
           id="BodyContainer"
         >
           <Outlet />
         </Container>
       </AppContext.Provider>
-    </Container>
   );
 }

@@ -8,7 +8,7 @@ const LoginButton = () => {
 
   return (
     <>
-    <Button variant="dark" onClick={() => setModalShow(true)}>
+    <Button variant="light" onClick={() => setModalShow(true)}>
       Login/Register
     </Button>
     <LoginModal
