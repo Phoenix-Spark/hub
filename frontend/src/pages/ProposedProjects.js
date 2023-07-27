@@ -1,8 +1,14 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link, useParams } from 'react-router-dom';
+import AppContext from '../AppContext.js';
+import { Button, Card, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 const ProposedProjects = () => {
+  const { server } = useContext(AppContext);
+  const [proposedList, setProposedList] = useState([]);
+  const { cell_endpoint } = useParams();
+
   const proposedProjects = [
     { id: 1, title: 'Project 1', description: 'Description for Project 1' },
     { id: 2, title: 'Project 2', description: 'Description for Project 2' },
@@ -10,22 +16,50 @@ const ProposedProjects = () => {
     { id: 4, title: 'Project 4', description: 'Description for Project 4' },
   ];
 
+  useEffect(() => {
+    fetch(`${server}/cell/${cell_endpoint}/proposed_projects`)
+      .then(res => {
+        console.log(res);
+        return res.json();
+      })
+      .then(data => setProposedList(data))
+      .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  }, []);
+
+  const renderTooltip = () => <Tooltip id="tooltip">The review process may take up to five business days</Tooltip>;
+
   return (
-    <div className="container"> 
-      {proposedProjects.map((project) => (
-        <div className="card mb-3" key={project.id}> 
-          <div className="card-body"> 
-            <h3 className="card-title">{project.title}</h3> 
-            <p className="card-text">{project.description}</p> 
-            <div className="d-flex justify-content-between">
-              <button className="btn btn-success">Approve</button>
-              <button className="btn btn-danger">Deny</button>
-            </div>
-          </div>
-        </div>
-      ))}
-      <Link to="/new-proposal" className="btn btn-primary">Create New Proposal</Link>
-    </div>
+    <Container>
+      <div style={{ color: 'white' }}>{JSON.stringify(proposedList)}</div> {/*data from server*/}
+      {proposedList.map(
+        (
+          project //hard-coded data
+        ) => (
+          <OverlayTrigger
+            key={project.id}
+            placement="top"
+            overlay={renderTooltip()}
+          >
+            <Card className="mb-3">
+              <Card.Body>
+                <Card.Title>{project.title}</Card.Title>
+                <Card.Text>{project.description}</Card.Text>
+                <div className="d-flex justify-content-between">
+                  <Button variant="success">Approve</Button>
+                  <Button variant="danger">Deny</Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </OverlayTrigger>
+        )
+      )}
+      <Link
+        to="/new-proposal"
+        className="btn btn-primary"
+      >
+        Create New Proposal
+      </Link>
+    </Container>
   );
 };
 

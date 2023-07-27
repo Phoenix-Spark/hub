@@ -34,6 +34,7 @@ export async function signUpHandler(req, res) {
   }
 }
 
+// eslint-disable-next-line consistent-return
 export async function loginHandler(req, res) {
   if (req.session.user) {
     return res.status(200).json({ message: 'You are already logged in.' });
@@ -50,9 +51,25 @@ export async function loginHandler(req, res) {
     return res.status(401).json('Incorrect username or password');
   }
   try {
-    const { token } = await loginUser(validUser, req.session);
+    const { token, roles } = await loginUser(validUser, req.session);
+    req.session.regenerate(regenErr => {
+      if (regenErr) throw new Error(regenErr);
 
-    return res.status(200).json({ token });
+      try {
+        // eslint-disable-next-line no-param-reassign
+        req.session.roles = roles;
+        // eslint-disable-next-line no-param-reassign
+        req.session.user = validUser.id;
+
+        req.session.save(saveErr => {
+          if (saveErr) throw new Error(saveErr);
+          console.log('saved', req.session);
+          res.status(200).json({ token });
+        });
+      } catch (e) {
+        throw new Error(e);
+      }
+    });
   } catch (e) {
     return res.status(500).send({ error: e.message });
   }
@@ -74,6 +91,7 @@ export async function logoutHandler(req, res) {
 /** After this middleware the user roles can be accessed from req.session.roles */
 /** And the user can be accessed from req.user */
 router.use(async (req, res, next) => {
+  console.log('refresh', req.session, req.session.id);
   if (!req.session.user) {
     return res.sendStatus(401);
   }

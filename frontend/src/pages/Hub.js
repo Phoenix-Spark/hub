@@ -1,8 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, InputGroup, Navbar, Card, ListGroup } from 'react-bootstrap';
+import { Card, Col, Container, ListGroup, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import MapChart from '../components/MapChart.js';
 import HubNavBar from '../components/HubNavBar.js';
@@ -101,7 +101,7 @@ function Hub() {
                         </Col>
                         <Col>
                           <div>
-                            <div style={{ fontSize: '10px', fontWeight: "bold" }}>{new Date(item.date).toString()}</div>
+                            <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{new Date(item.date).toString()}</div>
                             {item.news}
                           </div>
                         </Col>
@@ -130,7 +130,7 @@ function Hub() {
               <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <Link
-                    to={`/cell/${spark.base_endpoint}`}
+                    to={`/cell/${spark.cell_endpoint}`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >
