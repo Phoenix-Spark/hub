@@ -208,26 +208,28 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
   return user;
 }
 
-async function generateSession(user, session) {
-  const roles = await findUserRoles(user.id);
-
-  session.regenerate(regenErr => {
-    if (regenErr) throw new Error(regenErr);
-
-    try {
-      // eslint-disable-next-line no-param-reassign
-      session.roles = roles;
-      // eslint-disable-next-line no-param-reassign
-      session.user = user.id;
-
-      session.save(saveErr => {
-        if (saveErr) throw new Error(saveErr);
-      });
-    } catch (e) {
-      throw new Error(e);
-    }
-  });
-}
+// async function generateSession(user, session, cb, token) {
+//   const roles = await findUserRoles(user.id);
+//   console.log('gen session', user, session);
+//   session.regenerate(regenErr => {
+//     if (regenErr) throw new Error(regenErr);
+//
+//     try {
+//       // eslint-disable-next-line no-param-reassign
+//       session.roles = roles;
+//       // eslint-disable-next-line no-param-reassign
+//       session.user = user.id;
+//
+//       session.save(saveErr => {
+//         if (saveErr) throw new Error(saveErr);
+//         console.log('saved', session);
+//         cb(token);
+//       });
+//     } catch (e) {
+//       throw new Error(e);
+//     }
+//   });
+// }
 
 export async function generateUserToken(user) {
   const roles = await findUserRoles(user.id);
@@ -236,15 +238,15 @@ export async function generateUserToken(user) {
   return { token };
 }
 
-export async function loginUser(user, session) {
-  await generateSession(user, session);
-  const { token } = await generateUserToken(user);
-  return { token };
+export async function loginUser(user) {
+  const roles = await findUserRoles(user.id);
+  const { token } = await generateUserToken(user, roles);
+  // await generateSession(user, session, cb, token);
+  return { token, roles };
 }
 
 export async function validateLogin(username, plaintext) {
   const { user, password } = await findUser(username);
-  console.log('validate', user);
 
   if (user && password) {
     const validPass = await comparePassword(plaintext, password);
