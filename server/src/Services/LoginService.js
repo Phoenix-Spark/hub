@@ -208,26 +208,26 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
   return user;
 }
 
-async function generateSession(user, session) {
-  const roles = await findUserRoles(user.id);
+// async function generateSession(user, session) {
+//   const roles = await findUserRoles(user.id);
 
-  session.regenerate(regenErr => {
-    if (regenErr) throw new Error(regenErr);
+//   session.regenerate(regenErr => {
+//     if (regenErr) throw new Error(regenErr);
 
-    try {
-      // eslint-disable-next-line no-param-reassign
-      session.roles = roles;
-      // eslint-disable-next-line no-param-reassign
-      session.user = user.id;
+//     try {
+//       // eslint-disable-next-line no-param-reassign
+//       session.roles = roles;
+//       // eslint-disable-next-line no-param-reassign
+//       session.user = user.id;
 
-      session.save(saveErr => {
-        if (saveErr) throw new Error(saveErr);
-      });
-    } catch (e) {
-      throw new Error(e);
-    }
-  });
-}
+//       session.save(saveErr => {
+//         if (saveErr) throw new Error(saveErr);
+//       });
+//     } catch (e) {
+//       throw new Error(e);
+//     }
+//   });
+// }
 
 export async function generateUserToken(user) {
   const roles = await findUserRoles(user.id);
@@ -237,9 +237,11 @@ export async function generateUserToken(user) {
 }
 
 export async function loginUser(user, session) {
-  await generateSession(user, session);
+  
+  const roles = await findUserRoles(user.id);
+  // await generateSession(user, session);
   const { token } = await generateUserToken(user);
-  return { token };
+  return { token, roles };
 }
 
 export async function validateLogin(username, plaintext) {

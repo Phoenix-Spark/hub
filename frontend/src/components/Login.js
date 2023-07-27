@@ -24,7 +24,7 @@ export default function Login({ setModalShow }) {
 
     try {
       const response = await fetch(`${server}/login`, {
-        credentials: "include",
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,8 +56,7 @@ export default function Login({ setModalShow }) {
     setIsLoading(false);
   }
   return (
-    <Container className="text-light vh-100">
-      <h1>Login Form</h1>
+    <Container className="text-light vh-100 my-4">
       <Form
         onSubmit={handleFormSubmit}
         className="mb-3"
@@ -70,7 +69,6 @@ export default function Login({ setModalShow }) {
           <Form.Control
             required
             type="text"
-            placeholder="Username"
           />
         </Form.Group>
         <Form.Group
@@ -84,17 +82,29 @@ export default function Login({ setModalShow }) {
             placeholder=""
           />
         </Form.Group>
-        <Form.Group>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isLoading}
-          >
-            Login
-          </Button>
+        <Form.Group className="d-flex justify-content-between">
+          <div>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isLoading}
+            >
+              Login
+            </Button>
+            <Button
+              variant="success"
+              as={Link}
+              onClick={() => {
+                setModalShow(false);
+              }}
+              to="/signup"
+              className="ms-3"
+            >
+              Create an Account
+            </Button>
+          </div>
           <Button
             variant="secondary"
-            className="ms-3"
             disabled={isLoading}
             onClick={() => {
               setModalShow(false);
@@ -104,9 +114,8 @@ export default function Login({ setModalShow }) {
           </Button>
         </Form.Group>
       </Form>
-      <hr />
-      <Button
-        type="button"
+      {/* <Button
+        variant='success'
         as={Link}
         onClick={() => {
           setModalShow(false);
@@ -114,7 +123,7 @@ export default function Login({ setModalShow }) {
         to="/signup"
       >
         Create an Account
-      </Button>
+      </Button> */}
     </Container>
   );
 }

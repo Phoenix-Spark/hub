@@ -39,6 +39,24 @@ function Hub() {
     </>
   );
 
+  function formatDate(inputDate) {
+    const date = new Date(inputDate);
+    const options = {
+      weekday: 'short',
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+      hour12: false
+    };
+    let formattedDate = date.toLocaleString('en-US', options);
+    formattedDate = formattedDate.replace('24:00', '00:00');
+    
+    return formattedDate;
+  };
+
   function MissionNewsRow() {
     const [missionCardHeight, setMissionCardHeight] = useState('600px');
 
@@ -101,7 +119,7 @@ function Hub() {
                         </Col>
                         <Col>
                           <div>
-                            <div style={{ fontSize: '10px', fontWeight: "bold" }}>{new Date(item.date).toString()}</div>
+                            <div style={{ fontSize: '10px', fontWeight: "bold" }}>{formatDate(new Date(item.date).toString())}</div>
                             {item.news}
                           </div>
                         </Col>
@@ -130,7 +148,7 @@ function Hub() {
               <ListGroup style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {filteredSparkList.map((spark, index) => (
                   <Link
-                    to={`/cell/${spark.base_endpoint}`}
+                    to={`/cell/${spark.cell_endpoint}`}
                     key={index}
                     className="list-group-item list-group-item-action"
                   >
