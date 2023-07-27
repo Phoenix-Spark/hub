@@ -12,8 +12,9 @@ const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 export default function App() {
   const [user, setUser] = useState(null);
   const [sparkList, setSparkList] = useState([]);
+  const [showLogin, setShowLogin] = useState(true);
 
-  const ContextObject = { server, user, setUser, sparkList };
+  const ContextObject = { server, user, setUser, sparkList, showLogin, setShowLogin };
 
   useEffect(() => {
     let ignore = false;
@@ -65,16 +66,16 @@ export default function App() {
   }, []);
 
   return (
-      <AppContext.Provider value={ContextObject}>
-          <Header />
-        <Container
-          fluid
-          style={{ paddingTop: 105 }}
-          className='bg-body-secondary'
-          id="BodyContainer"
-        >
-          <Outlet />
-        </Container>
-      </AppContext.Provider>
+    <AppContext.Provider value={ContextObject}>
+      <Header />
+      <Container
+        fluid
+        style={{ paddingTop: 105 }}
+        className="bg-body-secondary"
+        id="BodyContainer"
+      >
+        <Outlet />
+      </Container>
+    </AppContext.Provider>
   );
 }
