@@ -26,7 +26,7 @@ const FAQ = () => {
             data-bs-parent="#faqAccordion"
           >
             <div className="accordion-body">
-              Answer to question 1 goes here.
+              Answer
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@ const FAQ = () => {
             data-bs-parent="#faqAccordion"
           >
             <div className="accordion-body">
-              Answer to question 2 goes here.
+              Answer
             </div>
           </div>
         </div>

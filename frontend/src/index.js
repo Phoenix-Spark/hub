@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Login, Project, ProposedProjects, ProposalForm, SignUp } from './pages/index.js';
+import { Cell, Hub, Login, Project, ProposedProjects, ProposalForm, SignUp, Dashboard } from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +29,8 @@ const router = createBrowserRouter(
           element={<SignUp />} />
         <Route path='/*'
         element={<Hub />} />
+        <Route path='/dashboard'
+        element={<Dashboard />} />
     </Route>
   )
 );

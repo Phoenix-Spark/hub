@@ -1,16 +1,18 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Image, Nav, Navbar, Row } from 'react-bootstrap';
+import { Button, Col, Container, Image, Nav, Navbar, Row, Dropdown } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
 
 export default function Header() {
   const { server, user, setUser } = useContext(AppContext);
   const [showLogin, setShowLogin] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,6 +52,34 @@ export default function Header() {
     }
   }
 
+  async function handleUserDetails() {
+    const response = await fetch(`${server}/user/`, {
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      navigate(`${server}/dashboard/${user}`);
+    }
+  }
+  async function handleDashboard() {
+    const response = await fetch(`${server}/dashboard`, {
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      navigate(`${server}/dashboard`);
+    }
+  }
+
+  let imgUrl = '';
+  if (user) {
+      imgUrl = user.photo
+      ? user.photo.startsWith('https')
+        ? user.photo
+        : `${server}/uploads/${user.photo}`
+      : `../images/placeholder_logo.svg`;
+  }
+
   return (
     <Navbar
       id="header"
@@ -81,22 +111,35 @@ export default function Header() {
           >
             {showLogin && user === null && <LoginButton />}
             {showLogin && user && (
-              <p>
-                <Image
-                  alt="User Profile"
-                  src={`http://localhost:3000/uploads/${user.photo}`}
-                  height={80}
-                  roundedCircle
-                  className="me-2"
-                />
-                Welcome, {`${user.firstName} ${user.lastName}`}!
-                <Button
-                  onClick={handleLogout}
-                  variant="link"
-                >
-                  Logout
-                </Button>
-              </p>
+              <Row>
+                <Col style={{ display: 'flex', alignItems: 'center' }}>
+                  <Image
+                    style={{ height: '64px', width: '64px' }}
+                    src={imgUrl}
+                    alt="Profile Picture"
+                    roundedCircle
+                  />
+                </Col>
+                <Col style={{ display: 'flex', alignItems: 'center' }}>
+                  <Dropdown
+                    show={showDropdown}
+                    onToggle={isOpen => setShowDropdown(isOpen)}
+                    drop="down"
+                  >
+                    <Dropdown.Toggle
+                      as={Button}
+                      variant="light"
+                    >
+                      {`${user.firstName} ${user.lastName}`}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu align="end">
+                      <Dropdown.Item onClick={handleUserDetails}>Account Settings</Dropdown.Item>
+                      <Dropdown.Item onClick={handleDashboard}>Your Dashboard</Dropdown.Item>
+                      <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Col>
+              </Row>
             )}
           </Col>
         </Row>
