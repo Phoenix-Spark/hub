@@ -45,6 +45,8 @@ export default function App() {
             issuer: 'capstone',
           });
 
+          console.log(payload);
+
           for (let key of Object.keys(payload.user)) {
             payload.user[key] = decodeURIComponent(payload.user[key]);
           }
@@ -55,7 +57,7 @@ export default function App() {
         console.error('There was an error checking user session. ', e);
       }
     };
-    
+
     checkUserSession();
     fetchSparkList();
 
