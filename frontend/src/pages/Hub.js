@@ -71,12 +71,8 @@ function Hub() {
       };
     }, []);
     return (
-      <Container
-        fluid
-        style={{ paddingLeft: 0, paddingRight: 0 }}
-      >
         <Row className="mt-4 align-items-stretch">
-          <Col>
+          <Col lg={6}>
             <Card id="mission-card">
               <Card.Body style={{ borderRadius: '10px' }}>
                 <Card.Title className="card-title">Mission</Card.Title>
@@ -128,17 +124,13 @@ function Hub() {
             </Card>
           </Col>
         </Row>
-      </Container>
     );
   }
 
   function SparkyList() {
     return (
-      <Container
-        fluid
-        style={{ paddingLeft: 12, paddingRight: 12 }}
-      >
         <Row className="mt-4">
+          <Col>
           <Card>
             <Card.Body style={{ borderRadius: '10px' }}>
               <Card.Title className="d-flex justify-content-between w-100">
@@ -174,8 +166,8 @@ function Hub() {
               </ListGroup>
             </Card.Body>
           </Card>
+          </Col>
         </Row>
-      </Container>
     );
   }
 }

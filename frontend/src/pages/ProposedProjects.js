@@ -9,12 +9,12 @@ const ProposedProjects = () => {
   const [proposedList, setProposedList] = useState([]);
   const { cell_endpoint } = useParams();
 
-  const proposedProjects = [
+/*   const ProposedProjects = [
     { id: 1, title: 'Project 1', description: 'Description for Project 1' },
     { id: 2, title: 'Project 2', description: 'Description for Project 2' },
     { id: 3, title: 'Project 3', description: 'Description for Project 3' },
     { id: 4, title: 'Project 4', description: 'Description for Project 4' },
-  ];
+  ]; */
 
   useEffect(() => {
     let ignore = false;

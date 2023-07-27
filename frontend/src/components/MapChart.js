@@ -2,7 +2,7 @@ import React from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, OverlayTrigger, Tooltip, Card } from "react-bootstrap";
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Marker } from "react-simple-maps"
 import { useNavigate } from 'react-router-dom';
@@ -17,18 +17,28 @@ export default function MapChart() {
   const navigate = useNavigate();
 
   function handleZoomIn() {
-    if (position.zoom >= 32) return;
-    setPosition((pos) => ({ ...pos, zoom: pos.zoom * 2 }));
-  };
+    if (position.zoom >= 4) return;
+    setPosition((pos) => { console.log("pos=", pos)
+                          return ({ ...pos, zoom: pos.zoom * 2 })});
+  }
 
   function handleZoomOut() {
     if (position.zoom <= 1) return;
     setPosition((pos) => ({ ...pos, zoom: pos.zoom / 2 }));
-  };
+  }
 
   function handleMoveEnd(position) {
-    setPosition(position);
-  };
+    //setPosition(position);
+  }
+
+  function handleMoveNEW(pos) {
+    console.log(pos);
+    setPosition(pos);
+  }
+
+  // useEffect(() => {
+  //   setZoomFactor(position.zoom);
+  // }, [position]);
 
   return (
     <Container className="mt-4 mx-0 w-100" style={{ maxWidth: '100vw', paddingLeft: 0, paddingRight: 0 }}>
@@ -67,7 +77,11 @@ export default function MapChart() {
               
               </Card.Title>
                 
-      <ComposableMap style={{ height: '500px', width: '100%', border: '3px solid red', borderRadius: "60px", backgroundColor: "black" }}
+      <ComposableMap 
+        //style={{ height: '500px', width: '100%', border: '3px solid red', borderRadius: "60px", backgroundColor: "black" }}
+        style={{ border: '3px solid red', borderRadius: "60px", backgroundColor: "black" }}
+        width={1800}
+        height={600}
         projectionConfig={{ 
           center: [0, 0],
           scale: 220,
@@ -76,8 +90,9 @@ export default function MapChart() {
         <ZoomableGroup
           zoom={position.zoom}
           center={position.coordinates}
+          //center={[0,0]}
           onMoveEnd={handleMoveEnd}
-          onMove={({zoom}) =>{setZoomFactor(zoom)}}
+          onMove={(pos)=>handleMoveNEW(pos)}
         >
           <Sphere stroke="#ff8900" strokeWidth={2} fill="lightblue" />
           <Geographies geography={geoUrl}>
@@ -121,7 +136,7 @@ export default function MapChart() {
             </Tooltip>
             }
           >
-              <circle r={8/zoomFactor} fill="#F53"/>
+              <circle r={8/position.zoom} fill="#F53"/>
           </OverlayTrigger>
         </Marker>
     )

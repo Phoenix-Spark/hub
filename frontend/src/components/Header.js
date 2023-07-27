@@ -1,8 +1,8 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Image, Nav, Navbar, NavDropdown, Row, Dropdown, Form, InputGroup } from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
+import { Button, Col, Container, Image, Nav, Navbar, NavDropdown, Row, Dropdown, Form, InputGroup, ButtonGroup } from 'react-bootstrap';
+import { Search, MoonStars, SunFill } from 'react-bootstrap-icons';
 import AppContext from '../AppContext.js';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
@@ -11,6 +11,7 @@ export default function Header() {
   const { server, user, setUser } = useContext(AppContext);
   const [showLogin, setShowLogin] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,12 +56,19 @@ export default function Header() {
 
   let imgUrl = '';
   if (user) {
-      imgUrl = user.photo
+    imgUrl = user.photo
       ? user.photo.startsWith('https')
         ? user.photo
         : `${server}/uploads/${user.photo}`
       : `../images/placeholder_logo.svg`;
   }
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+    const newMode = isDarkMode ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-bs-theme', newMode);
+    localStorage.setItem('preferredMode', newMode);
+  };
 
   return (
     <Navbar
@@ -73,27 +81,67 @@ export default function Header() {
         fluid
         id="HeaderWrapper"
       >
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand
+          as={Link}
+          to="/"
+        >
           <Image
-                src="http://localhost:3000/images/travis.png"
-                alt="Spark Hub Logo"
-                width={90}
-              />
-          </Navbar.Brand>
-          <Navbar.Toggle />
-          <Navbar.Collapse>
-            <Nav className='me-auto'>
-            <Nav.Link as={Link} to="/" active>Home</Nav.Link>
-            <Nav.Link as={Link} to="/">Forum</Nav.Link>
-            <NavDropdown title="Resources" id="resources-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/">Proposal Guidelines</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/">Submission FAQ</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/">Alex's "Homework" Folder</NavDropdown.Item>
+            src="http://localhost:3000/images/travis.png"
+            alt="Spark Hub Logo"
+            width={90}
+          />
+        </Navbar.Brand>
+        <Navbar.Toggle />
+        <Navbar.Collapse>
+          <Nav className="me-auto">
+            <Nav.Link
+              as={Link}
+              to="/"
+              active
+            >
+              Home
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to="/"
+            >
+              Forum
+            </Nav.Link>
+            <NavDropdown
+              title="Resources"
+              id="resources-nav-dropdown"
+            >
+              <NavDropdown.Item
+                as={Link}
+                to="/"
+              >
+                Proposal Guidelines
+              </NavDropdown.Item>
+              <NavDropdown.Item
+                as={Link}
+                to="/"
+              >
+                Submission FAQ
+              </NavDropdown.Item>
+              <NavDropdown.Item
+                as={Link}
+                to="/"
+              >
+                Alex's "Homework" Folder
+              </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link as={Link} to="/">Submit New Idea</Nav.Link>
-            </Nav>
-            <Form inline className='d-flex'>
-              <InputGroup className='me-5'>
+            <Nav.Link
+              as={Link}
+              to="/"
+            >
+              Submit New Idea
+            </Nav.Link>
+          </Nav>
+          <Form
+            inline
+            className="d-flex"
+          >
+            <InputGroup className="me-5">
               <Form.Control
                 type="text"
                 placeholder="Search"
@@ -104,42 +152,62 @@ export default function Header() {
               >
                 <Search />
               </Button>
-              </InputGroup>
-            </Form>
-          </Navbar.Collapse>
+            </InputGroup>
+          </Form>
+        </Navbar.Collapse>
         <Row className="align-items-center me-3">
-            {showLogin && user === null && <LoginButton />}
-            {showLogin && user && (
-              <>
-                <Col style={{ display: 'flex', alignItems: 'center' }}>
-                  <Image
-                    style={{ height: '64px', width: '64px' }}
-                    src={imgUrl}
-                    alt="Profile Picture"
-                    roundedCircle
-                  />
-                </Col>
-                <Col style={{ display: 'flex', alignItems: 'center' }}>
-                  <Dropdown
-                    show={showDropdown}
-                    onToggle={isOpen => setShowDropdown(isOpen)}
-                    drop="down"
+          <Col style={{ display: 'flex', alignItems: 'center' }}>
+            {/* <Button onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? <MoonStars /> : <SunFill />}</Button> */}
+            <Button onClick={toggleDarkMode}>{isDarkMode ? <MoonStars /> : <SunFill />}</Button>
+          </Col>
+          {showLogin && user === null && (
+            <Col>
+              <LoginButton />
+            </Col>
+          )}
+          {showLogin && user && (
+            <>
+              <Col style={{ display: 'flex', alignItems: 'center' }}>
+                <Image
+                  style={{ height: '64px', width: '64px' }}
+                  src={imgUrl}
+                  alt="Profile Picture"
+                  roundedCircle
+                />
+              </Col>
+              <Col style={{ display: 'flex', alignItems: 'center' }}>
+                <Dropdown
+                  show={showDropdown}
+                  onToggle={isOpen => setShowDropdown(isOpen)}
+                  drop="down"
+                >
+                  <Dropdown.Toggle
+                    as={Button}
+                    variant="light"
                   >
-                    <Dropdown.Toggle
-                      as={Button}
-                      variant="light"
+                    {`${user.firstName} ${user.lastName}`}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu align="end">
+                    <Dropdown.Item
+                      as={Link}
+                      to="user/settings"
                     >
-                      {`${user.firstName} ${user.lastName}`}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu align="end">
-                      <Dropdown.Item as={Link} to="user/settings">Account Settings</Dropdown.Item>
-                      {user.roles !== '' && <Dropdown.Item as={Link} to="user/dashboard">Your Dashboard</Dropdown.Item>}
-                      <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-              </>
-            )}
+                      Account Settings
+                    </Dropdown.Item>
+                    {user.roles !== '' && (
+                      <Dropdown.Item
+                        as={Link}
+                        to="user/dashboard"
+                      >
+                        Your Dashboard
+                      </Dropdown.Item>
+                    )}
+                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+            </>
+          )}
         </Row>
       </Container>
     </Navbar>

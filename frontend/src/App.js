@@ -70,7 +70,7 @@ export default function App() {
         <Container
           fluid
           style={{ paddingTop: 105 }}
-          className='bg-body-secondary'
+          className='bg-body-secondary col-12 col-md-10'
           id="BodyContainer"
         >
           <Outlet />

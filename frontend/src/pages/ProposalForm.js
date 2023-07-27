@@ -9,8 +9,8 @@ const ProposalForm = ({ addProjectToProposedList }) => {
   const [budget, setBudget] = useState('');
   const [participants, setParticipants] = useState('');
   const [photos, setPhotos] = useState(null);
-  const { server, setProposedProject } = useContext(AppContext);
-  const [showMessageBox, setShowMessageBox] = useState(false);
+  const { server, user } = useContext(AppContext);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -24,14 +24,13 @@ const ProposalForm = ({ addProjectToProposedList }) => {
     formData.append('photos', photos);
 
     try {
-      const response = await fetch(`${server}/proposed-projects`, {
+      const response = await fetch(`${server}/:cellId/proposed_projects`, {
         method: 'POST',
         body: formData,
       });
 
       if (response.ok) {
-        // Show the success modal
-        setShowMessageBox(true);
+        
         // add the submitted project to the proposed list
         addProjectToProposedList({
           projectName,
@@ -40,6 +39,10 @@ const ProposalForm = ({ addProjectToProposedList }) => {
           participants,
           photos,
         });
+
+        // Show the success modal
+        setShowSuccessModal(true);
+
       } else {
         // Handle error case
         console.error('Failed to submit proposal');
@@ -49,9 +52,7 @@ const ProposalForm = ({ addProjectToProposedList }) => {
     }
   };
 
-  const handleMessageBox = () => {
-    setShowMessageBox(false);
-  };
+  
 
   return (
     <Container className="my-4">
@@ -125,7 +126,6 @@ const ProposalForm = ({ addProjectToProposedList }) => {
           <Button
             variant="primary"
             type="submit"
-            onClick={() => setShowMessageBox(true)}
           >
             Submit Proposal
           </Button>
@@ -133,8 +133,8 @@ const ProposalForm = ({ addProjectToProposedList }) => {
       </Form>
 
       <Modal
-        show={showMessageBox}
-        onHide={handleMessageBox}
+        show={showSuccessModal}
+        onHide={() => setShowSuccessModal(false)}
       >
         <Modal.Header closeButton>
           <Modal.Title>Submission Status</Modal.Title>
@@ -143,7 +143,7 @@ const ProposalForm = ({ addProjectToProposedList }) => {
         <Modal.Footer>
           <Button
             variant="danger"
-            onClick={handleMessageBox}
+            onClick = {() => setShowSuccessModal(false)}
           >
             Close
           </Button>
