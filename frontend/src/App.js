@@ -12,8 +12,9 @@ const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 export default function App() {
   const [user, setUser] = useState(null);
   const [sparkList, setSparkList] = useState([]);
+  const [showLogin, setShowLogin] = useState(true);
 
-  const ContextObject = { server, user, setUser, sparkList };
+  const ContextObject = { server, user, setUser, sparkList, showLogin, setShowLogin };
 
   useEffect(() => {
     let ignore = false;

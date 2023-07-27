@@ -185,8 +185,6 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
   const { base, cell } = await getBaseAndCell(baseId, cellId);
   const user = new User(username, firstName, lastName, email, baseId, cellId, filename, contactNumbers, bio, base, cell);
 
-  console.log(user);
-
   const newUser = await db('users').insert(
     {
       base_id: user.baseId ?? 1,
@@ -205,6 +203,12 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
   );
 
   user.id = newUser[0].id;
+
+  // set default role
+  await db('permissions').insert({
+    users_id: user.id,
+    roles: '',
+  });
 
   return user;
 }

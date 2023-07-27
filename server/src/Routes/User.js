@@ -21,13 +21,30 @@ export async function signUpHandler(req, res) {
         req.body[item] = encodeURIComponent(req.body[item]);
       }
 
-      const user = await addUser(req.body, req.file);
+      const user = await addUser(req.body, req.file ?? { filename: '' });
 
-      const { token } = await loginUser(user, req.session);
+      const { token, roles } = await loginUser(user, req.session);
 
-      return res.status(201).json({ token });
+      req.session.regenerate(regenErr => {
+        if (regenErr) throw new Error(regenErr);
+
+        try {
+          // eslint-disable-next-line no-param-reassign
+          req.session.roles = roles;
+          // eslint-disable-next-line no-param-reassign
+          req.session.user = user.id;
+
+          req.session.save(saveErr => {
+            if (saveErr) throw new Error(saveErr);
+            return res.status(200).json({ token });
+          });
+        } catch (e) {
+          throw new Error(e);
+        }
+      });
+    } else {
+      return res.status(401).json('User already exists');
     }
-    return res.status(401).json('User already exists');
   } catch (e) {
     console.error('There was an error. ', e);
     return res.status(500).send({ error: e.message });
@@ -69,7 +86,6 @@ export async function loginHandler(req, res) {
         throw new Error(e);
       }
     });
-
   } catch (e) {
     return res.status(500).send({ error: e.message });
   }

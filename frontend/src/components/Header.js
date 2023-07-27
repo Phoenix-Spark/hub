@@ -1,15 +1,14 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Image, Nav, Navbar, NavDropdown, Row, Dropdown, Form, InputGroup, ButtonGroup } from 'react-bootstrap';
+import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row, ButtonGroup } from 'react-bootstrap';
 import { Search, MoonStars, SunFill } from 'react-bootstrap-icons';
 import AppContext from '../AppContext.js';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
 
 export default function Header() {
-  const { server, user, setUser } = useContext(AppContext);
-  const [showLogin, setShowLogin] = useState(true);
+  const { server, user, setUser, showLogin, setShowLogin } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
