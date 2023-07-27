@@ -21,7 +21,7 @@ export async function signUpHandler(req, res) {
         req.body[item] = encodeURIComponent(req.body[item]);
       }
 
-      const user = await addUser(req.body, req.file);
+      const user = await addUser(req.body, req.file ?? { filename: '' });
 
       const { token } = await loginUser(user, req.session);
 
@@ -69,7 +69,6 @@ export async function loginHandler(req, res) {
         throw new Error(e);
       }
     });
-
   } catch (e) {
     return res.status(500).send({ error: e.message });
   }
