@@ -6,7 +6,7 @@ import AppContext from '../AppContext.js';
 
 // TODO: Photo upload
 export default function SignUp() {
-  const { server, setUser } = useContext(AppContext);
+  const { server, setUser, setShowLogin } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [signUpComplete, setSignUpComplete] = useState(false);
   const navigate = useNavigate();
@@ -50,6 +50,7 @@ export default function SignUp() {
 
           setUser(payload.user);
           setSignUpComplete(true);
+          setShowLogin(true);
         }
       } catch (e) {
         console.error('There was an error.', e);
