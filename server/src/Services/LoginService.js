@@ -208,22 +208,20 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
   return user;
 }
 
-// async function generateSession(user, session, cb, token) {
+// async function generateSession(user, session) {
 //   const roles = await findUserRoles(user.id);
-//   console.log('gen session', user, session);
+
 //   session.regenerate(regenErr => {
 //     if (regenErr) throw new Error(regenErr);
-//
+
 //     try {
 //       // eslint-disable-next-line no-param-reassign
 //       session.roles = roles;
 //       // eslint-disable-next-line no-param-reassign
 //       session.user = user.id;
-//
+
 //       session.save(saveErr => {
 //         if (saveErr) throw new Error(saveErr);
-//         console.log('saved', session);
-//         cb(token);
 //       });
 //     } catch (e) {
 //       throw new Error(e);

@@ -42,16 +42,18 @@ export async function seed(knex) {
   await knex('permissions').del();
   await knex('permissions').insert([
     { users_id: 1, roles: '' }, // Registered - no projects or proposals
-    { users_id: 2, roles: 'project:cw' }, // Team Lead - has a project no proposal
-    { users_id: 3, roles: 'project:aw propsoal:araw cell:w' }, // Cell Admin - has a proposal
+    { users_id: 2, roles: '' }, // Team Lead - has a project no proposal
+    { users_id: 3, roles: 'cell' }, // Cell Admin - has a proposal
 
     { users_id: 4, roles: '' }, // Registered
-    { users_id: 5, roles: 'project:cw' }, // Team Lead
-    { users_id: 6, roles: 'value' }, // Cell Admin
+    { users_id: 5, roles: '' }, // Team Lead
+    { users_id: 6, roles: 'cell' }, // Cell Admin
 
-    { users_id: 7, roles: 'value' }, // Registered
-    { users_id: 8, roles: 'value' }, // Team Lead
-    { users_id: 9, roles: 'value' }, // Cell Admin
-    { users_id: 10, roles: 'project:araw propsoal:araw cell:aw' }, // SITE ADMIN
+    { users_id: 7, roles: '' }, // Registered
+    { users_id: 8, roles: '' }, // Team Lead
+    { users_id: 9, roles: 'cell' }, // Cell Admin
+    { users_id: 10, roles: 'site' }, // SITE ADMIN
   ]);
 }
+
+export default seed;

@@ -8,10 +8,6 @@ const LoginModal = ( props ) => {
 
   const {setModalShow, ...rest} = props;
 
-  const enableButton = () => {
-    setSubmitBtnEnabled(true);
-  }
-
   return (
     <Modal
       className='login-modal'
@@ -22,7 +18,7 @@ const LoginModal = ( props ) => {
     >
       <Modal.Body
       className='login-modal-body'>
-        <Login setModalShow={props.setModalShow} enableButton={enableButton}/>
+        <Login setModalShow={props.setModalShow} />
       </Modal.Body>
     </Modal>
   );

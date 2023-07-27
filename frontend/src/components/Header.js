@@ -89,7 +89,7 @@ export default function Header() {
                   roundedCircle
                   className="me-2"
                 />
-                Welcome, {`${user.firstName} ${user.lastName} ${user.email}`}!
+                Welcome, {`${user.firstName} ${user.lastName}`}!
                 <Button
                   onClick={handleLogout}
                   variant="link"

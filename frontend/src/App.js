@@ -55,9 +55,8 @@ export default function App() {
         console.error('There was an error checking user session. ', e);
       }
     };
-    if (!user) {
-      checkUserSession();
-    }
+    
+    checkUserSession();
     fetchSparkList();
 
     return () => {

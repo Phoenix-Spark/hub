@@ -63,13 +63,13 @@ export async function loginHandler(req, res) {
 
         req.session.save(saveErr => {
           if (saveErr) throw new Error(saveErr);
-          console.log('saved', req.session);
-          res.status(200).json({ token });
+          return res.status(200).json({ token });
         });
       } catch (e) {
         throw new Error(e);
       }
     });
+
   } catch (e) {
     return res.status(500).send({ error: e.message });
   }
@@ -91,7 +91,6 @@ export async function logoutHandler(req, res) {
 /** After this middleware the user roles can be accessed from req.session.roles */
 /** And the user can be accessed from req.user */
 router.use(async (req, res, next) => {
-  console.log('refresh', req.session, req.session.id);
   if (!req.session.user) {
     return res.sendStatus(401);
   }

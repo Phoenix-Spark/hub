@@ -4,12 +4,17 @@ import db from '../db.js';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.send('Hello!');
+  res.send('Ahoy!');
 });
 
 router.get('/:cellId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').join('cell', 'cell.id', 'users.cell_id').where('cell.cell_endpoint', req.params.cellId);
+    const data = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+
+    if (data.length === 0) {
+      // return res.redirect('/');
+      return res.status(404).json({ message: 'Cell not found' });
+    }
 
     res.status(200).json(data);
   } catch (e) {
@@ -20,7 +25,11 @@ router.get('/:cellId', async (req, res, next) => {
 
 router.get('/:cellId/team', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('users').where('cell_id', req.params.cellId);
+    const data = await db
+      .select('*')
+      .from('users')
+      .join('cell', 'users.cell_id', '=', 'cell.base_id')
+      .where('cell.cell_endpoint', req.params.cellId);
 
     res.status(200).json(data);
   } catch (e) {
@@ -34,7 +43,8 @@ router.get('/:cellId/proposed_projects', async (req, res, next) => {
     const data = await db
       .select('*')
       .from('project')
-      .where('cell_id', req.params.cellId)
+      .join('cell', 'cell.id', 'project.cell_id')
+      .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', false);
 
     res.status(200).json(data);
@@ -49,7 +59,8 @@ router.get('/:cellId/current_projects', async (req, res, next) => {
     const data = await db
       .select('*')
       .from('project')
-      .where('cell_id', req.params.cellId)
+      .join('cell', 'cell.id', 'project.cell_id')
+      .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
       .andWhere('is_complete', false);
 
@@ -65,7 +76,8 @@ router.get('/:cellId/previous_projects', async (req, res, next) => {
     const data = await db
       .select('*')
       .from('project')
-      .where('cell_id', req.params.cellId)
+      .join('cell', 'cell.id', 'project.cell_id')
+      .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
       .andWhere('is_complete', true);
 
