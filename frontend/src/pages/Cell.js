@@ -6,18 +6,20 @@ import { Button, Card, Col, Container, Dropdown, Form, Image, ListGroup, Navbar,
 import { Link, useParams } from 'react-router-dom';
 
 export default function Cell() {
-  const { server } = useContext(AppContext);
+  const { server, user } = useContext(AppContext);
   const [cellData, setCellData] = useState([]);
   const { cell_endpoint } = useParams();
 
   useEffect(() => {
     fetch(`${server}/cell/${cell_endpoint}`)
-      .then(res=> {
-          console.log(res);
-          return res.json();
-        })
-      .then(data => { setCellData(data[0])
-                      console.log(data[0])})
+      .then(res => {
+        console.log(res);
+        return res.json();
+      })
+      .then(data => {
+        setCellData(data[0]);
+        console.log(data[0]);
+      })
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, [server, cell_endpoint]);
 
@@ -111,24 +113,27 @@ export default function Cell() {
           <Col md="4">
             <Card className="h-100">
               <Card.Body className="d-flex flex-column h-100">
-                <Card.Title>Project Proposal</Card.Title>
-                <Button
-                  variant="primary"
-                  as={Link}
-                  to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
-                >
-                  {' '}
-                  Proposed Projects{' '}
-                </Button>
-                <Button
-                  variant="success"
-                  as={Link}
-                  to={`/cell/${cellData.cell_endpoint}/new-proposal`}
-                  className="mt-3"
-                >
-                  {' '}
-                  Submit New Proposal{' '}
-                </Button>
+                {user && (
+                  <>
+                    <Card.Title>Project Proposal</Card.Title>
+                    <Button
+                      variant="primary"
+                      as={Link}
+                      to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
+                    >
+                      {user.roles === '' ? 'Your Proposed Projects' : 'Proposed Projects'}
+                    </Button>
+                    <Button
+                      variant="success"
+                      as={Link}
+                      to={`/cell/${cellData.cell_endpoint}/new-proposal`}
+                      className="mt-3"
+                    >
+                      Submit New Proposal
+                    </Button>
+                  </>
+                )}
+                {!user && <p>Please login first to submit a new proposal.</p>}
               </Card.Body>
             </Card>
           </Col>
