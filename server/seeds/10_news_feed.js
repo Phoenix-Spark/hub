@@ -4,7 +4,7 @@
  */
 export async function seed(knex) {
   // Deletes ALL existing entries
-  //await knex.schema.raw('TRUNCATE news_feed CASCADE')
+  // await knex.schema.raw('TRUNCATE news_feed CASCADE')
   await knex('news_feed').del();
   await knex('news_feed').insert([
     { news: 'value', date: '2020-01-01' },

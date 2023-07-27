@@ -34,6 +34,7 @@ export async function signUpHandler(req, res) {
   }
 }
 
+// eslint-disable-next-line consistent-return
 export async function loginHandler(req, res) {
   if (req.session.user) {
     return res.status(200).json({ message: 'You are already logged in.' });
@@ -68,7 +69,7 @@ export async function loginHandler(req, res) {
         throw new Error(e);
       }
     });
-    
+
   } catch (e) {
     return res.status(500).send({ error: e.message });
   }

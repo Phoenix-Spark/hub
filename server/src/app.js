@@ -26,15 +26,15 @@ const redisStore = new RedisStore({
 
 const sessionOptions = {
   secret: 'changethis',
-  cookie: { /** domain: '', */ httpOnly: true, /** sameSite: 'strict', */ maxAge: 3600000 },
+  cookie: { /** domain: '', */ httpOnly: true, sameSite: 'none', maxAge: 3600000 },
   resave: false,
-  rolling: true,
+  rolling: false,
   saveUninitialized: false,
   store: redisStore,
 };
 
 const corsOptions = {
-  origin: [/(http:\/\/localhost)(:(\d{4}))/, 'http://localhost:3000'],
+  origin: ['http://localhost:3000'],
   credentials: true,
 };
 
@@ -45,10 +45,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(logger('dev'));
-app.use(session(sessionOptions));
 app.use(cors(corsOptions));
+app.use(session(sessionOptions));
 app.use(cookieParser());
 app.use(json());
+
+app.post('/login', loginHandler);
+app.get('/logout', logoutHandler);
 
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -64,8 +67,6 @@ const profileStorage = multer.diskStorage({
 const profileUpload = multer({ dest: 'uploads/', storage: profileStorage });
 
 app.post('/signup', profileUpload.single('photo'), signUpHandler);
-app.post('/login', loginHandler);
-app.get('/logout', logoutHandler);
 
 app.use('/cell', CellRouter);
 app.use('/project', ProjectRouter);

@@ -7,8 +7,9 @@ import { faker } from '@faker-js/faker';
  */
 export async function seed(knex) {
   // Deletes ALL existing entries
-  // await knex.schema.raw('TRUNCATE users CASCADE')
-  await knex('users').del();
+  await knex.schema.raw('TRUNCATE users RESTART IDENTITY CASCADE');
+  // await knex('users').del();
+  // await knex.schema.raw('ALTER SEQUENCE users_id_seq RESTART WITH 1');
   await knex('users').insert([
     {
       base_id: 1,
@@ -49,7 +50,6 @@ export async function seed(knex) {
       contact_number2: '',
       bio: '',
     },
-
     {
       base_id: 2,
       cell_id: 2,
@@ -71,7 +71,7 @@ export async function seed(knex) {
       first_name: 'Sabrina',
       last_name: 'J',
       email: 'some@email.com',
-      photo_url: faker.image.avatarGitHub(),
+      photo_url: '',
       contact_number1: '',
       contact_number2: '',
       bio: '',
@@ -84,12 +84,11 @@ export async function seed(knex) {
       first_name: 'Michael',
       last_name: 'B',
       email: 'some@email.com',
-      photo_url: faker.image.avatarGitHub(),
+      photo_url: '',
       contact_number1: '',
       contact_number2: '',
       bio: '',
     },
-
     {
       base_id: 3,
       cell_id: 3,
@@ -123,6 +122,23 @@ export async function seed(knex) {
       password: bcrypt.hashSync('value', 10),
       first_name: 'Joe',
       last_name: 'S',
+      email: 'some@email.com',
+      photo_url: faker.image.avatarGitHub(),
+      contact_number1: '',
+      contact_number2: '',
+      bio: '',
+    },
+    {
+      // *********************************************
+      // THIS IS THE SEEDED SITE ADMIN FOR TESTING
+      // TODO: REMOVE BEFORE DEPLOYMENT
+      // *********************************************
+      base_id: 1,
+      cell_id: 1,
+      username: 'rick',
+      password: bcrypt.hashSync('supersecret', 10),
+      first_name: 'Site',
+      last_name: 'Admin',
       email: 'some@email.com',
       photo_url: faker.image.avatarGitHub(),
       contact_number1: '',

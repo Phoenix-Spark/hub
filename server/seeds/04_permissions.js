@@ -41,9 +41,9 @@ export async function seed(knex) {
 
   await knex('permissions').del();
   await knex('permissions').insert([
-    { users_id: 1, roles: '' }, // Registered - no projects or proposals
+    { users_id: 1, roles: 'cell' }, // Registered - no projects or proposals
     { users_id: 2, roles: '' }, // Team Lead - has a project no proposal
-    { users_id: 3, roles: 'cell' }, // Cell Admin - has a proposal
+    { users_id: 3, roles: '' }, // Cell Admin - has a proposal
 
     { users_id: 4, roles: '' }, // Registered
     { users_id: 5, roles: '' }, // Team Lead

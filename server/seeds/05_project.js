@@ -4,8 +4,8 @@
  */
 export async function seed(knex) {
   // Deletes ALL existing entries
-  //await knex.schema.raw('TRUNCATE project CASCADE')
-  await knex('project').del();
+  await knex.schema.raw('TRUNCATE project RESTART IDENTITY CASCADE');
+  // await knex('project').del()
   await knex('project').insert([
     {
       cell_id: 1,

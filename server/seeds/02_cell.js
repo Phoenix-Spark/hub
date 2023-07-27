@@ -1,11 +1,11 @@
 /**
- *  * @param { import("knex").Knex } knex
+ * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 export async function seed(knex) {
   // Deletes ALL existing entries
-  // await knex.schema.raw('TRUNCATE cell CASCADE')
-  await knex('cell').del();
+  await knex.schema.raw('TRUNCATE cell RESTART IDENTITY CASCADE');
+  // await knex('cell').del()
   await knex('cell').insert([
     {
       base_id: 1,

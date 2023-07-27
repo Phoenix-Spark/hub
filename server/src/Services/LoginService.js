@@ -147,8 +147,9 @@ export async function findUserById(id) {
  * @param userId
  * @returns {Promise<string>}
  */
-async function findUserRoles(userId) {
-  return db('permissions').select().where('users_id', userId).first();
+export async function getUserRoles(userId) {
+  const data = await db('permissions').select('roles').where('users_id', userId).first();
+  return data.roles;
 }
 
 /**
@@ -209,7 +210,7 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
 }
 
 // async function generateSession(user, session) {
-//   const roles = await findUserRoles(user.id);
+//   const roles = await getUserRoles(user.id);
 
 //   session.regenerate(regenErr => {
 //     if (regenErr) throw new Error(regenErr);
@@ -230,23 +231,21 @@ export async function addUser({ baseId, cellId, username, password, firstName, l
 // }
 
 export async function generateUserToken(user) {
-  const roles = await findUserRoles(user.id);
+  const roles = await getUserRoles(user.id);
   const { token } = generateAccessToken(user, roles);
 
   return { token };
 }
 
-export async function loginUser(user, session) {
-  
-  const roles = await findUserRoles(user.id);
-  // await generateSession(user, session);
-  const { token } = await generateUserToken(user);
+export async function loginUser(user) {
+  const roles = await getUserRoles(user.id);
+  const { token } = await generateUserToken(user, roles);
+  // await generateSession(user, session, cb, token);
   return { token, roles };
 }
 
 export async function validateLogin(username, plaintext) {
   const { user, password } = await findUser(username);
-  console.log('validate', user);
 
   if (user && password) {
     const validPass = await comparePassword(plaintext, password);

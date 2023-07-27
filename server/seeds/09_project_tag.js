@@ -4,7 +4,7 @@
  */
 export async function seed(knex) {
   // Deletes ALL existing entries
-  //await knex.schema.raw('TRUNCATE project_tag CASCADE')
+  // await knex.schema.raw('TRUNCATE project_tag CASCADE')
   await knex('project_tag').del();
   await knex('project_tag').insert([
     { project_id: 1, tag_id: 1 },

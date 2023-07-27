@@ -53,7 +53,7 @@ function Hub() {
     };
     let formattedDate = date.toLocaleString('en-US', options);
     formattedDate = formattedDate.replace('24:00', '00:00');
-    
+
     return formattedDate;
   };
 
