@@ -8,17 +8,18 @@ import { Link, useParams } from 'react-router-dom';
 export default function Cell() {
   const { server } = useContext(AppContext);
   const [cellData, setCellData] = useState([]);
-  const { cellId } = useParams();
+  const { cell_endpoint } = useParams();
 
   useEffect(() => {
-    fetch(`${server}/cell/${cellId}`)
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
-      .then(data => setCellData(data[0]))
+    fetch(`${server}/cell/${cell_endpoint}`)
+      .then(res=> {
+          console.log(res);
+          return res.json();
+        })
+      .then(data => { setCellData(data[0])
+                      console.log(data[0])})
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  }, [server, cellId]);
+  }, [server, cell_endpoint]);
 
   return (
     <>
@@ -114,7 +115,7 @@ export default function Cell() {
                 <Button
                   variant="primary"
                   as={Link}
-                  to="/proposed-projects"
+                  to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
                 >
                   {' '}
                   Proposed Projects{' '}
@@ -122,7 +123,7 @@ export default function Cell() {
                 <Button
                   variant="success"
                   as={Link}
-                  to="/new-proposal"
+                  to={`/cell/${cellData.cell_endpoint}/new-proposal`}
                   className="mt-3"
                 >
                   {' '}
@@ -140,7 +141,7 @@ export default function Cell() {
     const [teamList, setTeamList] = useState([]);
 
     useEffect(() => {
-      fetch(`${server}/cell/${cellId}/team`)
+      fetch(`${server}/cell/${cell_endpoint}/team`)
         .then(res => {
           console.log(res);
           return res.json();
@@ -167,7 +168,7 @@ export default function Cell() {
                     const imgUrl = member.photo_url
                       ? member.photo_url.startsWith('https')
                         ? member.photo_url
-                        : `http://localhost:3000s /uploads/${member.photo_url}`
+                        : `http://localhost:3000/uploads/${member.photo_url}`
                       : `../images/placeholder_logo.svg`;
                     return (
                       <Col
@@ -211,7 +212,7 @@ export default function Cell() {
     const [previousList, setPreviousList] = useState([]);
 
     useEffect(() => {
-      fetch(`${server}/cell/${cellId}/current_projects`)
+      fetch(`${server}/cell/${cell_endpoint}/current_projects`)
         .then(res => {
           console.log(res);
           return res.json();
@@ -221,7 +222,7 @@ export default function Cell() {
     }, []);
 
     useEffect(() => {
-      fetch(`${server}/cell/${cellId}/previous_projects`)
+      fetch(`${server}/cell/${cell_endpoint}/previous_projects`)
         .then(res => {
           console.log(res);
           return res.json();

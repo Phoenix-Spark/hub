@@ -17,9 +17,9 @@ const router = createBrowserRouter(
         element={<Cell />} />
         <Route path='/project/:projectId'
         element={<Project />} />
-        <Route path='/proposed-projects/'
+        <Route path='/cell/:cell_endpoint/proposed-projects/'
         element={<ProposedProjects />} />
-        <Route path='/new-proposal/'
+        <Route path='/cell/:cell_endpoint/new-proposal/'
         element={<ProposalForm />} />
         <Route
           path="/login"
