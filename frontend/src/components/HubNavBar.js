@@ -15,21 +15,6 @@ export default function HubNavBar() {
         <Form>
           <Row>
             <Col>
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="dark"
-                  id="resource-dropdown"
-                >
-                  Resources
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="http://localhost:3000/">Proposal Guidelines</Dropdown.Item>
-                  <Dropdown.Item href="http://localhost:3000/">Submission FAQ</Dropdown.Item>
-                  <Dropdown.Item href="http://localhost:3000/">Alex's "Homework" Folder</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </Col>
-            <Col>
               <Button
                 variant="dark"
                 href="http://localhost:3000/"
@@ -45,8 +30,23 @@ export default function HubNavBar() {
                 variant="dark"
                 href="http://localhost:3000/"
               >
-                Don't see your cell?
+                New Cell Request Form
               </Button>
+            </Col>
+            <Col>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="dark"
+                  id="resource-dropdown"
+                >
+                  Resources
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item href="http://localhost:3000/">Proposal Guidelines</Dropdown.Item>
+                  <Dropdown.Item href="http://localhost:3000/">Submission FAQ</Dropdown.Item>
+                  <Dropdown.Item href="http://localhost:3000/">Alex's "Homework" Folder</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </Col>
             <Col>
               <Form.Control
@@ -60,7 +60,6 @@ export default function HubNavBar() {
                 type="submit"
               >
                 <Search />
-        
               </Button>
             </Col>
           </Row>

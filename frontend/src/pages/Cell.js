@@ -28,7 +28,6 @@ export default function Cell() {
       <div style={{ color: 'white' }}>
         This is the Cell Component! We should add an error catch JSX if cell fetch doesn't work because cell doesnt exist.
       </div>
-      <CellNavBar />
       <MissionProposeRow />
       <TeamContactRow />
       <ProjectListRow />
@@ -253,7 +252,8 @@ export default function Cell() {
                   {currentList.map((item, index) => (
                     <ListGroup.Item
                       action
-                      href={`/project/${item.id}`}
+                      as={Link}
+                      to={`/project/${item.id}`}
                       key={index}
                     >
                       <Row>
