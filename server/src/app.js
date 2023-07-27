@@ -44,11 +44,6 @@ if (process.env.NODE_ENV === 'production') {
   sessionOptions.cookie.secure = true;
 }
 
-const corsOptions = {
-  origin: [/(http:\/\/localhost)(:(\d{4}))/, 'http://localhost:3000'],
-  credentials: true,
-};
-
 app.use(logger('dev'));
 app.use(session(sessionOptions));
 app.use(cors(corsOptions));
