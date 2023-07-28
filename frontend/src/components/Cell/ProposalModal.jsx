@@ -1,17 +1,18 @@
 import { Modal } from 'react-bootstrap';
-import ProposalForm from './ProposalForm.js';
+import ProposalForm from '../../pages/ProposalForm.js';
+import './ProposalModal.scss';
 
 export default function ProposalModal(props) {
   const { setModalShow, ...rest } = props;
   return (
     <Modal
-      className="login-modal"
+      className="proposal-modal"
       {...rest}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Body className="login-modal-body">
+      <Modal.Body className="proposal-modal-body">
         <ProposalForm setModalShow={props.setModalShow} />
       </Modal.Body>
     </Modal>

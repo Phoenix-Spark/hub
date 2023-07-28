@@ -1,0 +1,24 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/variables-dark";
+@import "~bootstrap/scss/mixins";
+
+
+#BodyContainer a.nav-link {
+  $tab-links-color: $red;
+  
+  color: RGBA(to-rgb($tab-links-color), 1) !important;
+  -webkit-text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
+  text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
+}
+
+@include color-mode(dark) {
+  #BodyContainer .nav-item > a.nav-link {
+
+    $tab-links-color: $teal;
+  
+    color: RGBA(to-rgb($tab-links-color), var(--bs-link-opacity, 1)) !important;
+    -webkit-text-decoration-color: RGBA(to-rgb($tab-links-color), var(--bs-link-underline-opacity, 1)) !important;
+    text-decoration-color: RGBA(to-rgb($tab-links-color), var(--bs-link-underline-opacity, 1)) !important;
+  }
+}

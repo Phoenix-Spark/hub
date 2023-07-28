@@ -9,10 +9,11 @@ const SubmissionFAQ = () => {
     setQuestion(event.target.value);
   };
 
-  const handleQuestionSubmit = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (question.trim() === '') return;
-    setQuestionsList([...questionsList, question.trim()]);
+
+    console.log(`User submitted question: ${question.trim()}`);
     setQuestion('');
   };
 
@@ -45,7 +46,8 @@ const SubmissionFAQ = () => {
           </Card>
         ))}
       </Accordion>
-      <Form onSubmit={handleQuestionSubmit}>
+
+      <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formQuestion">
           <Form.Label>Ask a Question</Form.Label>
           <Form.Control

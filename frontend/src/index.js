@@ -37,11 +37,7 @@ const router = createBrowserRouter(
         element={<SignUp />}
       />
       <Route
-        path="/*"
-        element={<Hub />}
-      />
-      <Route
-        path="/dashboard"
+        path="/dashboard/:page"
         element={<Dashboard />}
       />
       <Route
@@ -51,6 +47,10 @@ const router = createBrowserRouter(
       <Route
         path="/forums"
         element={<Forums />}
+      />
+      <Route
+        path="/*"
+        element={<Hub />}
       />
     </Route>
   )

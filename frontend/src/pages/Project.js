@@ -10,42 +10,23 @@ export default function Project() {
   const { server } = useContext(AppContext);
   const { projectId } = useParams();
   const [projectData, setProjectData] = useState([]);
-  const [teamList, setTeamList] = useState([]);
-  const [photoList, setPhotoList] = useState([]);
 
   useEffect(() => {
     let ignore = false;
 
-    const fetchData = async url => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${server}/project/${projectId}${url}`);
+        const response = await fetch(`${server}/project/${projectId}/all`);
         if (response.ok) {
-          const data = response.json();
-          if (!ignore) return data;
+          const data = await response.json();
+          if (!ignore) setProjectData(data)
         }
       } catch (e) {
         throw new Error(`There was an error. ${e}`);
       }
     };
 
-    const fetchProjectData = async () => {
-      const data = await fetchData('');
-      if (!ignore) setProjectData(data[0]);
-    };
-
-    const fetchProjectPhotos = async () => {
-      const photos = await fetchData(`/photos`);
-      if (!ignore) setPhotoList(photos);
-    };
-
-    const fetchProjectTeam = async () => {
-      const team = await fetchData(`/team`);
-      if (!ignore) setTeamList(team);
-    };
-
-    fetchProjectData();
-    fetchProjectTeam();
-    fetchProjectPhotos();
+    fetchData();
 
     return () => {
       ignore = true;
@@ -60,8 +41,8 @@ export default function Project() {
       <Row className="my-3">
         <Col>
           <Card>
-            <Card.Header as="h5">{projectData.name} Overview</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">{projectData.description}</Card.Body>
+            <Card.Header as="h5">{projectData?.name} Overview</Card.Header>
+            <Card.Body className="d-flex flex-column h-100">{projectData?.description}</Card.Body>
           </Card>
         </Col>
       </Row>
@@ -70,7 +51,7 @@ export default function Project() {
           <Card>
             <Card.Header>Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <VerticalTeamList team={teamList}></VerticalTeamList>
+              <VerticalTeamList team={projectData?.team}></VerticalTeamList>
             </Card.Body>
           </Card>
         </Col>
@@ -81,7 +62,7 @@ export default function Project() {
           >
             <Card.Header>Photos</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <PhotoCarousel photos={photoList}></PhotoCarousel>
+              <PhotoCarousel photos={projectData?.photos}></PhotoCarousel>
             </Card.Body>
           </Card>
         </Col>
@@ -91,8 +72,8 @@ export default function Project() {
           <Card>
             <Card.Header>Budget / Asks / Tasks</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <p>${projectData.budget}</p>
-              <p>{projectData.asks_tasks}</p>
+              <p>${projectData?.budget}</p>
+              <p>{projectData?.asks_tasks}</p>
             </Card.Body>
           </Card>
         </Col>

@@ -2,10 +2,14 @@ import { Col, ListGroup, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
+import {firstSentence} from '../../utils/index.js';
+
+
+
 function ProjectList({ projects }) {
   return (
     <ListGroup style={{ overflowY: 'auto' }}>
-      {projects.map((item, index) => (
+      {projects?.map((item, index) => (
         <ListGroup.Item
           action
           as={Link}
@@ -23,7 +27,7 @@ function ProjectList({ projects }) {
             <Col>
               <div>
                 <div style={{ fontWeight: 'bold' }}>{item.name}</div>
-                {item.description}
+                {firstSentence(item.description)}
               </div>
             </Col>
           </Row>

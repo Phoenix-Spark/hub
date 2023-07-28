@@ -1,62 +1,87 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { Button, Card, Col, Row, Modal } from 'react-bootstrap';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import HorizontalTeamList from '../components/Cell/HorizontalTeamList.jsx';
 import ProjectList from '../components/Cell/ProjectList.jsx';
+import ProposalModal from '../components/Cell/ProposalModal.jsx';
+
 
 export default function Cell() {
   const { cell_endpoint } = useParams();
   const { server, user } = useContext(AppContext);
-  const [cellData, setCellData] = useState([]);
-  const [teamList, setTeamList] = useState([]);
-  const [currentList, setCurrentList] = useState([]);
-  const [previousList, setPreviousList] = useState([]);
-  const [modalShow, setModalShow] = useState(false);
+  const [cellAllData, setCellAllData] = useState({});
+  // const [cellData, setCellData] = useState([]);
+  // const [teamList, setTeamList] = useState([]);
+  // const [currentList, setCurrentList] = useState([]);
+  // const [previousList, setPreviousList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const Navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${server}/cell/${cell_endpoint}/team`)
+    fetch(`${server}/cell/${cell_endpoint}/all`)
       .then(res => {
         console.log(res);
-        return res.json();
-      })
-      .then(data => setTeamList(data))
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  }, []);
-
-  useEffect(() => {
-    fetch(`${server}/cell/${cell_endpoint}`)
-      .then(res => {
-        console.log(res);
+        if (res.status === 404) {
+          Navigate(`/`);
+        }
         return res.json();
       })
       .then(data => {
-        setCellData(data[0]);
-        console.log(data[0]);
+        setCellAllData(data);
       })
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, [server, cell_endpoint]);
 
-  useEffect(() => {
-    fetch(`${server}/cell/${cell_endpoint}/current_projects`)
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
-      .then(data => setCurrentList(data))
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  }, []);
+  const showProposalModal = () => setShowModal(true);
+  const hideProposalModal = () => setShowModal(false);
 
-  useEffect(() => {
-    fetch(`${server}/cell/${cell_endpoint}/previous_projects`)
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
-      .then(data => setPreviousList(data))
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${server}/cell/${cell_endpoint}`)
+  //     .then(res => {
+  //       console.log(res);
+  //       if (res.status === 404) {
+  //         Navigate(`/`);
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(data => {
+  //       setCellData(data[0]);
+  //       console.log(data[0]);
+  //     })
+  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  // }, [server, cell_endpoint]);
+
+  // useEffect(() => {
+  //   fetch(`${server}/cell/${cell_endpoint}/team`)
+  //     .then(res => {
+  //       console.log(res);
+  //       return res.json();
+  //     })
+  //     .then(data => setTeamList(data))
+  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  // }, []);
+
+  // useEffect(() => {
+  //   fetch(`${server}/cell/${cell_endpoint}/current_projects`)
+  //     .then(res => {
+  //       console.log(res);
+  //       return res.json();
+  //     })
+  //     .then(data => setCurrentList(data))
+  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  // }, []);
+
+  // useEffect(() => {
+  //   fetch(`${server}/cell/${cell_endpoint}/previous_projects`)
+  //     .then(res => {
+  //       console.log(res);
+  //       return res.json();
+  //     })
+  //     .then(data => setPreviousList(data))
+  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  // }, []);
 
   return (
     <>
@@ -76,7 +101,7 @@ export default function Cell() {
                     alt=""
                   />
                 </Col>
-                <Col>{cellData.cell_mission}</Col>
+                <Col>{cellAllData?.cell_mission}</Col>
               </Row>
             </Card.Body>
           </Card>
@@ -90,24 +115,18 @@ export default function Cell() {
                   <Button
                     variant="primary"
                     as={Link}
-                    onClick={() => {
-                      setModalShow(false);
-                    }}
-                    to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
+                    to={`/dashboard/projects`}
                   >
                     {user.roles === '' ? 'Your Proposed Projects' : 'Proposed Projects'}
                   </Button>
                   <Button
                     variant="success"
-                    as={Link}
-                    onClick={() => {
-                      setModalShow(false);
-                    }}
-                    to={`/cell/${cellData.cell_endpoint}/new-proposal`}
+                    onClick={showProposalModal}
                     className="mt-3"
                   >
                     Submit New Proposal
                   </Button>
+                  <ProposalModal show={showModal} onHide={hideProposalModal} />
                 </>
               )}
               {!user && <p>Please login first to submit a new proposal.</p>}
@@ -121,7 +140,7 @@ export default function Cell() {
             <Card.Header as="h5">Meet the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
               <Row>
-                <HorizontalTeamList teamList={teamList}></HorizontalTeamList>
+                <HorizontalTeamList teamList={cellAllData?.team}></HorizontalTeamList>
               </Row>
             </Card.Body>
           </Card>
@@ -130,11 +149,11 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Contact the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              {cellData.email}
+              {cellAllData.email}
               <br />
-              {cellData.contact_number1}
+              {cellAllData.contact_number1}
               <br />
-              {cellData.contact_number2}
+              {cellAllData.contact_number2}
             </Card.Body>
           </Card>
         </Col>
@@ -144,7 +163,7 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Current Projects</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <ProjectList projects={currentList} />
+              <ProjectList projects={cellAllData.current_projects} />
             </Card.Body>
           </Card>
         </Col>
@@ -152,7 +171,7 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Previous Projects</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <ProjectList projects={previousList} />
+              <ProjectList projects={cellAllData.previous_projects} />
             </Card.Body>
           </Card>
         </Col>
@@ -171,7 +190,7 @@ export default function Cell() {
         </Col>
       </Row>
 
-      {JSON.stringify(cellData)}
+      {JSON.stringify(cellAllData)}
     </>
   );
 }

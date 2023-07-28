@@ -80,7 +80,7 @@ export default function MapChart() {
             maxZoom={64}
           >
             <Sphere
-              stroke="#ff8900"
+              stroke="#fff"
               strokeWidth={2}
               fill="lightblue"
             />

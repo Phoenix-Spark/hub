@@ -15,3 +15,7 @@ export function formatDate(inputDate) {
 
   return formattedDate;
 }
+
+export function firstSentence(paragraph) {
+  return `${paragraph.split('.')[0]}.`;
+}
