@@ -59,10 +59,10 @@ export default function SignUp() {
   }
 
   return (
-    <div className="text-light m-3 vh-100">
+    <div className="m-3">
       {!signUpComplete && (
         <>
-          <h1>Sign Up Form</h1>
+          <h3>Sign Up Form</h3><hr />
           <Form
             noValidate
             validated={validated}
@@ -219,12 +219,13 @@ export default function SignUp() {
               <Button
                 type="submit"
                 variant="primary"
+                className='mb-3'
               >
                 Create Account
               </Button>
               <Button
                 variant="secondary"
-                className="ms-3"
+                className="ms-3 mb-3"
                 onClick={handleCancel}
               >
                 Cancel

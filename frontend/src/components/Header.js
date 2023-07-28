@@ -8,9 +8,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
 
 export default function Header() {
-  const { server, user, setUser, showLogin, setShowLogin } = useContext(AppContext);
+  const { server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [fadeAnimation, setFadeAnimation] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,13 +67,21 @@ export default function Header() {
     const newMode = isDarkMode ? 'light' : 'dark';
     document.documentElement.setAttribute('data-bs-theme', newMode);
     localStorage.setItem('preferredMode', newMode);
+    setFadeAnimation(true);
   };
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setFadeAnimation(false);
+    }, 80);
+
+    return () => clearTimeout(timerId);
+  }, [fadeAnimation]);
 
   return (
     <Navbar
       id="header"
       fixed="top"
-      //bg="dark"
       className="header-css"
     >
       <Container
@@ -156,8 +164,13 @@ export default function Header() {
         </Navbar.Collapse>
         <Row className="align-items-center me-3">
           <Col style={{ display: 'flex', alignItems: 'center' }}>
-            {/* <Button onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? <MoonStars /> : <SunFill />}</Button> */}
-            <Button onClick={toggleDarkMode}>{isDarkMode ? <MoonStars /> : <SunFill />}</Button>
+            <Button
+              variant={isDarkMode ? 'light' : 'dark'}
+              onClick={toggleDarkMode}
+              className={`button-fade-animation ${fadeAnimation ? 'button-fade-out' : ''}`}
+            >
+              {isDarkMode ? <MoonStars /> : <SunFill />}
+            </Button>
           </Col>
           {showLogin && user === null && (
             <Col>

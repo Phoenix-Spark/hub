@@ -13,8 +13,9 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [sparkList, setSparkList] = useState([]);
   const [showLogin, setShowLogin] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const ContextObject = { server, user, setUser, sparkList, showLogin, setShowLogin };
+  const ContextObject = { server, user, setUser, sparkList, showLogin, setShowLogin, isDarkMode, setIsDarkMode };
 
   useEffect(() => {
     let ignore = false;
@@ -66,16 +67,18 @@ export default function App() {
   }, []);
 
   return (
-      <AppContext.Provider value={ContextObject}>
-          <Header />
+    <AppContext.Provider value={ContextObject}>
+      <Header />
+      <div className="scrollbar-morpheus-den" >
         <Container
           fluid
           style={{ paddingTop: 105 }}
-          className='bg-body-secondary col-12 col-md-10'
+          className="bg-body-secondary col-12 col-md-10 pb-5"
           id="BodyContainer"
         >
           <Outlet />
         </Container>
-      </AppContext.Provider>
+      </div>
+    </AppContext.Provider>
   );
 }
