@@ -3,7 +3,8 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { useState, useContext } from 'react';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, OverlayTrigger, Tooltip, Card } from "react-bootstrap";
+import { Container, Row, Col, Button, ButtonGroup, OverlayTrigger, Tooltip, Card } from "react-bootstrap";
+import { PlusLg, DashLg } from 'react-bootstrap-icons';
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Marker } from "react-simple-maps"
 import { useNavigate } from 'react-router-dom';
 
@@ -12,91 +13,73 @@ const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/wo
 export default function MapChart() {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const { sparkList } = useContext(AppContext);
-  const [toolTipOpen, setToolTipOpen] = useState(false);
-  const [zoomFactor, setZoomFactor] = useState(1);
   const navigate = useNavigate();
 
   function handleZoomIn() {
     if (position.zoom >= 32) return;
-    setPosition((pos) => ({ ...pos, zoom: pos.zoom * 2 }));
-  };
+    setPosition((pos) => { console.log("pos=", pos)
+                          return ({ ...pos, zoom: pos.zoom * 2 })});
+  }
 
   function handleZoomOut() {
     if (position.zoom <= 1) return;
-    setPosition((pos) => ({ ...pos, zoom: pos.zoom / 2 }));
-  };
+    setPosition((pos) => { console.log("pos=", pos)
+                          return ({ ...pos, zoom: pos.zoom / 2 })});
+  }
 
   function handleMoveEnd(position) {
     setPosition(position);
-  };
+    console.log(position.zoom)
+  }
 
   return (
-    <Container className="mt-4 mx-0 w-100" style={{ maxWidth: '100vw', paddingLeft: 0, paddingRight: 0 }}>
-      <Card id="map-card">
-              <Card.Body style={{ borderRadius: '10px' }}>
-              <Card.Title className="d-flex justify-content-between w-100">Map
-              <div className="controls">
-                <button onClick={handleZoomIn}>
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-                <button onClick={handleZoomOut}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                </button>
-              </div>
-              
-              
-              
-              </Card.Title>
-                
-      <ComposableMap style={{ height: '500px', width: '100%', border: '3px solid red', borderRadius: "60px", backgroundColor: "black" }}
-        projectionConfig={{ 
-          center: [0, 0],
-          scale: 220,
-          height: 500
-          }} >
-        <ZoomableGroup
-          zoom={position.zoom}
-          center={position.coordinates}
-          onMoveEnd={handleMoveEnd}
-          onMove={({zoom}) =>{setZoomFactor(zoom)}}
-        >
-          <Sphere stroke="#ff8900" strokeWidth={2} fill="lightblue" />
-          <Geographies geography={geoUrl}>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography key={geo.rsmKey} geography={geo} />
-              ))
-            }
-          </Geographies>
-          {sparkList.map(spark=>
-            <MarkerWithTooltip key={spark.id} spark={spark}/>
-          )}
-        </ZoomableGroup>
-      </ComposableMap>
-      
-      {/* </Row> */}
-      </Card.Body>
-            </Card>
-    </Container>
+    //<Container className="mt-4 mx-0 w-100 mb-5" style={{ maxWidth: '100vw', paddingLeft: 0, paddingRight: 0 }}>
+    <Row className="mt-4">
+      <Col>
+        <Card id="map-card">
+          <Card.Body style={{ borderRadius: '10px' }}>
+            <Card.Title className="d-flex justify-content-between w-100 mb-3">Spark Cells Around the World
+              <ButtonGroup> 
+                <Button variant='secondary' onClick={handleZoomIn} className="p-0" >
+                  <PlusLg size={32}/>
+                </Button> 
+                <Button variant='secondary' onClick={handleZoomIn} className="p-0" >
+                  <DashLg size={32}/>
+                </Button>
+              </ButtonGroup> 
+            </Card.Title>
+            <ComposableMap 
+              //style={{ border: '3px solid #495057', borderRadius: "60px", backgroundColor: "black" }}
+              style={{ border: '3px solid #495057', borderRadius: "60px", backgroundImage: `url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22a%22%3E%3CfeTurbulence%20baseFrequency%3D%22.2%22%2F%3E%3CfeColorMatrix%20values%3D%220%200%200%209%20-4%200%200%200%209%20-4%200%200%200%209%20-4%200%200%200%200%201%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23a)%22%2F%3E%3C%2Fsvg%3E')`}}
+              width={1800}
+              height={600}
+              projectionConfig={{ 
+                center: [0, 0],
+                scale: 220,
+                }} >
+              <ZoomableGroup
+                zoom={position.zoom}
+                center={position.coordinates}
+                onMoveEnd={handleMoveEnd}
+                maxZoom={64}
+              >
+                <Sphere stroke="#ff8900" strokeWidth={2} fill="lightblue" />
+                <Geographies geography={geoUrl}>
+                  {({ geographies }) =>
+                    geographies.map((geo) => (
+                      <Geography key={geo.rsmKey} geography={geo} />
+                    ))
+                  }
+                </Geographies>
+                {sparkList.map(spark=>
+                  <MarkerWithTooltip key={spark.id} spark={spark}/>
+                )}
+              </ZoomableGroup>
+            </ComposableMap>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
   );
 
   function MarkerWithTooltip({spark, onClick}) {
@@ -121,7 +104,7 @@ export default function MapChart() {
             </Tooltip>
             }
           >
-              <circle r={8/zoomFactor} fill="#F53"/>
+              <circle r={8/position.zoom} fill="#F53"/>
           </OverlayTrigger>
         </Marker>
     )

@@ -1,15 +1,16 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row } from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
+import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row, ButtonGroup } from 'react-bootstrap';
+import { Search, MoonStars, SunFill } from 'react-bootstrap-icons';
 import AppContext from '../AppContext.js';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton.js';
 
 export default function Header() {
-  const { server, user, setUser, showLogin, setShowLogin } = useContext(AppContext);
+  const { server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [fadeAnimation, setFadeAnimation] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,11 +62,26 @@ export default function Header() {
       : `../images/placeholder_logo.svg`;
   }
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(prevMode => !prevMode);
+    const newMode = isDarkMode ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-bs-theme', newMode);
+    localStorage.setItem('preferredMode', newMode);
+    setFadeAnimation(true);
+  };
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setFadeAnimation(false);
+    }, 80);
+
+    return () => clearTimeout(timerId);
+  }, [fadeAnimation]);
+
   return (
     <Navbar
       id="header"
       fixed="top"
-      //bg="dark"
       className="header-css"
     >
       <Container
@@ -147,7 +163,20 @@ export default function Header() {
           </Form>
         </Navbar.Collapse>
         <Row className="align-items-center me-3">
-          {showLogin && user === null && <LoginButton />}
+          <Col style={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              variant={isDarkMode ? 'light' : 'dark'}
+              onClick={toggleDarkMode}
+              className={`button-fade-animation ${fadeAnimation ? 'button-fade-out' : ''}`}
+            >
+              {isDarkMode ? <MoonStars /> : <SunFill />}
+            </Button>
+          </Col>
+          {showLogin && user === null && (
+            <Col>
+              <LoginButton />
+            </Col>
+          )}
           {showLogin && user && (
             <>
               <Col style={{ display: 'flex', alignItems: 'center' }}>

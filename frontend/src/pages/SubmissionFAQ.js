@@ -1,65 +1,44 @@
 import React from 'react';
+import { Accordion, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Nav, NavDropdown, Form, Dropdown, Button, Navbar } from 'react-bootstrap';
+import { Search } from 'react-bootstrap-icons';
 
 const FAQ = () => {
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4">Frequently Asked Questions</h1>
-
-      <div className="accordion" id="faqAccordion">
-        <div className="accordion-item">
-          <h2 className="accordion-header" id="faqHeading1">
-            <button
-              className="accordion-button"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#faqCollapse1"
-              aria-expanded="true"
-              aria-controls="faqCollapse1"
-            >
+    <Container
+      fluid
+      style={{ paddingLeft: 0, paddingRight: 0 }}
+    >
+      <Navbar
+        className="bg-body-tertiary justify-content-end"
+        data-bs-theme="dark"
+      >
+      <Accordion>
+        <Card>
+          <Card.Header>
+            <Accordion.Toggle as={Button} variant="link" eventKey="0">
               Question 1
-            </button>
-          </h2>
-          <div
-            id="faqCollapse1"
-            className="accordion-collapse collapse show"
-            aria-labelledby="faqHeading1"
-            data-bs-parent="#faqAccordion"
-          >
-            <div className="accordion-body">
-              Answer
-            </div>
-          </div>
-        </div>
+            </Accordion.Toggle>
+          </Card.Header>
+          <Accordion.Collapse eventKey="0">
+            <Card.Body>Answer </Card.Body>
+          </Accordion.Collapse>
+        </Card>
 
-        <div className="accordion-item">
-          <h2 className="accordion-header" id="faqHeading2">
-            <button
-              className="accordion-button"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#faqCollapse2"
-              aria-expanded="false"
-              aria-controls="faqCollapse2"
-            >
+        <Card>
+          <Card.Header>
+            <Accordion.Toggle as={Button} variant="link" eventKey="1">
               Question 2
-            </button>
-          </h2>
-          <div
-            id="faqCollapse2"
-            className="accordion-collapse collapse"
-            aria-labelledby="faqHeading2"
-            data-bs-parent="#faqAccordion"
-          >
-            <div className="accordion-body">
-              Answer
-            </div>
-          </div>
-        </div>
+            </Accordion.Toggle>
+          </Card.Header>
+          <Accordion.Collapse eventKey="1">
+            <Card.Body>Answer</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+      </Accordion>
+      </Navbar>
+      </Container>
+)};
 
-        {/* FAQ items here */}
-      </div>
-    </div>
-  );
-};
 
 export default FAQ;

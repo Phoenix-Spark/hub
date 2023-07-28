@@ -5,7 +5,6 @@ import AppContext from '../AppContext.js';
 import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, InputGroup, Navbar, Card, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import MapChart from '../components/MapChart.js';
-import HubNavBar from '../components/HubNavBar.js';
 
 const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 
@@ -35,6 +34,7 @@ function Hub() {
       <MissionNewsRow />
       <SparkyList />
       <MapChart />
+      {/* <div id="starstar" style={{height: "400px", width: "400px"}}></div> */}
     </>
   );
 
@@ -57,11 +57,11 @@ function Hub() {
   }
 
   function MissionNewsRow() {
-    const [missionCardHeight, setMissionCardHeight] = useState('600px');
+    const [missionCardHeight, setMissionCardHeight] = useState('300px');
 
     useEffect(() => {
       function handleResize() {
-        const height = document.getElementById('mission-card') ? `${document.getElementById('mission-card').clientHeight + 2}px` : '600px';
+        const height = document.getElementById('mission-card') ? `${document.getElementById('mission-card').clientHeight + 2}px` : '300px';
         setMissionCardHeight(height);
       }
       handleResize();
@@ -71,12 +71,8 @@ function Hub() {
       };
     }, []);
     return (
-      <Container
-        fluid
-        style={{ paddingLeft: 0, paddingRight: 0 }}
-      >
         <Row className="mt-4 align-items-stretch">
-          <Col>
+          <Col lg={6}>
             <Card id="mission-card">
               <Card.Body style={{ borderRadius: '10px' }}>
                 <Card.Title className="card-title">Mission</Card.Title>
@@ -128,23 +124,19 @@ function Hub() {
             </Card>
           </Col>
         </Row>
-      </Container>
     );
   }
 
   function SparkyList() {
     return (
-      <Container
-        fluid
-        style={{ paddingLeft: 12, paddingRight: 12 }}
-      >
         <Row className="mt-4">
+          <Col>
           <Card>
             <Card.Body style={{ borderRadius: '10px' }}>
               <Card.Title className="d-flex justify-content-between w-100">
                 <div>Spark List</div>
                 <Button
-                  variant="light"
+                  variant='secondary'
                   href="http://localhost:3000/"
                 >
                   Don't see your cell?
@@ -174,8 +166,8 @@ function Hub() {
               </ListGroup>
             </Card.Body>
           </Card>
+          </Col>
         </Row>
-      </Container>
     );
   }
 }
