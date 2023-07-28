@@ -1,15 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react';
-import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import AppContext from '../AppContext.js';
-import { Container, Row, Col, Form, NavDropdown, Nav, Dropdown, Button, InputGroup, Navbar, Card, ListGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import MapChart from '../components/MapChart.js';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 
-const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
+import AppContext from '../AppContext.js';
+import MapChart from '../components/Hub/MapChart.jsx';
+import SparkyList from '../components/Hub/SparkyList.jsx';
+import NewsList from '../components/Hub/NewsList.jsx';
 
 function Hub() {
-  const { sparkList } = useContext(AppContext);
+  const { server, sparkList } = useContext(AppContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [newsList, setNewsList] = useState([]);
 
@@ -31,145 +29,65 @@ function Hub() {
 
   return (
     <>
-      <MissionNewsRow />
-      <SparkyList />
-      <MapChart />
-      {/* <div id="starstar" style={{height: "400px", width: "400px"}}></div> */}
-    </>
-  );
-
-  function formatDate(inputDate) {
-    const date = new Date(inputDate);
-    const options = {
-      weekday: 'short',
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZoneName: 'short',
-      hour12: false,
-    };
-    let formattedDate = date.toLocaleString('en-US', options);
-    formattedDate = formattedDate.replace('24:00', '00:00');
-
-    return formattedDate;
-  }
-
-  function MissionNewsRow() {
-    const [missionCardHeight, setMissionCardHeight] = useState('300px');
-
-    useEffect(() => {
-      function handleResize() {
-        const height = document.getElementById('mission-card') ? `${document.getElementById('mission-card').clientHeight + 2}px` : '300px';
-        setMissionCardHeight(height);
-      }
-      handleResize();
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }, []);
-    return (
-        <Row className="mt-4 align-items-stretch">
-          <Col lg={6}>
-            <Card id="mission-card">
-              <Card.Body style={{ borderRadius: '10px' }}>
-                <Card.Title className="card-title">Mission</Card.Title>
-                <Card.Text
-                  className="border px-3 py-2 mb-0 rounded fw-medium"
-                >
-                  At the Air Force Spark Hub, our mission is to ignite a culture of innovation and collaboration throughout the Air Force by
-                  providing a dynamic and interactive platform that showcases and empowers Spark Cells. We are committed to fostering a
-                  thriving ecosystem where Spark Cells can share their groundbreaking ideas, ongoing projects, and achievements, propelling
-                  the Air Force into a more agile and forward-thinking future. Through this hub, we aim to connect, inspire, and enable
-                  airmen from all ranks to contribute, propose, and collaborate on transformative initiatives that drive technological
-                  advancements and enhance the Air Force's operational capabilities. Together, we spark the flames of ingenuity, propelling
-                  the Air Force to new heights of excellence and ensuring our nation's defense remains unrivaled.
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col>
-            <Card style={{ height: missionCardHeight }}>
-              <Card.Body className="d-flex flex-column h-100">
-                <Card.Title>News</Card.Title>
-                <ListGroup style={{ overflowY: 'auto' }}>
-                  {newsList.map((item, index) => (
-                    <ListGroup.Item
-                      action
-                      to={'/'}
-                      as={Link}
-                      key={index}
-                    >
-                      <Row>
-                        <Col md="auto">
-                          <img
-                            style={{ height: '64px', width: '64px' }}
-                            src="./images/placeholder_logo.svg"
-                            alt=""
-                          />
-                        </Col>
-                        <Col>
-                          <div>
-                            <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{formatDate(new Date(item.date).toString())}</div>
-                            {item.news}
-                          </div>
-                        </Col>
-                      </Row>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-    );
-  }
-
-  function SparkyList() {
-    return (
-        <Row className="mt-4">
-          <Col>
+      <Row className="mt-3">
+        <Col>
           <Card>
+            <Card.Header as="h5">Mission</Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>
-              <Card.Title className="d-flex justify-content-between w-100">
-                <div>Spark List</div>
-                <Button
-                  variant='secondary'
-                  href="http://localhost:3000/"
-                >
-                  Don't see your cell?
-                </Button>
-              </Card.Title>
-              <ListGroup style={{ maxHeight: '25vh', overflowY: 'auto' }}>
-                {filteredSparkList.map((spark, index) => (
-                  <Link
-                    to={`/cell/${spark.cell_endpoint}`}
-                    key={index}
-                    className="list-group-item list-group-item-action"
-                  >
-                    <Row>
-                      <Col md="auto">
-                        <img
-                          style={{ height: '64px', width: '64px' }}
-                          src={spark.logo_url}
-                          alt=""
-                        />
-                      </Col>
-                      <Col className="pl-5">
-                        {spark.cell_name} at {spark.base_name}
-                      </Col>
-                    </Row>
-                  </Link>
-                ))}
-              </ListGroup>
+              <Card.Text className="border px-3 py-2 mb-0 rounded fw-medium">
+                At the Air Force Spark Hub, our mission is to ignite a culture of innovation and collaboration throughout the Air Force by
+                providing a dynamic and interactive platform that showcases and empowers Spark Cells. We are committed to fostering a
+                thriving ecosystem where Spark Cells can share their groundbreaking ideas, ongoing projects, and achievements, propelling
+                the Air Force into a more agile and forward-thinking future. Through this hub, we aim to connect, inspire, and enable airmen
+                from all ranks to contribute, propose, and collaborate on transformative initiatives that drive technological advancements
+                and enhance the Air Force's operational capabilities. Together, we spark the flames of ingenuity, propelling the Air Force
+                to new heights of excellence and ensuring our nation's defense remains unrivaled.
+              </Card.Text>
             </Card.Body>
           </Card>
-          </Col>
-        </Row>
-    );
-  }
+        </Col>
+      </Row>
+      <Row className="my-3">
+        <Col
+          sm={12}
+          md={6}
+          style={{ maxHeight: '400px', minHeight: '400px' }}
+        >
+          <Card className="h-100">
+            <Card.Header
+              as="h5"
+              className="justify-content-between"
+            >
+              Spark List
+              <Button
+                variant="secondary"
+                href="http://localhost:3000/"
+                className=""
+              >
+                Don't see your cell?
+              </Button>
+            </Card.Header>
+            <Card.Body style={{ borderRadius: '10px' }}>
+              <SparkyList sparkList={filteredSparkList} />
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col style={{ maxHeight: '400px', minHeight: '400px' }}>
+          <Card style={{ height: '100%' }}>
+            <Card.Header as="h5">News</Card.Header>
+            <Card.Body className="d-flex flex-column h-75">
+              <NewsList newsList={newsList} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <MapChart />
+        </Col>
+      </Row>
+    </>
+  );
 }
 
 export default Hub;

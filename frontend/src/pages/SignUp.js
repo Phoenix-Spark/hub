@@ -2,17 +2,19 @@ import React, { useContext, useState } from 'react';
 import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
 import AppContext from '../AppContext.js';
 
-// TODO: Photo upload
 export default function SignUp() {
   const { server, setUser, setShowLogin } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [signUpComplete, setSignUpComplete] = useState(false);
   const navigate = useNavigate();
+
   const handleCancel = () => {
     navigate(-1);
   };
+
   // TODO: Move validation to input changes
   async function handleSignup(e) {
     e.preventDefault();
@@ -62,7 +64,8 @@ export default function SignUp() {
     <div className="m-3">
       {!signUpComplete && (
         <>
-          <h3>Sign Up Form</h3><hr />
+          <h3>Sign Up Form</h3>
+          <hr />
           <Form
             noValidate
             validated={validated}
@@ -219,7 +222,7 @@ export default function SignUp() {
               <Button
                 type="submit"
                 variant="primary"
-                className='mb-3'
+                className="mb-3"
               >
                 Create Account
               </Button>

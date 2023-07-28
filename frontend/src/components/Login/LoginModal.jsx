@@ -1,27 +1,26 @@
-import '../App.css';
 import { useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
-import Login from './Login.js';
+import { Modal } from 'react-bootstrap';
 
-const LoginModal = ( props ) => {
+import Login from './Login.jsx';
+
+const LoginModal = props => {
   const [submitBtnEnabled, setSubmitBtnEnabled] = useState(false);
 
-  const {setModalShow, ...rest} = props;
+  const { setModalShow, ...rest } = props;
 
   return (
     <Modal
-      className='login-modal'
+      className="login-modal"
       {...rest}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Body
-      className='login-modal-body'>
+      <Modal.Body className="login-modal-body">
         <Login setModalShow={props.setModalShow} />
       </Modal.Body>
     </Modal>
   );
-}
+};
 
 export default LoginModal;

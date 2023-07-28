@@ -1,11 +1,10 @@
-import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
-import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row, ButtonGroup } from 'react-bootstrap';
-import { Search, MoonStars, SunFill } from 'react-bootstrap-icons';
-import AppContext from '../AppContext.js';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import LoginButton from './LoginButton.js';
+import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row } from 'react-bootstrap';
+import { MoonStars, Search, SunFill } from 'react-bootstrap-icons';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+
+import AppContext from '../../AppContext.js';
+import LoginButton from '../Login/LoginButton.jsx';
 
 export default function Header() {
   const { server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
@@ -102,14 +101,13 @@ export default function Header() {
         <Navbar.Collapse>
           <Nav className="me-auto">
             <Nav.Link
-              as={Link}
+              as={NavLink}
               to="/"
-              active
             >
               Home
             </Nav.Link>
             <Nav.Link
-              as={Link}
+              as={NavLink}
               to="/"
             >
               Forum
@@ -119,35 +117,32 @@ export default function Header() {
               id="resources-nav-dropdown"
             >
               <NavDropdown.Item
-                as={Link}
+                as={NavLink}
                 to="/"
               >
                 Proposal Guidelines
               </NavDropdown.Item>
               <NavDropdown.Item
-                as={Link}
+                as={NavLink}
                 to="/"
               >
                 Submission FAQ
               </NavDropdown.Item>
               <NavDropdown.Item
-                as={Link}
+                as={NavLink}
                 to="/"
               >
                 Alex's "Homework" Folder
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Link
-              as={Link}
+              as={NavLink}
               to="/"
             >
               Submit New Idea
             </Nav.Link>
           </Nav>
-          <Form
-            inline
-            className="d-flex"
-          >
+          <Form className="d-flex">
             <InputGroup className="me-5">
               <Form.Control
                 type="text"

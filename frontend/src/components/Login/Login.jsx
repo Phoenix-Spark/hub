@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
+import { Button, Container, Form } from 'react-bootstrap';
 import * as jose from 'jose';
-import AppContext from '../AppContext.js';
 import { Link, useNavigate } from 'react-router-dom';
+
+import AppContext from '../../AppContext.js';
 
 export default function Login({ setModalShow }) {
   const { server, setUser, user } = useContext(AppContext);
