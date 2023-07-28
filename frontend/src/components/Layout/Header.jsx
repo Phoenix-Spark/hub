@@ -108,9 +108,9 @@ export default function Header() {
             </Nav.Link>
             <Nav.Link
               as={NavLink}
-              to="/"
+              to="/forums"
             >
-              Forum
+              Forums
             </Nav.Link>
             <NavDropdown
               title="Resources"
@@ -124,7 +124,7 @@ export default function Header() {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to="/"
+                to="/SubmissionFAQ"
               >
                 Submission FAQ
               </NavDropdown.Item>

@@ -1,44 +1,81 @@
-import React from 'react';
-import { Accordion, Card, Button } from 'react-bootstrap';
-import { Container, Row, Col, Nav, NavDropdown, Form, Dropdown, Button, Navbar } from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
+import React, { useState } from 'react';
+import { Accordion, Card, Button, Form } from 'react-bootstrap';
 
-const FAQ = () => {
+const SubmissionFAQ = () => {
+  const [question, setQuestion] = useState('');
+  const [questionsList, setQuestionsList] = useState([]);
+
+  const handleQuestionChange = (event) => {
+    setQuestion(event.target.value);
+  };
+
+  const handleQuestionSubmit = (event) => {
+    event.preventDefault();
+    if (question.trim() === '') return;
+    setQuestionsList([...questionsList, question.trim()]);
+    setQuestion('');
+  };
+
+  const faqData = [
+    {
+      question: 'What is Spark Hub?',
+      answer: 'Spark Hub is a platform for creative individuals to collaborate and share ideas.',
+    },
+    {
+      question: 'How do I join Spark Hub?',
+      answer: 'You can join Spark Hub by signing up for an account and becoming a member of our community.',
+    },
+  ];
+
   return (
-    <Container
-      fluid
-      style={{ paddingLeft: 0, paddingRight: 0 }}
-    >
-      <Navbar
-        className="bg-body-tertiary justify-content-end"
-        data-bs-theme="dark"
-      >
+    <div className="container mt-5">
+      <h1 className="mb-4">Frequently Asked Questions</h1>
+
       <Accordion>
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant="link" eventKey="0">
-              Question 1
-            </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>Answer </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant="link" eventKey="1">
-              Question 2
-            </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey="1">
-            <Card.Body>Answer</Card.Body>
-          </Accordion.Collapse>
-        </Card>
+        {faqData.map((item, index) => (
+          <Card key={index}>
+            <Card.Header>
+              <Accordion.Toggle as={Button} variant="link" eventKey={index.toString()}>
+                {item.question}
+              </Accordion.Toggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey={index.toString()}>
+              <Card.Body>{item.answer}</Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        ))}
       </Accordion>
-      </Navbar>
-      </Container>
-)};
+      <Form onSubmit={handleQuestionSubmit}>
+        <Form.Group controlId="formQuestion">
+          <Form.Label>Ask a Question</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter your question"
+            value={question}
+            onChange={handleQuestionChange}
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
 
+      <Accordion className="mt-4">
+        {questionsList.map((q, index) => (
+          <Card key={index}>
+            <Card.Header>
+              <Accordion.Toggle as={Button} variant="link" eventKey={index.toString()}>
+                Question {index + 1}
+              </Accordion.Toggle>
+            </Card.Header>
+            <Accordion.Collapse eventKey={index.toString()}>
+              <Card.Body>{q}</Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        ))}
+      </Accordion>
+    </div>
+  );
+};
 
-export default FAQ;
+export default SubmissionFAQ;

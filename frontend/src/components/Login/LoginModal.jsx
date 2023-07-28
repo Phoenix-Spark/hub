@@ -4,7 +4,7 @@ import { Modal } from 'react-bootstrap';
 import Login from './Login.jsx';
 
 const LoginModal = props => {
-  const [submitBtnEnabled, setSubmitBtnEnabled] = useState(false);
+  // const [submitBtnEnabled, setSubmitBtnEnabled] = useState(false);
 
   const { setModalShow, ...rest } = props;
 

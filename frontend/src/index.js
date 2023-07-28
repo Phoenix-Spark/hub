@@ -45,6 +45,10 @@ const router = createBrowserRouter(
       <Route
         path="/dashboard"
         element={<Dashboard />}
+      <Route path='/SubmissionFAQ'
+             element={<SubmissionFAQ />} />
+      <Route path='/forums'
+             element={<Forums />} />
       />
     </Route>
   )

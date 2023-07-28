@@ -13,6 +13,7 @@ export default function Cell() {
   const [teamList, setTeamList] = useState([]);
   const [currentList, setCurrentList] = useState([]);
   const [previousList, setPreviousList] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
     fetch(`${server}/cell/${cell_endpoint}/team`)

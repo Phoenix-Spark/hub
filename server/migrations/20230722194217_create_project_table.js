@@ -15,7 +15,7 @@ export function up(knex) {
     table.boolean('is_complete');
     table.date('date_complete');
     table.string('name', 64);
-    table.string('description', 512);
+    table.string('description', 1024);
     table.string('budget', 64);
     table.string('asks_tasks', 512);
   });
