@@ -1,11 +1,10 @@
-import React, { useContext, useState } from 'react';
-import '../../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import AppContext from '../../AppContext.js';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { DashLg, PlusLg } from 'react-bootstrap-icons';
 import { ComposableMap, Geographies, Geography, Marker, Sphere, ZoomableGroup } from 'react-simple-maps';
 import { useNavigate } from 'react-router-dom';
+
+import AppContext from '../../AppContext.js';
 
 const geoUrl = 'https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json';
 
@@ -14,25 +13,24 @@ export default function MapChart() {
   const { sparkList } = useContext(AppContext);
   const navigate = useNavigate();
 
+  let delayFunction;
+
+  useEffect(() => {
+    return () => clearTimeout(delayFunction);
+  }, []);
+
   function handleZoomIn() {
     if (position.zoom >= 32) return;
-    setPosition(pos => {
-      console.log('pos=', pos);
-      return { ...pos, zoom: pos.zoom * 2 };
-    });
+    setPosition(pos => ({ ...pos, zoom: pos.zoom * 2 }));
   }
 
   function handleZoomOut() {
     if (position.zoom <= 1) return;
-    setPosition(pos => {
-      console.log('pos=', pos);
-      return { ...pos, zoom: pos.zoom / 2 };
-    });
+    setPosition(pos => ({ ...pos, zoom: pos.zoom / 2 }));
   }
 
   function handleMoveEnd(position) {
-    setPosition(position);
-    console.log(position.zoom);
+    delayFunction = setTimeout(() => setPosition(position), 10);
   }
 
   return (

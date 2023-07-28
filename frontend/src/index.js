@@ -3,10 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 
 import App from './App.js';
-import { Cell, Dashboard, Hub, Project, ProposalForm, ProposedProjects, SignUp } from './pages/index.js';
+import { Cell, Dashboard, Forums, Hub, Project, ProposalForm, ProposedProjects, SignUp, SubmissionFAQ } from './pages/index.js';
 import reportWebVitals from './reportWebVitals.js';
-
-import './index.css';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -45,10 +43,14 @@ const router = createBrowserRouter(
       <Route
         path="/dashboard"
         element={<Dashboard />}
-      <Route path='/SubmissionFAQ'
-             element={<SubmissionFAQ />} />
-      <Route path='/forums'
-             element={<Forums />} />
+      />
+      <Route
+        path="/SubmissionFAQ"
+        element={<SubmissionFAQ />}
+      />
+      <Route
+        path="/forums"
+        element={<Forums />}
       />
     </Route>
   )

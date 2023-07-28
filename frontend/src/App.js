@@ -6,8 +6,7 @@ import { Container } from 'react-bootstrap';
 import { Header } from './components/index.js';
 import AppContext from './AppContext.js';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import './App.scss';
 
 const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 

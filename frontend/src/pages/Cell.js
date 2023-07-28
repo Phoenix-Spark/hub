@@ -90,6 +90,9 @@ export default function Cell() {
                   <Button
                     variant="primary"
                     as={Link}
+                    onClick={() => {
+                      setModalShow(false);
+                    }}
                     to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
                   >
                     {user.roles === '' ? 'Your Proposed Projects' : 'Proposed Projects'}
@@ -97,6 +100,9 @@ export default function Cell() {
                   <Button
                     variant="success"
                     as={Link}
+                    onClick={() => {
+                      setModalShow(false);
+                    }}
                     to={`/cell/${cellData.cell_endpoint}/new-proposal`}
                     className="mt-3"
                   >
