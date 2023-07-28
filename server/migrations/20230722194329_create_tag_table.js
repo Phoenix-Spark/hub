@@ -5,7 +5,7 @@
 export function up(knex) {
   return knex.schema.createTable('tag', table => {
     table.increments('id');
-    table.string('name', 32);
+    table.string('name', 64);
   });
 }
 

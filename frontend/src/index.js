@@ -4,7 +4,7 @@ import './index.css';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Cell, Hub, Login, Project, ProposedProjects, ProposalForm, SignUp, Dashboard } from './pages/index.js';
+import { Cell, Hub, Login, Project, ProposedProjects, ProposalForm, SignUp, Dashboard, Forums, SubmissionFAQ} from './pages/index.js';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +31,10 @@ const router = createBrowserRouter(
         element={<Hub />} />
         <Route path='/dashboard'
         element={<Dashboard />} />
+         <Route path='/SubmissionFAQ.js'
+        element={<SubmissionFAQ />} />
+        <Route path='/forums'
+        element={<Forums />} />
     </Route>
   )
 );

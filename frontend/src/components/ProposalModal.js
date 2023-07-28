@@ -1,14 +1,11 @@
 import '../App.css';
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import Login from './Login.js';
+import ProposalForm from './ProposalForm.js';
 
-const LoginModal = ( props ) => {
-  // const [submitBtnEnabled, setSubmitBtnEnabled] = useState(false);
-
+export default function ProposalModal (props){
   const {setModalShow, ...rest} = props;
-
-  return (
+  return(
     <Modal
       className='login-modal'
       {...rest}
@@ -18,10 +15,8 @@ const LoginModal = ( props ) => {
     >
       <Modal.Body
       className='login-modal-body'>
-        <Login setModalShow={props.setModalShow} />
+        <ProposalForm setModalShow={props.setModalShow} />
       </Modal.Body>
     </Modal>
   );
-}
-
-export default LoginModal;
+};

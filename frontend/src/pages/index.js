@@ -7,5 +7,7 @@ import ProposalForm from './ProposalForm.js';
 import Login from '../components/Login.js';
 import SignUp from './SignUp.js';
 import Dashboard from './Dashboard.js';
+import SubmissionFAQ from './SubmissionFAQ.js';
+import Forums from './Forums.js';
 
-export { Header, Hub, Cell, Project, ProposedProjects, ProposalForm, Login, SignUp, Dashboard };
+export { Header, Hub, Cell, Project, ProposedProjects, ProposalForm, Login, SignUp, Dashboard, Forums, SubmissionFAQ};

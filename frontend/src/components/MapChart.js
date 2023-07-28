@@ -2,7 +2,7 @@ import React from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Container, Row, Col, Button, ButtonGroup, OverlayTrigger, Tooltip, Card } from "react-bootstrap";
 import { PlusLg, DashLg } from 'react-bootstrap-icons';
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Sphere, Marker } from "react-simple-maps"
@@ -14,6 +14,11 @@ export default function MapChart() {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const { sparkList } = useContext(AppContext);
   const navigate = useNavigate();
+  let delayFunction
+
+  useEffect(() => {
+    return ()=>clearTimeout(delayFunction)
+  }, [])
 
   function handleZoomIn() {
     if (position.zoom >= 32) return;
@@ -28,8 +33,7 @@ export default function MapChart() {
   }
 
   function handleMoveEnd(position) {
-    setPosition(position);
-    console.log(position.zoom)
+    delayFunction = setTimeout(()=>setPosition(position), 10);
   }
 
   return (
@@ -39,21 +43,21 @@ export default function MapChart() {
         <Card id="map-card">
           <Card.Body style={{ borderRadius: '10px' }}>
             <Card.Title className="d-flex justify-content-between w-100 mb-3">Spark Cells Around the World
-              <ButtonGroup> 
+              <ButtonGroup>
                 <Button variant='secondary' onClick={handleZoomIn} className="p-0" >
                   <PlusLg size={32}/>
-                </Button> 
-                <Button variant='secondary' onClick={handleZoomIn} className="p-0" >
+                </Button>
+                <Button variant='secondary' onClick={handleZoomOut} className="p-0" >
                   <DashLg size={32}/>
                 </Button>
-              </ButtonGroup> 
+              </ButtonGroup>
             </Card.Title>
-            <ComposableMap 
+            <ComposableMap
               //style={{ border: '3px solid #495057', borderRadius: "60px", backgroundColor: "black" }}
               style={{ border: '3px solid #495057', borderRadius: "60px", backgroundImage: `url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22a%22%3E%3CfeTurbulence%20baseFrequency%3D%22.2%22%2F%3E%3CfeColorMatrix%20values%3D%220%200%200%209%20-4%200%200%200%209%20-4%200%200%200%209%20-4%200%200%200%200%201%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23a)%22%2F%3E%3C%2Fsvg%3E')`}}
               width={1800}
               height={600}
-              projectionConfig={{ 
+              projectionConfig={{
                 center: [0, 0],
                 scale: 220,
                 }} >
@@ -63,7 +67,7 @@ export default function MapChart() {
                 onMoveEnd={handleMoveEnd}
                 maxZoom={64}
               >
-                <Sphere stroke="#ff8900" strokeWidth={2} fill="lightblue" />
+                <Sphere stroke="white" strokeWidth={2} fill="lightblue" />
                 <Geographies geography={geoUrl}>
                   {({ geographies }) =>
                     geographies.map((geo) => (
@@ -72,7 +76,7 @@ export default function MapChart() {
                   }
                 </Geographies>
                 {sparkList.map(spark=>
-                  <MarkerWithTooltip key={spark.id} spark={spark}/>
+                    <MarkerWithTooltip key={spark.id} spark={spark}/>
                 )}
               </ZoomableGroup>
             </ComposableMap>

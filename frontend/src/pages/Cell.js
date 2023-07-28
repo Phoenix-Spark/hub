@@ -9,6 +9,7 @@ export default function Cell() {
   const { server, user } = useContext(AppContext);
   const [cellData, setCellData] = useState([]);
   const { cell_endpoint } = useParams();
+  const [modalShow, setModalShow] = useState(false);
 
   useEffect(() => {
     fetch(`${server}/cell/${cell_endpoint}`)
@@ -23,7 +24,7 @@ export default function Cell() {
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, [server, cell_endpoint]);
 
-  return (
+   return (
     <>
       <div style={{ color: 'white' }}>
         This is the Cell Component! We should add an error catch JSX if cell fetch doesn't work because cell doesnt exist.
@@ -118,13 +119,20 @@ export default function Cell() {
                     <Button
                       variant="primary"
                       as={Link}
+                      onClick={() => {
+                        setModalShow(false);
+                      }}
                       to={`/cell/${cellData.cell_endpoint}/proposed-projects`}
-                    >
+                      >
                       {user.roles === '' ? 'Your Proposed Projects' : 'Proposed Projects'}
-                    </Button>
+                   </Button>
+
                     <Button
                       variant="success"
                       as={Link}
+                      onClick={() => {
+                        setModalShow(false);
+                      }}
                       to={`/cell/${cellData.cell_endpoint}/new-proposal`}
                       className="mt-3"
                     >
@@ -178,6 +186,7 @@ export default function Cell() {
                       <Col
                         md="auto"
                         key={`${member}-${index}`}
+                        className="d-flex flex-column align-items-center"
                       >
                         <Image
                           style={{ height: '64px', width: '64px' }}
@@ -185,7 +194,6 @@ export default function Cell() {
                           alt="Member Profile"
                           rounded
                         />
-                        <br />
                         {member.first_name} {member.last_name}
                       </Col>
                     );

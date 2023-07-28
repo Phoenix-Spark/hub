@@ -1,4 +1,5 @@
 import '../App.css';
+import '../App.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Dropdown, Form, Image, InputGroup, Nav, Navbar, NavDropdown, Row, ButtonGroup } from 'react-bootstrap';
@@ -110,9 +111,9 @@ export default function Header() {
             </Nav.Link>
             <Nav.Link
               as={Link}
-              to="/"
+              to="/forums"
             >
-              Forum
+              Forums
             </Nav.Link>
             <NavDropdown
               title="Resources"
@@ -126,7 +127,7 @@ export default function Header() {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={Link}
-                to="/"
+                to="/SubmissionFAQ.js"
               >
                 Submission FAQ
               </NavDropdown.Item>

@@ -17,7 +17,7 @@ export function up(knex) {
     table.string('photo_url', 128);
     table.string('contact_number1', 16);
     table.string('contact_number2', 16);
-    table.string('bio', 256);
+    table.string('bio', 768);
   });
 }
 

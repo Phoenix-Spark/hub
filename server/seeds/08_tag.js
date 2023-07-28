@@ -7,14 +7,15 @@ export async function seed(knex) {
   await knex.schema.raw('TRUNCATE tag RESTART IDENTITY CASCADE');
   // await knex('tag').del();
   await knex('tag').insert([
-    { name: 'TAG 1' },
-    { name: 'TAG 2' },
-    { name: 'TAG 3' },
-    { name: 'TAG 4' },
-    { name: 'TAG 5' },
-    { name: 'TAG 6' },
-    { name: 'TAG 7' },
-    { name: 'TAG 8' },
-    { name: 'TAG 9' },
+    { name: 'Aerospace' },
+    { name: 'Cybersecurity' },
+    { name: 'Artificial Intelligence' },
+    { name: 'Sustainability' },
+    { name: 'Training & Simulation' },
+    { name: 'Unmanned Systems' },
+    { name: 'Energy Efficiency' },
+    { name: 'Augmented Reality (AR) / Virtual Reality (VR)' },
+    { name: '3-D Printing' },
+    { name: 'Biometrics' },
   ]);
 }
