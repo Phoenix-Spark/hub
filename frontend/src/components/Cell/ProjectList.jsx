@@ -1,0 +1,35 @@
+import { Col, ListGroup, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import React from 'react';
+
+function ProjectList({ projects }) {
+  return (
+    <ListGroup style={{ overflowY: 'auto' }}>
+      {projects.map((item, index) => (
+        <ListGroup.Item
+          action
+          as={Link}
+          to={`/project/${item.id}`}
+          key={index}
+        >
+          <Row>
+            <Col md="auto">
+              <img
+                style={{ height: '64px', width: '64px' }}
+                src="../images/placeholder_logo.svg"
+                alt=""
+              />
+            </Col>
+            <Col>
+              <div>
+                <div style={{ fontWeight: 'bold' }}>{item.name}</div>
+                {item.description}
+              </div>
+            </Col>
+          </Row>
+        </ListGroup.Item>
+      ))}
+    </ListGroup>
+  );
+}
+export default ProjectList;

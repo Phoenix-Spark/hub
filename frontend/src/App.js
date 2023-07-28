@@ -1,11 +1,12 @@
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState } from 'react';
 import * as jose from 'jose';
 import { Outlet } from 'react-router-dom';
-import { Header } from './pages/index.js';
-import AppContext from './AppContext.js';
 import { Container } from 'react-bootstrap';
+
+import { Header } from './components/index.js';
+import AppContext from './AppContext.js';
+
+import './App.scss';
 
 const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
 
@@ -69,7 +70,7 @@ export default function App() {
   return (
     <AppContext.Provider value={ContextObject}>
       <Header />
-      <div className="scrollbar-morpheus-den" >
+      <div className="scrollbar-morpheus-den">
         <Container
           fluid
           style={{ paddingTop: 105 }}

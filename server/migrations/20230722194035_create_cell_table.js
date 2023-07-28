@@ -10,7 +10,7 @@ export function up(knex) {
         table.string('cell_name', 64);
         table.string('cell_endpoint', 64);
         table.string('external_website', 128);
-        table.string('cell_mission', 256);
+        table.string('cell_mission', 512);
         table.string('contact_number1', 16);
         table.string('contact_number2', 16);
         table.string('email', 64);

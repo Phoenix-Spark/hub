@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useParams } from 'react-router-dom';
-import AppContext from '../AppContext.js';
 import { Button, Card, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import AppContext from '../AppContext.js';
 
 const ProposedProjects = () => {
   const { server, user } = useContext(AppContext);
   const [proposedList, setProposedList] = useState([]);
   const { cell_endpoint } = useParams();
 
-/*   const ProposedProjects = [
+  /*   const ProposedProjects = [
     { id: 1, title: 'Project 1', description: 'Description for Project 1' },
     { id: 2, title: 'Project 2', description: 'Description for Project 2' },
     { id: 3, title: 'Project 3', description: 'Description for Project 3' },
