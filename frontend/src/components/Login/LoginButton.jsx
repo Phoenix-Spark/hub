@@ -1,6 +1,5 @@
-import { useContext, useState } from 'react';
+import { useState, useContext } from 'react';
 import { Button } from 'react-bootstrap';
-
 import LoginModal from './LoginModal.jsx';
 import AppContext from '../../AppContext.js';
 
@@ -12,8 +11,8 @@ const LoginButton = () => {
   return (
     <>
       <Button
-        variant="secondary"
-        classname="custom-btn"
+        // variant="secondary"
+        classname="btn-background-dark"
         onClick={() => setModalShow(true)}
       >
         Login/Register

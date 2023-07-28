@@ -4,7 +4,7 @@ import { Button, Card, Container, OverlayTrigger, Tooltip } from 'react-bootstra
 
 import AppContext from '../AppContext.js';
 
-const ProposedProjects = () => {
+const ProposedProjects = ({ cell }) => {
   const { server, user } = useContext(AppContext);
   const [proposedList, setProposedList] = useState([]);
   const { cell_endpoint } = useParams();
@@ -20,7 +20,7 @@ const ProposedProjects = () => {
     let ignore = false;
     const getProposedProjects = async () => {
       try {
-        const response = await fetch(`${server}/cell/${cell_endpoint}/proposed_projects`, {
+        const response = await fetch(`${server}/cell/${cell}/proposed_projects`, {
           credentials: 'include',
         });
         if (response.ok) {
@@ -33,13 +33,13 @@ const ProposedProjects = () => {
         console.error(`There was an error: ${e}`);
       }
     };
-
-    getProposedProjects();
-
+    if (user) {
+      getProposedProjects();
+    } 
     return () => (ignore = true);
     //
     //   .then(res => {
-    //     console.log(res);
+    //     conso  le.log(res);
     //     return res.json();
     //   })
     //   .then(data => setProposedList(data))
@@ -50,7 +50,6 @@ const ProposedProjects = () => {
 
   return (
     <Container>
-      <div style={{ color: 'white' }}>{JSON.stringify(proposedList)}</div> {/*data from server*/}
       {proposedList.map(
         (
           project //hard-coded data
@@ -75,13 +74,7 @@ const ProposedProjects = () => {
           </OverlayTrigger>
         )
       )}
-      <Link
-        to="/new-proposal"
-        className="btn btn-primary"
-      >
-        Create New Proposal
-      </Link>
-    </Container>
+     </Container>
   );
 };
 

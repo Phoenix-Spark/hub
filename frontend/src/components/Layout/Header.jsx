@@ -6,6 +6,8 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import AppContext from '../../AppContext.js';
 import LoginButton from '../Login/LoginButton.jsx';
 
+import './Header.scss';
+
 export default function Header() {
   const { server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -99,7 +101,7 @@ export default function Header() {
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse>
-          <Nav className="me-auto">
+          <Nav className="me-auto links">
             <Nav.Link
               as={NavLink}
               to="/"
@@ -149,7 +151,7 @@ export default function Header() {
                 placeholder="Search"
               />
               <Button
-                variant="outline-secondary"
+                variant={isDarkMode ? "outline-dark" : 'outline-light' }
                 type="submit"
               >
                 <Search />
@@ -197,18 +199,16 @@ export default function Header() {
                   <Dropdown.Menu align="end">
                     <Dropdown.Item
                       as={Link}
-                      to="user/settings"
+                      to="dashboard/account"
                     >
                       Account Settings
                     </Dropdown.Item>
-                    {user.roles !== '' && (
                       <Dropdown.Item
                         as={Link}
-                        to="user/dashboard"
+                        to="/dashboard/projects"
                       >
-                        Your Dashboard
+                        Your Projects
                       </Dropdown.Item>
-                    )}
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>

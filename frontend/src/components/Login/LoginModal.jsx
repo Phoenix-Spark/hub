@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-
+import './Login.scss';
 import Login from './Login.jsx';
 
 const LoginModal = props => {

@@ -1,6 +1,4 @@
 import React, { useContext, useState } from 'react';
-import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import AppContext from '../AppContext.js';
 import { Button, ButtonGroup, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { DashLg, PlusLg } from 'react-bootstrap-icons';

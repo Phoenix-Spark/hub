@@ -4,12 +4,13 @@ import React from 'react';
 function HorizontalTeamList({ teamList }) {
   return (
     <>
-      {teamList.map((member, index) => {
+      {teamList?.map((member, index) => {
         const imgUrl = member.photo_url
           ? member.photo_url.startsWith('https')
             ? member.photo_url
             : `http://localhost:3000/uploads/${member.photo_url}`
           : `../images/placeholder_logo.svg`;
+          
         return (
           <Col
             md="auto"
