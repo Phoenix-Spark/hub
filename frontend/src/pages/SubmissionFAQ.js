@@ -31,25 +31,25 @@ const SubmissionFAQ = () => {
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Frequently Asked Questions</h1>
-
       <Accordion>
         {faqData.map((item, index) => (
-          <Card key={index}>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey={index.toString()}>
-                {item.question}
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey={index.toString()}>
-              <Card.Body>{item.answer}</Card.Body>
-            </Accordion.Collapse>
-          </Card>
+          <Accordion.Item key={index} eventKey={index}>
+            <Accordion.Header>
+              <h4>{item.question}</h4>
+            </Accordion.Header>
+            <Accordion.Body>
+              {item.answer}
+            </Accordion.Body>
+          </Accordion.Item>
         ))}
       </Accordion>
+      <br/>
+      <br/>
+
 
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formQuestion">
-          <Form.Label>Ask a Question</Form.Label>
+          <Form.Label><h3>Ask a Question</h3></Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter your question"

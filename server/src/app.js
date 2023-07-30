@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { CellRouter, ProjectRouter, UserRouter, ForumRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
@@ -71,6 +71,7 @@ app.post('/signup', profileUpload.single('photo'), signUpHandler);
 app.use('/cell', CellRouter);
 app.use('/project', ProjectRouter);
 app.use('/user', UserRouter);
+app.use('/forum', ForumRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Server running.' });
