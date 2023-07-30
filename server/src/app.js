@@ -98,4 +98,14 @@ app.get('/news', async (req, res, next) => {
   }
 });
 
+app.get('/faq', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('faq');
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq ERROR: ${e}`);
+    next(e);
+  }
+});
+
 export default app;

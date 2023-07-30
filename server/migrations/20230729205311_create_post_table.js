@@ -11,9 +11,9 @@ export function up(knex) {
     table.foreign('category_id').references('category.id');
     table.string('title', 128);
     table.string('body', 1024);
-    table.date('create_time');
+    table.datetime('create_time');
     table.boolean('is_edited');
-    table.date('edit_time');
+    table.datetime('edit_time');
     table.integer('views');
   });
 }

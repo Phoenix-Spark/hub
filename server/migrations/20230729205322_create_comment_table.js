@@ -10,7 +10,7 @@ export function up(knex) {
     table.integer('users_id');
     table.foreign('users_id').references('users.id');
     table.string('body', 1024);
-    table.date('create_time');
+    table.datetime('create_time');
     table.boolean('is_edited');
     table.date('edit_time');
   });
