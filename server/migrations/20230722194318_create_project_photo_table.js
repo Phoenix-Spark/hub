@@ -9,6 +9,8 @@ export function up(knex) {
     table.foreign('project_id').references('project.id');
     table.string('url', 128);
     table.integer('index');
+    table.string('name', 64);
+    table.string('description', 128);
   });
 }
 

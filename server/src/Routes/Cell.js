@@ -8,16 +8,54 @@ router.get('/', (req, res) => {
   res.send('Ahoy!');
 });
 
-router.get('/:cellId', async (req, res, next) => {
+// eslint-disable-next-line consistent-return
+router.get('/:cellId/all', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+    const cellData = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+    const teamData = await db
+      .select('*')
+      .from('users')
+      .join('cell', 'users.cell_id', '=', 'cell.base_id')
+      .where('cell.cell_endpoint', req.params.cellId);
+    const currentProjectData = await db
+      .select('*')
+      .from('project')
+      .join('cell', 'cell.id', 'project.cell_id')
+      .where('cell.cell_endpoint', req.params.cellId)
+      .andWhere('is_approved', true)
+      .andWhere('is_complete', false);
+    const previousProjectData = await db
+      .select('*')
+      .from('project')
+      .join('cell', 'cell.id', 'project.cell_id')
+      .where('cell.cell_endpoint', req.params.cellId)
+      .andWhere('is_approved', true)
+      .andWhere('is_complete', true);
+
+    const data = {...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData};
 
     if (data.length === 0) {
-      // return res.redirect('/');
       return res.status(404).json({ message: 'Cell not found' });
     }
 
     res.status(200).json(data);
+    console.log('Raw get data:', data);
+  } catch (e) {
+    console.error(`GET /cell/${req.params.cellId}/all ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.get('/:cellId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+    
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'Cell not found' });
+    }
+
+    res.status(200).json(data);
+    console.log('Raw get data:', data);
   } catch (e) {
     console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
     next(e);
@@ -56,7 +94,7 @@ router.get(
   async (req, res, next) => {
     try {
       const userRoles = await getUserRoles(req.session.user);
-      const whereCondition = { 'cell.cell_endpoint': req.params.cellId };
+      const whereCondition = { 'cell.id': req.params.cellId };
 
       if (userRoles === req.session.roles) {
         if (userRoles !== 'cell' && userRoles !== 'site') {
