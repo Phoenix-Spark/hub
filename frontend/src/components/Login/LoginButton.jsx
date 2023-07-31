@@ -12,7 +12,7 @@ const LoginButton = () => {
     <>
       <Button
         // variant="secondary"
-        classname="btn-background-dark"
+        className="btn-background-dark"
         onClick={() => setModalShow(true)}
       >
         Login/Register

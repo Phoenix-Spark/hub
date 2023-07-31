@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { CellRouter, ProjectRouter, UserRouter, ForumRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
@@ -71,6 +71,7 @@ app.post('/signup', profileUpload.single('photo'), signUpHandler);
 app.use('/cell', CellRouter);
 app.use('/project', ProjectRouter);
 app.use('/user', UserRouter);
+app.use('/forum', ForumRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Server running.' });
@@ -93,6 +94,30 @@ app.get('/news', async (req, res, next) => {
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /news ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/faq', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('faq');
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/profile/:userId', async (req, res, next) => {
+  try {
+    const data = await
+    db.select('users.username','users.first_name','users.last_name','users.email','users.photo_url','users.contact_number1','users.contact_number2','users.bio','cell.cell_name', 'cell.logo_url')
+      .from('users')
+      .join('cell', 'users.cell_id', 'cell.id')
+      .where('users.id', req.params.userId);
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq ERROR: ${e}`);
     next(e);
   }
 });

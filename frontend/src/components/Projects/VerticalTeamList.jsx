@@ -1,7 +1,11 @@
 import { Col, ListGroup, Row } from 'react-bootstrap';
+import { useContext } from 'react';
+import AppContext from '../../AppContext.js';
 
 function VerticalTeamList({ team }) {
-  return (
+    const { setProfileModal } = useContext(AppContext);
+
+    return (
     <ListGroup style={{ overflowY: 'auto' }}>
       {team?.map((item, index) => {
         const imgUrl = item.photo_url
@@ -20,6 +24,7 @@ function VerticalTeamList({ team }) {
                   style={{ height: '64px', width: '64px' }}
                   src={imgUrl}
                   alt=""
+                  onClick={()=>setProfileModal({show: true, userId: item.id})}
                 />
               </Col>
               <Col>

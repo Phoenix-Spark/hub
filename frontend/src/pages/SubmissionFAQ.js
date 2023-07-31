@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Accordion, Card, Button, Form } from 'react-bootstrap';
+import AppContext from '../AppContext.js';
 
 const SubmissionFAQ = () => {
+  const { server } = useContext(AppContext);
+  const [faq, setFaq] = useState([])
+
   const [question, setQuestion] = useState('');
   const [questionsList, setQuestionsList] = useState([]);
+
+
+  useEffect(()=>{
+    fetch(`${server}/faq`)
+      .then(res => {
+        console.log(res);
+        return res.json();
+      })
+      .then(data => setFaq(data))
+      .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  },[])
 
   const handleQuestionChange = (event) => {
     setQuestion(event.target.value);
@@ -31,25 +46,24 @@ const SubmissionFAQ = () => {
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Frequently Asked Questions</h1>
-
       <Accordion>
-        {faqData.map((item, index) => (
-          <Card key={index}>
-            <Card.Header>
-              <Accordion.Toggle as={Button} variant="link" eventKey={index.toString()}>
-                {item.question}
-              </Accordion.Toggle>
-            </Card.Header>
-            <Accordion.Collapse eventKey={index.toString()}>
-              <Card.Body>{item.answer}</Card.Body>
-            </Accordion.Collapse>
-          </Card>
+        {faq.map((item, index) => (
+          <Accordion.Item key={index} eventKey={index}>
+            <Accordion.Header>
+              <h4>{item.question}</h4>
+            </Accordion.Header>
+            <Accordion.Body>
+              {item.answer}
+            </Accordion.Body>
+          </Accordion.Item>
         ))}
       </Accordion>
+      <br/>
+      <br/>
 
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formQuestion">
-          <Form.Label>Ask a Question</Form.Label>
+          <Form.Label><h3>Ask a Question</h3></Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter your question"
