@@ -7,6 +7,8 @@ export function up(knex) {
     table.increments('id');
     table.string('news', 512);
     table.date('date');
+    table.integer('cell_id');
+    table.foreign('cell_id').references('cell.id');
   });
 }
 
