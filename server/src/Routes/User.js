@@ -1,5 +1,6 @@
 import express from 'express';
 import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
+import db from '../db.js';
 
 const router = express.Router();
 
@@ -18,8 +19,7 @@ export async function signUpHandler(req, res) {
   try {
     // User does not exist keep going
     if (userDoesNotExist) {
-
-      // eslint-disable-next-line      
+      // eslint-disable-next-line
       for (const item in req.body) {
         req.body[item] = encodeURIComponent(req.body[item]);
       }
@@ -105,6 +105,17 @@ export async function logoutHandler(req, res) {
     });
   });
 }
+
+router.get('/:userName/projects(/:filter)?', async (req, res, next) => {
+  try {
+    const user = await db('users').select('id').where('first_name', req.params.userName).first();
+    const projects = await db('project').select().where('proposed_by', user.id).orderByRaw('is_approved NULLS FIRST');
+
+    res.status(200).json(projects);
+  } catch (e) {
+    console.error(`Error was caught ${e}`);
+  }
+});
 
 /** Use this example to protect routes that require auth */
 /** After this middleware the user roles can be accessed from req.session.roles */

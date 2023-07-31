@@ -100,11 +100,20 @@ router.get(
         }
       }
       const data = await db
-        .select('*')
+        .select(
+          'project.*',
+          'users.id as user_id',
+          'users.username as user_name',
+          'users.first_name as user_first_name',
+          'users.last_name as user_last_name',
+          'users.photo_url as user_photo'
+        )
         .from('project')
         .join('cell', 'cell.id', 'project.cell_id')
+        .join('users', 'users.id', 'project.proposed_by')
         .where(whereCondition)
-        .andWhere('is_approved', false);
+        .andWhere('is_approved', null)
+        .orderBy('date_proposed');
 
       res.status(200).json(data ?? {});
     } catch (e) {
