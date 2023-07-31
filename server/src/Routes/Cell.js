@@ -13,26 +13,27 @@ router.get('/:cellId/all', async (req, res, next) => {
   try {
     const cellData = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
     const teamData = await db
-      .select('*')
+      .select('users.*')
       .from('users')
       .join('cell', 'users.cell_id', '=', 'cell.base_id')
       .where('cell.cell_endpoint', req.params.cellId);
     const currentProjectData = await db
-      .select('*')
+      .select('project.*')
       .from('project')
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
       .andWhere('is_complete', false);
     const previousProjectData = await db
-      .select('*')
+      .select('project.*')
       .from('project')
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
       .andWhere('is_complete', true);
+    const baseData = await db('base').select().where('id', cellData[0].id).first();
 
-    const data = { ...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData };
+    const data = { ...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData, baseData };
 
     if (data.length === 0) {
       return res.status(404).json({ message: 'Cell not found' });

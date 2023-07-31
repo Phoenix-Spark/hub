@@ -8,6 +8,8 @@ const ProposedProjects = ({ cell }) => {
   const { server, user, setProfileModal } = useContext(AppContext);
   const [projectList, setProjectList] = useState([]);
 
+  /** TODO: Provide feedback that elements have been removed, an alert or something **/
+
   const removeProject = id => {
     const newList = projectList.filter(item => item.id !== id);
     setProjectList([...newList]);
@@ -63,7 +65,7 @@ const ProposedProjects = ({ cell }) => {
 
   return (
     <Container>
-      {projectList.length === 0 && 'No Projects to show'}
+      {projectList.length === 0 ? 'No Projects to show' : <h3 className="mb-3">Projects Awaiting Approval at {user.cell}</h3>}
       {projectList.map(project => {
         const userImgUrl = project.user_photo
           ? project.user_photo.startsWith('https')
