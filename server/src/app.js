@@ -26,15 +26,15 @@ const redisStore = new RedisStore({
 
 const sessionOptions = {
   secret: 'changethis',
-  cookie: { /** domain: '', */ httpOnly: true, sameSite: 'none', maxAge: 3600000 },
+  cookie: { /** domain: '', */ httpOnly: true, sameSite: 'lax', maxAge: 3600000 },
   resave: false,
-  rolling: false,
+  rolling: true,
   saveUninitialized: false,
   store: redisStore,
 };
 
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
 };
 

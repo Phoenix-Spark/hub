@@ -3,6 +3,7 @@ import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, val
 
 const router = express.Router();
 
+// eslint-disable-next-line consistent-return
 export async function signUpHandler(req, res) {
   if (req.session.user) {
     return res.status(200).json({ message: 'You are already logged in. Did you mean to do that?' });
@@ -17,6 +18,8 @@ export async function signUpHandler(req, res) {
   try {
     // User does not exist keep going
     if (userDoesNotExist) {
+
+      // eslint-disable-next-line      
       for (const item in req.body) {
         req.body[item] = encodeURIComponent(req.body[item]);
       }

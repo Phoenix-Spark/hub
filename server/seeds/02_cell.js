@@ -13,7 +13,7 @@ export async function seed(knex) {
       cell_endpoint: 'travis',
       external_website: 'https://cell1website.com',
       cell_mission:
-        'Empowering name Phoenix Spark Cell to be the driving force behind disruptive innovation, leveraging emerging technologies and novel approaches to propel the Air Force\'s capabilities forward. Together, we ignite a spark of ingenuity that shapes the future of aerospace and national defense.',
+        'Empowering Phoenix Spark Cell to be the driving force behind disruptive innovation, leveraging emerging technologies and novel approaches to propel the Air Force\'s capabilities forward. Together, we ignite a spark of ingenuity that shapes the future of aerospace and national defense.',
       contact_number1: '768-555-4321',
       contact_number2: '123-555-9876',
       email: 'cell1@cell1.com',

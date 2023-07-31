@@ -53,4 +53,4 @@ const shutdownServer = () => {
 process.on('SIGTERM', shutdownServer);
 
 // TODO: Gracefully shutdown on SIGKILL
-// process.on('SIGKILL', shutdownServer);
+// process.on('SIGKILL', shutdownServer)
