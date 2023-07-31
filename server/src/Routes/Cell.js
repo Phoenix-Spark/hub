@@ -131,7 +131,8 @@ router.get('/:cellId/current_projects', async (req, res, next) => {
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
-      .andWhere('is_complete', false);
+      .andWhere('is_complete', false)
+      .orderBy('date_approved');
 
     res.status(200).json(data);
   } catch (e) {
@@ -148,7 +149,8 @@ router.get('/:cellId/previous_projects', async (req, res, next) => {
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
-      .andWhere('is_complete', true);
+      .andWhere('is_complete', true)
+      .orderBy('date_complete');
 
     res.status(200).json(data);
   } catch (e) {

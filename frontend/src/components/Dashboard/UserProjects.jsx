@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Card, Container, Tooltip } from 'react-bootstrap';
+import { Card, Container } from 'react-bootstrap';
 
 import AppContext from '../../AppContext.js';
 
@@ -31,16 +31,14 @@ const ProposedProjects = () => {
     return () => (ignore = true);
   }, [user]);
 
-  const renderTooltip = () => <Tooltip id="tooltip">The review process may take up to five business days</Tooltip>;
-
   return (
     <Container>
       <div className="alert alert-light mb-3">The review process may take up to five business days</div>
       {projectList.length === 0 && 'No Projects to show'}
       {projectList.map(project => {
         const approvalStatus = !project.is_approved ? (project.is_approved === null ? 'Awaiting Approval' : 'Denied') : 'Approved';
-        const subtitleClasses = `mb-2 border rounded p-1 ${
-          !project.is_approved ? (project.is_approved === null ? 'border-info' : 'border-danger-subtle') : 'border-success-subtle'
+        const subtitleClasses = ` alert px-3 py-2 mx-0 my-2 ${
+          !project.is_approved ? (project.is_approved === null ? 'alert-info' : 'alert-danger') : 'alert-success'
         }`;
         return (
           <Card
