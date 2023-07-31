@@ -32,14 +32,13 @@ router.get('/:cellId/all', async (req, res, next) => {
       .andWhere('is_approved', true)
       .andWhere('is_complete', true);
 
-    const data = {...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData};
+    const data = { ...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData };
 
     if (data.length === 0) {
       return res.status(404).json({ message: 'Cell not found' });
     }
 
     res.status(200).json(data);
-    console.log('Raw get data:', data);
   } catch (e) {
     console.error(`GET /cell/${req.params.cellId}/all ERROR: ${e}`);
     next(e);
@@ -49,13 +48,12 @@ router.get('/:cellId/all', async (req, res, next) => {
 router.get('/:cellId', async (req, res, next) => {
   try {
     const data = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
-    
+
     if (data.length === 0) {
       return res.status(404).json({ message: 'Cell not found' });
     }
 
     res.status(200).json(data);
-    console.log('Raw get data:', data);
   } catch (e) {
     console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
     next(e);
@@ -101,14 +99,13 @@ router.get(
           whereCondition['project.proposed_by'] = req.session.user;
         }
       }
-      console.log(whereCondition);
       const data = await db
         .select('*')
         .from('project')
         .join('cell', 'cell.id', 'project.cell_id')
         .where(whereCondition)
         .andWhere('is_approved', false);
-      console.log(data);
+
       res.status(200).json(data ?? {});
     } catch (e) {
       console.error(`GET /cell/${req.params.cellId}/proposed_projects ERROR: ${e}`);
@@ -143,6 +140,18 @@ router.get('/:cellId/previous_projects', async (req, res, next) => {
       .where('cell.cell_endpoint', req.params.cellId)
       .andWhere('is_approved', true)
       .andWhere('is_complete', true);
+
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /cell/${req.params.cellId}/previous_projects ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.get('/:cellEndpoint/news', async (req, res, next) => {
+  try {
+    const cell = await db('cell').select('id').where('cell_endpoint', req.params.cellEndpoint).first();
+    const data = await db('news_feed').select().where('cell_id', cell.id);
 
     res.status(200).json(data);
   } catch (e) {

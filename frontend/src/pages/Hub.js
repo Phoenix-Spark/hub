@@ -4,7 +4,7 @@ import { Button, Card, Col, Row } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 import MapChart from '../components/Hub/MapChart.jsx';
 import SparkyList from '../components/Hub/SparkyList.jsx';
-import NewsList from '../components/Hub/NewsList.jsx';
+import { NewsList } from '../components/index.js';
 
 function Hub() {
   const { server, sparkList } = useContext(AppContext);

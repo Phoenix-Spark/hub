@@ -1,23 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Col, ListGroup, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { formatDate } from '../../utils/index.js';
 
 function NewsList({ newsList }) {
-  const [missionCardHeight, setMissionCardHeight] = useState('300px');
-
-  // useEffect(() => {
-  //   function handleResize() {
-  //     const height = document.getElementById('mission-card') ? `${document.getElementById('mission-card').clientHeight + 2}px` : '300px';
-  //     setMissionCardHeight(height);
-  //   }
-  //   handleResize();
-  //   window.addEventListener('resize', handleResize);
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
-
   return (
     <ListGroup
       style={{ overflowY: 'scroll' }}
@@ -34,7 +20,7 @@ function NewsList({ newsList }) {
             <Col md="auto">
               <img
                 style={{ height: '64px', width: '64px' }}
-                src="./images/placeholder_logo.svg"
+                src={process.env.PUBLIC_URL + '/images/placeholder_logo.svg'}
                 alt=""
               />
             </Col>
