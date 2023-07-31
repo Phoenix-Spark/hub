@@ -1,7 +1,16 @@
 import express from 'express';
-import { addUser, doesUserExist, findUserById, User, getBaseAndCell, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
-import db from '../db.js';
 import multer from 'multer';
+import {
+  addUser,
+  doesUserExist,
+  findUserById,
+  generateUserToken,
+  getBaseAndCell,
+  loginUser,
+  User,
+  validateLogin,
+} from '../Services/LoginService.js';
+import db from '../db.js';
 
 const router = express.Router();
 
@@ -145,7 +154,6 @@ router.get('/refresh', async (req, res) => {
   return res.status(200).json({ token });
 });
 
-
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = process.env.UPLOAD_PATH || '/tmp/uploads/';
@@ -165,14 +173,13 @@ app.post('/signup', profileUpload.single('photo'), signUpHandler);
  *
  */
 
-
 router.patch('/update', profileUpload.single('photo'), async (req, res) => {
   const data = req.body;
   console.log('req.body = ', req.body);
   try {
     let photoUrl;
     if (!req.file) {
-      ({photo_url: photoUrl} = await db('users').first('photo_url').where('username', data.username));
+      ({ photo_url: photoUrl } = await db('users').first('photo_url').where('username', data.username));
     }
 
     const [update] = await db
@@ -212,12 +219,12 @@ router.patch('/update', profileUpload.single('photo'), async (req, res) => {
       update.id
     );
 
-    if(!update){
+    if (!update) {
       res.status(404).json({ message: 'User not found' });
     } else {
       console.log(`PATCH /user/update/  User Id:${data.username}`);
       const { token } = await generateUserToken(updatedUser, req.session.roles);
-      return res.status(200).json({  token  });
+      return res.status(200).json({ token });
     }
   } catch (err) {
     res.status(500).json({ message: err });
