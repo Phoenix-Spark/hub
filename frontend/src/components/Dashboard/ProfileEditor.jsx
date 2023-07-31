@@ -1,15 +1,38 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 
 export default function ProfileEditor() {
-  const { server, user, setUser, setShowLogin } = useContext(AppContext);
+  const { server, user } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
-  const [signUpComplete, setSignUpComplete] = useState(false);
-
+  const [updateComplete, setUpdateComplete] = useState(false);
+  const [userData, setUserData] = useState('');
+  useEffect(()=>{
+        fetch(`${server}/userData/${user.username}`)
+          .then(res => {
+            console.log(res);
+            return res.json();
+          })
+          .then(data => setUserData(data[0]))
+          .catch(err => console.log(`Fetch failed. Error: ${err}`));
+  }, [server, user])
+  // table.increments('id');
+  // table.integer('base_id');
+  // table.foreign('base_id').references('base.id');
+  // table.integer('cell_id');
+  // table.foreign('cell_id').references('cell.id');
+  // table.string('username', 32);
+  // table.string('password', 64);
+  // table.string('first_name', 32);
+  // table.string('last_name', 32);
+  // table.string('email', 64);
+  // table.string('photo_url', 128);
+  // table.string('contact_number1', 16);
+  // table.string('contact_number2', 16);
+  // table.string('bio', 768);
   // TODO: Move validation to input changes
-  async function handleSignup(e) {
+  async function handleUpdate(e) {
     e.preventDefault();
     /** @type {HTMLFormElement} */
     const form = e.currentTarget;
@@ -26,8 +49,8 @@ export default function ProfileEditor() {
 
         console.log(formData);
 
-        const response = await fetch(`${server}/signup`, {
-          method: 'POST',
+        const response = await fetch(`${server}/user/update`, {
+          method: 'PATCH',
           body: formData,
         });
 
@@ -39,13 +62,12 @@ export default function ProfileEditor() {
             issuer: 'capstone',
           });
 
-          for (let key of Object.keys(payload.user)) {
-            payload.user[key] = decodeURIComponent(payload.user[key]);
+          for (let key of Object.keys(payload.userData)) {
+            payload.userData[key] = decodeURIComponent(payload.userData[key]);
           }
 
-          setUser(payload.user);
-          setSignUpComplete(true);
-          setShowLogin(true);
+          setUserData(payload.userData);
+          setUpdateComplete(true);
         }
       } catch (e) {
         console.error('There was an error.', e);
@@ -55,47 +77,16 @@ export default function ProfileEditor() {
 
   return (
     <div className="m-3">
-      {!signUpComplete && (
+      {JSON.stringify(userData)}
+      {!updateComplete && (
         <>
-          <h3>Sign Up Form</h3>
+          <h3>Profile Editor</h3>
           <hr />
           <Form
             noValidate
             validated={validated}
-            onSubmit={handleSignup}
+            onSubmit={handleUpdate}
           >
-            <Row>
-              <Form.Group
-                as={Col}
-                className="mb-3"
-                controlId="username"
-              >
-                <Form.Label>Username</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder={`${user.username}`}
-                  name="username"
-                ></Form.Control>
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                <Form.Control.Feedback type="invalid">Please enter a username.</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group
-                as={Col}
-                className="mb-3"
-                controlId="password"
-              >
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  required
-                  type="password"
-                  placeholder={`${user.password}`}
-                  name="password"
-                ></Form.Control>
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                <Form.Control.Feedback type="invalid">Please enter a password.</Form.Control.Feedback>
-              </Form.Group>
-            </Row>
             <Row>
               <Form.Group
                 as={Col}
@@ -107,7 +98,7 @@ export default function ProfileEditor() {
                 <Form.Control
                   required
                   type="text"
-                  placeholder={`${user.firstName}`}
+                  value={`${userData.first_name}`}
                   name="firstName"
                 ></Form.Control>
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
@@ -122,7 +113,7 @@ export default function ProfileEditor() {
                 <Form.Control
                   required
                   type="text"
-                  placeholder={`${user.lastName}`}
+                  value={`${userData.last_name}`}
                   name="lastName"
                 ></Form.Control>
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
@@ -137,7 +128,7 @@ export default function ProfileEditor() {
               <Form.Control
                 required
                 type="email"
-                placeholder={`${user.email}`}
+                value={`${userData.email}`}
                 name="email"
               ></Form.Control>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
@@ -152,7 +143,7 @@ export default function ProfileEditor() {
                 <Form.Control
                   type="tel"
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  placeholder={`${user.contactNumber1}`}
+                  value={`${userData.contact_number1}`}
                   name="contactNumber1"
                 ></Form.Control>
               </Form.Group>
@@ -164,7 +155,7 @@ export default function ProfileEditor() {
                 <Form.Control
                   type="tel"
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  placeholder={`${user.contactNumber2}`}
+                  value={`${userData.contact_number2}`}
                   name="contactNumber2"
                 ></Form.Control>
               </Form.Group>
@@ -187,7 +178,7 @@ export default function ProfileEditor() {
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder={`${user.bio}`}
+                value={`${userData.bio}`}
                 name="bio"
               ></Form.Control>
             </Form.Group>
@@ -223,7 +214,7 @@ export default function ProfileEditor() {
           </Form>
         </>
       )}
-      {signUpComplete && <p>Your account has been updated successfully</p>}
+      {updateComplete && <p>Your account has been updated successfully</p>}
     </div>
   );
 }

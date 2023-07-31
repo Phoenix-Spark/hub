@@ -1,5 +1,6 @@
 import express from 'express';
 import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
+import db from '../db.js';
 
 const router = express.Router();
 
@@ -18,8 +19,7 @@ export async function signUpHandler(req, res) {
   try {
     // User does not exist keep going
     if (userDoesNotExist) {
-
-      // eslint-disable-next-line      
+      // eslint-disable-next-line
       for (const item in req.body) {
         req.body[item] = encodeURIComponent(req.body[item]);
       }
@@ -132,5 +132,53 @@ router.get('/refresh', async (req, res) => {
   const { token } = await generateUserToken(req.user);
   return res.status(200).json({ token });
 });
+
+router.patch('/user/update', async (req, res) => {
+  // const user = await findUserById(req.session.user);
+  const formData = req.body;
+  await db
+    .select('*')
+    .from('users')
+    .where('id', req.body.user_id)
+    .update({
+      base_id: formData.base_id,
+      cell_id: formData.cell_id,
+      username: formData.username,
+      password: formData.password,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      email: formData.email,
+      photo_url: formData.photo_url,
+      contact_number1: formData.contact_number1,
+      contact_number2: formData.contact_number2,
+      bio: formData.bio,
+    })
+    .then(rowCount => {
+      if(rowCount === 0){
+        res.status(404).json({ message: 'User not found' });
+      }else{
+        console.log(`PATCH /user/update/  User Id:${formData.id}`);
+        //const { token } = await generateUserToken(req.user); //this isnt right...
+        return res.status(200).json({ token });
+      }   
+    })
+    .catch(err => {
+      res.status(500).json({ message: err });
+      console.log(`PATCH /user/update/  User Id:${formData.id} ERROR: ${err}`);
+    });
+});
+
+// id
+// base_id
+// cell_id
+// username
+// password
+// first_name
+// last_name
+// email
+// photo_url
+// contact_number1
+// contact_number2
+// bio
 
 export default router;

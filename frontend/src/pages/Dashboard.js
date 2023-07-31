@@ -40,7 +40,7 @@ function Dashboard () {
             <Col sm={9}>
               <Tab.Content className='border-start p-3'>
                 <Tab.Pane eventKey="account">Tab with form for user to edit their profile things.
-                {/* <ProfileEditor /> */}
+                <ProfileEditor />
                 </Tab.Pane>
                 <Tab.Pane eventKey="projects">Tab with list of projects. Current (Ordered by active status) and Proposed (Ordered by approved status)
                   <ProposedProjects cell={user?.cellId ?? undefined} />
