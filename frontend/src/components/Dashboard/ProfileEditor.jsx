@@ -3,10 +3,10 @@ import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 
-export default function ProfileEditor() {
+export default function ProfileEditor() {//Gimmme a second
   const { server, user, setUser } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState({});
 
   useEffect(()=>{
     if(user) {
