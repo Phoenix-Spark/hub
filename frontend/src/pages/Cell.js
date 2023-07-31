@@ -1,94 +1,65 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Col, Row, Modal } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import HorizontalTeamList from '../components/Cell/HorizontalTeamList.jsx';
 import ProjectList from '../components/Cell/ProjectList.jsx';
 import ProposalModal from '../components/Cell/ProposalModal.jsx';
-
+import { NewsList } from '../components/index.js';
 
 export default function Cell() {
   const { cell_endpoint } = useParams();
   const { server, user } = useContext(AppContext);
   const [cellAllData, setCellAllData] = useState({});
-  // const [cellData, setCellData] = useState([]);
-  // const [teamList, setTeamList] = useState([]);
-  // const [currentList, setCurrentList] = useState([]);
-  // const [previousList, setPreviousList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [newsList, setNewsList] = useState([]);
   const Navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${server}/cell/${cell_endpoint}/all`)
-      .then(res => {
-        console.log(res);
-        if (res.status === 404) {
-          Navigate(`/`);
+    let ignore = false;
+
+    const fetchCellData = async () => {
+      try {
+        const response = await fetch(`${server}/cell/${cell_endpoint}/all`);
+        if (response.ok) {
+          const data = await response.json();
+          if (!ignore) setCellAllData(data);
+        } else if (response.status === 404) {
+          Navigate('/');
         }
-        return res.json();
-      })
-      .then(data => {
-        setCellAllData(data);
-      })
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
+      } catch (e) {
+        console.error(`Fetch failed. Error: ${e}`);
+      }
+    };
+
+    const fetchCellNews = async () => {
+      try {
+        const response = await fetch(`${server}/cell/${cell_endpoint}/news`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          if (!ignore) setNewsList(data);
+        }
+      } catch (e) {
+        console.error(`There was an error. ${e}`);
+      }
+    };
+
+    fetchCellData();
+    fetchCellNews();
+
+    return () => {
+      ignore = true;
+    };
   }, [server, cell_endpoint]);
 
   const showProposalModal = () => setShowModal(true);
   const hideProposalModal = () => setShowModal(false);
 
-  // useEffect(() => {
-  //   fetch(`${server}/cell/${cell_endpoint}`)
-  //     .then(res => {
-  //       console.log(res);
-  //       if (res.status === 404) {
-  //         Navigate(`/`);
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(data => {
-  //       setCellData(data[0]);
-  //       console.log(data[0]);
-  //     })
-  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  // }, [server, cell_endpoint]);
-
-  // useEffect(() => {
-  //   fetch(`${server}/cell/${cell_endpoint}/team`)
-  //     .then(res => {
-  //       console.log(res);
-  //       return res.json();
-  //     })
-  //     .then(data => setTeamList(data))
-  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  // }, []);
-
-  // useEffect(() => {
-  //   fetch(`${server}/cell/${cell_endpoint}/current_projects`)
-  //     .then(res => {
-  //       console.log(res);
-  //       return res.json();
-  //     })
-  //     .then(data => setCurrentList(data))
-  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  // }, []);
-
-  // useEffect(() => {
-  //   fetch(`${server}/cell/${cell_endpoint}/previous_projects`)
-  //     .then(res => {
-  //       console.log(res);
-  //       return res.json();
-  //     })
-  //     .then(data => setPreviousList(data))
-  //     .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  // }, []);
-
   return (
     <>
-      <div style={{ color: 'white' }}>
-        This is the Cell Component! We should add an error catch JSX if cell fetch doesn't work because cell doesnt exist.
-      </div>
-      <Row className="mb-3">
+      <Row className="my-3">
         <Col md={8}>
           <Card className="h-100">
             <Card.Header as="h5">Cell Mission</Card.Header>
@@ -126,7 +97,10 @@ export default function Cell() {
                   >
                     Submit New Proposal
                   </Button>
-                  <ProposalModal show={showModal} onHide={hideProposalModal} />
+                  <ProposalModal
+                    show={showModal}
+                    onHide={hideProposalModal}
+                  />
                 </>
               )}
               {!user && <p>Please login first to submit a new proposal.</p>}
@@ -181,16 +155,11 @@ export default function Cell() {
           <Card>
             <Card.Header as="h5">Recent News</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-              in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+              <NewsList newsList={newsList}></NewsList>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-
-      {JSON.stringify(cellAllData)}
     </>
   );
 }
