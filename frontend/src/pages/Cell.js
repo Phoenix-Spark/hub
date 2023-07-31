@@ -59,6 +59,12 @@ export default function Cell() {
 
   return (
     <>
+      <Row>
+        <Col>
+          <h1 className="my-3">Welcome to, {cellAllData.cell_name}!</h1>
+          <h4>Located at {cellAllData.baseData?.base_name}</h4>
+        </Col>
+      </Row>
       <Row className="my-3">
         <Col md={8}>
           <Card className="h-100">
@@ -83,13 +89,15 @@ export default function Cell() {
             <Card.Body className="d-flex flex-column h-100">
               {user && (
                 <>
-                  <Button
-                    variant="primary"
-                    as={Link}
-                    to={`/dashboard/projects`}
-                  >
-                    {user.roles === '' ? 'Your Proposed Projects' : 'Proposed Projects'}
-                  </Button>
+                  {parseInt(user.cellId, 10) === cellAllData.id && (
+                    <Button
+                      variant="primary"
+                      as={Link}
+                      to={`/dashboard/projects`}
+                    >
+                      {user.roles === '' ? 'Your Proposed Projects' : 'View Proposed Projects'}
+                    </Button>
+                  )}
                   <Button
                     variant="success"
                     onClick={showProposalModal}
@@ -113,9 +121,7 @@ export default function Cell() {
           <Card>
             <Card.Header as="h5">Meet the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <Row>
-                <HorizontalTeamList teamList={cellAllData?.team}></HorizontalTeamList>
-              </Row>
+              <HorizontalTeamList teamList={cellAllData?.team}></HorizontalTeamList>
             </Card.Body>
           </Card>
         </Col>
@@ -133,18 +139,18 @@ export default function Cell() {
         </Col>
       </Row>
       <Row className="mb-3">
-        <Col style={{ 'max-height': '300px' }}>
+        <Col style={{ maxHeight: '300px' }}>
           <Card className="h-100">
             <Card.Header as="h5">Current Projects</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">
+            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
               <ProjectList projects={cellAllData.current_projects} />
             </Card.Body>
           </Card>
         </Col>
-        <Col style={{ 'max-height': '300px' }}>
+        <Col style={{ maxHeight: '300px' }}>
           <Card className="h-100">
             <Card.Header as="h5">Previous Projects</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">
+            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
               <ProjectList projects={cellAllData.previous_projects} />
             </Card.Body>
           </Card>
@@ -152,9 +158,9 @@ export default function Cell() {
       </Row>
       <Row>
         <Col>
-          <Card>
+          <Card style={{ maxHeight: '415px' }}>
             <Card.Header as="h5">Recent News</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">
+            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
               <NewsList newsList={newsList}></NewsList>
             </Card.Body>
           </Card>

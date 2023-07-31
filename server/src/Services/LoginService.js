@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import db from '../db.js';
 import generateAccessToken from './TokenService.js';
 
-class User {
+export class User {
   id;
   baseId;
   base;
@@ -85,7 +85,7 @@ async function getUserByField(value = null, field = 'username') {
   return db('users').where(field, value).first();
 }
 
-async function getBaseAndCell(baseId, cellId) {
+export async function getBaseAndCell(baseId, cellId) {
   const base = await db('base').select('base_name').where('id', baseId).first();
 
   const cell = await db('cell').select('cell_name').where('id', cellId).first();

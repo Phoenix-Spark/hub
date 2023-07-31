@@ -29,7 +29,12 @@ function Hub() {
 
   return (
     <>
-      <Row className="mt-3">
+      <Row>
+        <Col>
+          <h1 className="display-3 m-3">Welcome to Spark Hub!</h1>
+        </Col>
+      </Row>
+      <Row>
         <Col>
           <Card>
             <Card.Header as="h5">Mission</Card.Header>

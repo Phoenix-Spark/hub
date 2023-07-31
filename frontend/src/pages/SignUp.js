@@ -213,7 +213,7 @@ export default function SignUp() {
               controlId="cellId"
             >
               <Form.Label>Spark Cell</Form.Label>
-              <Form.Select>
+              <Form.Select name="cell_id">
                 <option value="">Select a Spark Cell</option>
                 <option value={1}>Phoenix Spark</option>
               </Form.Select>

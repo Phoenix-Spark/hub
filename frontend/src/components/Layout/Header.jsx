@@ -139,7 +139,7 @@ export default function Header() {
             </NavDropdown>
             <Nav.Link
               as={NavLink}
-              to="/"
+              to="/SubmitNewIdea"
             >
               Submit New Idea
             </Nav.Link>
@@ -151,7 +151,7 @@ export default function Header() {
                 placeholder="Search"
               />
               <Button
-                variant={isDarkMode ? "outline-dark" : 'outline-light' }
+                variant={isDarkMode ? 'outline-dark' : 'outline-light'}
                 type="submit"
               >
                 <Search />
@@ -203,12 +203,12 @@ export default function Header() {
                     >
                       Account Settings
                     </Dropdown.Item>
-                      <Dropdown.Item
-                        as={Link}
-                        to="/dashboard/projects"
-                      >
-                        Your Projects
-                      </Dropdown.Item>
+                    <Dropdown.Item
+                      as={Link}
+                      to="/dashboard/projects"
+                    >
+                      {user.roles === 'cell' || user.roles === 'site' ? 'Proposed Projects' : 'Your Projects'}
+                    </Dropdown.Item>
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>

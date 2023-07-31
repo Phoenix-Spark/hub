@@ -1,18 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 
-export default function ProfileEditor() {
-  const { server, user, setUser, setShowLogin } = useContext(AppContext);
+export default function ProfileEditor() {//I'm commiting
+  const { server, user, setUser } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
-  const [signUpComplete, setSignUpComplete] = useState(false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(()=>{
+    if(user) {
+        fetch(`${server}/userData/${user?.username}`)
+          .then(res => {
+            console.log(res);
+            return res.json();
+          })
+          .then(data => setUserData(data[0]))
+          .catch(err => console.log(`Fetch failed. Error: ${err}`));
+        }
+  }, [server, user])
 
   // TODO: Move validation to input changes
-  async function handleSignup(e) {
+  async function handleUpdate(e) {
     e.preventDefault();
     /** @type {HTMLFormElement} */
     const form = e.currentTarget;
+
     const formIsValid = form.checkValidity();
     if (formIsValid === false) {
       e.stopPropagation();
@@ -24,11 +37,10 @@ export default function ProfileEditor() {
       try {
         const formData = new FormData(form);
 
-        console.log(formData);
-
-        const response = await fetch(`${server}/signup`, {
-          method: 'POST',
-          body: formData,
+        const response = await fetch(`${server}/user/update`, {
+          method: 'PATCH',
+          credentials: 'include',
+          body: formData
         });
 
         if (response.ok) {
@@ -43,9 +55,12 @@ export default function ProfileEditor() {
             payload.user[key] = decodeURIComponent(payload.user[key]);
           }
 
+          console.log(payload);
+
+          payload.user.contactNumber1 = payload.user.contactNumbers[0];
+          payload.user.contactNumber2 = payload.user.contactNumbers[1];
+          setUserData(payload.user);
           setUser(payload.user);
-          setSignUpComplete(true);
-          setShowLogin(true);
         }
       } catch (e) {
         console.error('There was an error.', e);
@@ -53,49 +68,25 @@ export default function ProfileEditor() {
     }
   }
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setUserData({
+      ...userData,
+      [name]: value,
+    });
+  };
+
   return (
     <div className="m-3">
-      {!signUpComplete && (
         <>
-          <h3>Sign Up Form</h3>
+          <h3>Profile Editor</h3>
           <hr />
           <Form
             noValidate
             validated={validated}
-            onSubmit={handleSignup}
+            onSubmit={handleUpdate}
           >
-            <Row>
-              <Form.Group
-                as={Col}
-                className="mb-3"
-                controlId="username"
-              >
-                <Form.Label>Username</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder={`${user.username}`}
-                  name="username"
-                ></Form.Control>
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                <Form.Control.Feedback type="invalid">Please enter a username.</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group
-                as={Col}
-                className="mb-3"
-                controlId="password"
-              >
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  required
-                  type="password"
-                  placeholder={`${user.password}`}
-                  name="password"
-                ></Form.Control>
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                <Form.Control.Feedback type="invalid">Please enter a password.</Form.Control.Feedback>
-              </Form.Group>
-            </Row>
+            <input type="hidden" id="username" name="username" value={user?.username} />
             <Row>
               <Form.Group
                 as={Col}
@@ -107,8 +98,9 @@ export default function ProfileEditor() {
                 <Form.Control
                   required
                   type="text"
-                  placeholder={`${user.firstName}`}
+                  value={`${userData?.firstName}`}
                   name="firstName"
+                  onChange={handleChange}
                 ></Form.Control>
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 <Form.Control.Feedback type="invalid">Please enter your first name.</Form.Control.Feedback>
@@ -122,8 +114,9 @@ export default function ProfileEditor() {
                 <Form.Control
                   required
                   type="text"
-                  placeholder={`${user.lastName}`}
+                  value={`${userData?.lastName}`}
                   name="lastName"
+                  onChange={handleChange}
                 ></Form.Control>
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 <Form.Control.Feedback type="invalid">Please enter your last name.</Form.Control.Feedback>
@@ -137,8 +130,9 @@ export default function ProfileEditor() {
               <Form.Control
                 required
                 type="email"
-                placeholder={`${user.email}`}
+                value={`${userData?.email}`}
                 name="email"
+                onChange={handleChange}
               ></Form.Control>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               <Form.Control.Feedback type="invalid">Please enter a valid email address.</Form.Control.Feedback>
@@ -152,8 +146,9 @@ export default function ProfileEditor() {
                 <Form.Control
                   type="tel"
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  placeholder={`${user.contactNumber1}`}
+                  value={`${userData?.contactNumber1}`}
                   name="contactNumber1"
+                  onChange={handleChange}
                 ></Form.Control>
               </Form.Group>
               <Form.Group
@@ -164,8 +159,9 @@ export default function ProfileEditor() {
                 <Form.Control
                   type="tel"
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                  placeholder={`${user.contactNumber2}`}
+                  value={`${userData?.contactNumber2}`}
                   name="contactNumber2"
+                  onChange={handleChange}
                 ></Form.Control>
               </Form.Group>
             </Row>
@@ -187,8 +183,9 @@ export default function ProfileEditor() {
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder={`${user.bio}`}
+                value={`${userData?.bio}`}
                 name="bio"
+                onChange={handleChange}
               ></Form.Control>
             </Form.Group>
             <Form.Group
@@ -196,9 +193,10 @@ export default function ProfileEditor() {
               controlId="baseId"
             >
               <Form.Label>Base</Form.Label>
-              <Form.Select>
+              <Form.Select name="baseId" onChange={handleChange}>
                 <option value="">Select a Base</option>
                 <option value={1}>Travis AFB</option>
+                <option value={2}>Patrick SFB</option>
               </Form.Select>
             </Form.Group>
             <Form.Group
@@ -206,7 +204,7 @@ export default function ProfileEditor() {
               controlId="cellId"
             >
               <Form.Label>Spark Cell</Form.Label>
-              <Form.Select>
+              <Form.Select name="cellId" onChange={handleChange}>
                 <option value="">Select a Spark Cell</option>
                 <option value={1}>Phoenix Spark</option>
               </Form.Select>
@@ -222,8 +220,6 @@ export default function ProfileEditor() {
             </Form.Group>
           </Form>
         </>
-      )}
-      {signUpComplete && <p>Your account has been updated successfully</p>}
     </div>
   );
 }
