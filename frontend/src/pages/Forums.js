@@ -52,7 +52,7 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
 ]
 
 const Forums = () => {
-  const { server } = useContext(AppContext);
+  const { server, setProfileModal } = useContext(AppContext);
   const [forumData, setForumData] = useState([]);
 
   useEffect(() => {
@@ -251,6 +251,7 @@ const Forums = () => {
             style={{ height: '50px', width: '50px' }}
             src={post.photo_url}
             alt=""
+            onClick={()=>setProfileModal({show: true, userId: post.users_id})}
           />
         </Col>
         <Col>
@@ -271,6 +272,7 @@ const Forums = () => {
             style={{ height: '40px', width: '40px' }}
             src={comment.photo_url}
             alt=""
+            onClick={()=>setProfileModal({show: true, userId: comment.users_id})}
           />
         </Col>
         <Col>
@@ -291,6 +293,7 @@ const Forums = () => {
             style={{ height: '30px', width: '30px' }}
             src={reply.photo_url}
             alt=""
+            onClick={()=>setProfileModal({show: true, userId: reply.users_id})}
           />
         </Col>
         <Col>

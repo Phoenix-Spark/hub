@@ -5,7 +5,9 @@ import ProposedProjects from './ProposedProjects.js';
 import ProposalForm from './ProposalForm.js';
 import SignUp from './SignUp.js';
 import Dashboard from './Dashboard.js';
-import SubmissionFAQ from './SubmissionFAQ.js';
 import Forums from './Forums.js';
+import ProposalGuidelines from './ProposalGuidelines.js';
+import SubmissionFAQ from './SubmissionFAQ.js';
+import KylesCorner from './KylesCorner.js';
 
-export { Hub, Cell, Project, ProposedProjects, ProposalForm, SignUp, Dashboard, Forums, SubmissionFAQ };
+export { Hub, Cell, Project, ProposedProjects, ProposalForm, SignUp, Dashboard, Forums, ProposalGuidelines, SubmissionFAQ, KylesCorner };

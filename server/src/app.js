@@ -108,4 +108,18 @@ app.get('/faq', async (req, res, next) => {
   }
 });
 
+app.get('/profile/:userId', async (req, res, next) => {
+  try {
+    const data = await
+    db.select('users.username','users.first_name','users.last_name','users.email','users.photo_url','users.contact_number1','users.contact_number2','users.bio','cell.cell_name', 'cell.logo_url')
+      .from('users')
+      .join('cell', 'users.cell_id', 'cell.id')
+      .where('users.id', req.params.userId);
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq ERROR: ${e}`);
+    next(e);
+  }
+});
+
 export default app;

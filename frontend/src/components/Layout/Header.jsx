@@ -120,7 +120,7 @@ export default function Header() {
             >
               <NavDropdown.Item
                 as={NavLink}
-                to="/"
+                to="/ProposalGuidelines"
               >
                 Proposal Guidelines
               </NavDropdown.Item>
@@ -132,9 +132,9 @@ export default function Header() {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to="/"
+                to="/KylesCorner"
               >
-                Alex's "Homework" Folder
+                Kyle's Corner
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Link
