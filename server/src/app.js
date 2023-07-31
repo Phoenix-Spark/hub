@@ -125,7 +125,7 @@ app.get('/profile/:userId', async (req, res, next) => {
 app.get('/userData/:username', async (req, res, next) => {
   try {
     const data = await
-    db.select('*')
+    db.select('username', 'password','first_name as firstName','last_name as lastName','email','photo_url as photo','contact_number1 as contactNumber1','contact_number2 as contactNumber2','bio')
       .from('users')
       .where('users.username', req.params.username);
     res.status(200).json(data);
