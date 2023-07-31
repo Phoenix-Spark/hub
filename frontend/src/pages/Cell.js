@@ -190,7 +190,7 @@ export default function Cell() {
         </Col>
       </Row>
 
-      {JSON.stringify(cellAllData)}
+      {JSON.stringify(cellAllData.team)}
     </>
   );
 }

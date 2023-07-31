@@ -27,7 +27,7 @@ function HorizontalTeamList({ teamList }) {
               rounded
             />
             <br />
-            {member.first_name} {member.last_name}
+            {member.first_name} {member.last_name} {member.id}
           </Col>
         );
       })}

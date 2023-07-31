@@ -13,7 +13,7 @@ router.get('/:cellId/all', async (req, res, next) => {
   try {
     const cellData = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
     const teamData = await db
-      .select('*')
+      .select('users.*')
       .from('users')
       .join('cell', 'users.cell_id', '=', 'cell.base_id')
       .where('cell.cell_endpoint', req.params.cellId);

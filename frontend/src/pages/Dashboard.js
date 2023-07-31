@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Tab, Row, Col, Nav } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-
 import AppContext from '../AppContext.js';
 import ProposedProjects from './ProposedProjects.js';
-
+import ProfileEditor from '../components/Dashboard/ProfileEditor.jsx';
 import './Dashboard.scss';
 
 function Dashboard () {
@@ -40,7 +39,9 @@ function Dashboard () {
             </Col>
             <Col sm={9}>
               <Tab.Content className='border-start p-3'>
-                <Tab.Pane eventKey="account">Tab with form for user to edit their profile things.</Tab.Pane>
+                <Tab.Pane eventKey="account">Tab with form for user to edit their profile things.
+                {/* <ProfileEditor /> */}
+                </Tab.Pane>
                 <Tab.Pane eventKey="projects">Tab with list of projects. Current (Ordered by active status) and Proposed (Ordered by approved status)
                   <ProposedProjects cell={user?.cellId ?? undefined} />
                 </Tab.Pane>
