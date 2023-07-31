@@ -4,9 +4,10 @@ import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import ProposedProjects from '../components/Dashboard/ProposedProjects.jsx';
+import ProfileEditor from '../components/Dashboard/ProfileEditor.jsx';
+import UserProjects from '../components/Dashboard/UserProjects.jsx';
 
 import './Dashboard.scss';
-import UserProjects from '../components/Dashboard/UserProjects.jsx';
 
 function Dashboard() {
   const currentPage = useParams();
@@ -77,7 +78,10 @@ function Dashboard() {
                 </Col>
                 <Col sm={9}>
                   <Tab.Content className="border-start p-3">
-                    <Tab.Pane eventKey="account">Tab with form for user to edit their profile things.</Tab.Pane>
+                    <Tab.Pane eventKey="account">
+                        Tab with form for user to edit their profile things.
+                        <ProfileEditor />
+                    </Tab.Pane>
                     <Tab.Pane eventKey="projects">
                       {!user.roles ? <UserProjects /> : <ProposedProjects cell={user?.cellId ?? undefined} />}
                     </Tab.Pane>

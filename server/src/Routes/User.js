@@ -1,6 +1,7 @@
 import express from 'express';
-import { addUser, doesUserExist, findUserById, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
+import { addUser, doesUserExist, findUserById, User, getBaseAndCell, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
 import db from '../db.js';
+import multer from 'multer';
 
 const router = express.Router();
 
@@ -142,6 +143,86 @@ router.get('/refresh', async (req, res) => {
   // const user = await findUserById(req.session.user);
   const { token } = await generateUserToken(req.user);
   return res.status(200).json({ token });
+});
+
+
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = process.env.UPLOAD_PATH || '/tmp/uploads/';
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const fileType = file.mimetype === 'image/jpeg' ? '.jpg' : '.png';
+    cb(null, `profile-${uniqueSuffix}${fileType}`);
+  },
+});
+const profileUpload = multer({ dest: 'uploads/', storage: profileStorage });
+/**
+ *
+app.post('/signup', profileUpload.single('photo'), signUpHandler);
+ *
+ *
+ */
+
+
+router.patch('/update', profileUpload.single('photo'), async (req, res) => {
+  const data = req.body;
+  console.log('req.body = ', req.body);
+  try {
+    let photoUrl;
+    if (!req.file) {
+      ({photo_url: photoUrl} = await db('users').first('photo_url').where('username', data.username));
+    }
+
+    const [update] = await db
+      .first()
+      .from('users')
+      .where('username', data.username)
+      .update({
+        base_id: data.baseId,
+        cell_id: data.cellId,
+        username: data.username,
+        password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        photo_url: req.file?.pathname ?? photoUrl,
+        contact_number1: data.contactNumber1,
+        contact_number2: data.contactNumber2,
+        bio: data.bio,
+      })
+      .returning('*');
+
+    console.log('update', update);
+
+    const { base, cell } = await getBaseAndCell(update.base_id, update.cell_id);
+    const updatedUser = new User(
+      update.username,
+      update.first_name,
+      update.last_name,
+      update.email,
+      update.base_id,
+      update.cell_id,
+      update.photo_url,
+      [update.contact_number1, update.contact_number2],
+      update.bio,
+      base,
+      cell,
+      update.id
+    );
+
+    if(!update){
+      res.status(404).json({ message: 'User not found' });
+    } else {
+      console.log(`PATCH /user/update/  User Id:${data.username}`);
+      const { token } = await generateUserToken(updatedUser, req.session.roles);
+      return res.status(200).json({  token  });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
+    console.log(`PATCH /user/update/   User: ${data.username} ERROR: ${err}`);
+  }
 });
 
 export default router;

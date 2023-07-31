@@ -139,7 +139,7 @@ export default function Header() {
             </NavDropdown>
             <Nav.Link
               as={NavLink}
-              to="/"
+              to="/SubmitNewIdea"
             >
               Submit New Idea
             </Nav.Link>

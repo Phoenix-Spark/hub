@@ -117,7 +117,20 @@ app.get('/profile/:userId', async (req, res, next) => {
       .where('users.id', req.params.userId);
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /faq ERROR: ${e}`);
+    console.error(`GET /profile/:userId ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/userData/:username', async (req, res, next) => {
+  try {
+    const data = await
+    db.select('username', 'password','first_name as firstName','last_name as lastName','email','photo_url as photo','contact_number1 as contactNumber1','contact_number2 as contactNumber2','bio')
+      .from('users')
+      .where('users.username', req.params.username);
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /user/:username ERROR: ${e}`);
     next(e);
   }
 });
