@@ -17,7 +17,7 @@ const CellDetails = () => {
   const [emailValue, setEmailValue] = useState('');
   const [resetForm, setResetForm] = useState(0);
   const logoFileField = useRef();
-  const idField = useRef();
+  const idField = useRef(user?.cellId);
 
   const resetValues = data => {
     setNameValue(data.cell_name);
@@ -38,6 +38,7 @@ const CellDetails = () => {
       const response = await fetch(`${server}/cell/${user?.cellId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('cell details',data);
         if (!ignore) {
           resetValues(data);
         }

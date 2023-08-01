@@ -80,7 +80,7 @@ app.get('/', (req, res) => {
 
 app.get('/spark_list', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').join('base', 'cell.base_id', 'base.id');
+    const data = await db.select('*').from('cell').join('base', 'cell.base_id', 'base.id').whereNot('is_approved', 'no');
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /spark_list ERROR: ${e}`);
@@ -205,7 +205,6 @@ app.get('/cell_list', async (req, res, next) => {
     next(e);
   }
 });
-
 
 app.post('/cell_list', async (req, res, next) => {
   try {
