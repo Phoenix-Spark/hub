@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { Accordion, Button, Col, Row, ListGroup } from 'react-bootstrap';
+import { Accordion, Button, Col, Form, Row, ListGroup, Modal } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 import { formatDate } from '../utils/index.js';
 
@@ -54,6 +54,10 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
 const Forums = () => {
   const { server, setProfileModal } = useContext(AppContext);
   const [forumData, setForumData] = useState([]);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null); 
+  const [postTitle, setPostTitle] = useState('');
+  const [postBody, setPostBody] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -164,6 +168,48 @@ const Forums = () => {
     }
   }
 
+  const createPost = async (category_id, title, body) => {
+    try {
+      const response = await fetch(`${server}/forum/${category_id}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          body,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create your post');
+      }
+      const data = await response.json();
+
+      console.log('New post created:', data);
+
+      handleCloseCreatePostModal();
+
+    } catch (error) {
+      console.error('Error creating a post', error);
+    }
+  }
+
+  const handleCreatePost = (category_id) => {
+    const title = postTitle;
+    const body = postBody;
+    createPost(category_id, title, body);
+  }
+
+  const handleCloseCreatePostModal = () => {
+    setSelectedCategory(null);
+    setShowCreatePostModal(false);
+  }
+
+  const handleShowCreatePostModal = (category_id) => {
+    setSelectedCategory(category_id);
+    setShowCreatePostModal(true);
+  }
+
   return(
     <><br/>
     <h1>Forums</h1>
@@ -172,7 +218,7 @@ const Forums = () => {
           <Accordion.Item key={cat_index} eventKey={cat_index}>
             <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
-              <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button>Create A Post....</Button></div>
+              <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button onClick={() => handleShowCreatePostModal(category.id)}>Create A Post....</Button></div>
               <Accordion className="mt-5">
                 {forumData[cat_index].posts.map((post,post_index)=>
                   <Accordion.Item key={post_index} eventKey={post_index}>
@@ -240,6 +286,35 @@ const Forums = () => {
         )}
       </Accordion>
       {/* <TheForum/> */}
+
+      {showCreatePostModal && selectedCategory !== null && (
+      <Modal 
+        size= 'lg'
+        centered
+        show={showCreatePostModal} onHide={handleCloseCreatePostModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create a New Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group controlId='postTitle'>
+            <Form.Label>Title</Form.Label>
+            <Form.Control type='text' placeholder='Enter post title' />
+          </Form.Group>
+          <Form.Group controlId='postBody'>
+            <Form.Label>Body</Form.Label>
+            <Form.Control as='textarea' rows={4} placeholder='Type here' />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleCloseCreatePostModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={() => handleCreatePost(selectedCategory)}>
+            Create Post
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      )}
     </>
   )
 

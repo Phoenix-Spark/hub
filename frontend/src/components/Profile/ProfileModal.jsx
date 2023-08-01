@@ -27,7 +27,7 @@ const ProfileModal = () => {
       onHide={() => setProfileModal({show: false, userId: 0})}
     >
       <Modal.Header closeButton>
-          <Modal.Title>User Profile {profileModal.userId}</Modal.Title>
+          <Modal.Title>User Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
 

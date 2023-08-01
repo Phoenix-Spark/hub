@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 
-export default function ProfileEditor() {//I'm commiting
+export default function ProfileEditor() {
   const { server, user, setUser } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [userData, setUserData] = useState({});

@@ -9,10 +9,10 @@ import jwt from 'jsonwebtoken';
  */
 const generateAccessToken = (user, roles) => {
   const tokenUuid = uuid();
-  const { username, email, firstName, lastName, contactNumbers, cell, cellId, base, baseId, photo } = user;
+  const { username, email, firstName, lastName, contactNumbers, cell, cellId, base, baseId, photo, id } = user;
   const secret = process.env.TOKEN_SECRET || 'secret';
   return {
-    token: jwt.sign({ user: { username, email, firstName, lastName, contactNumbers, cellId, cell, baseId, base, photo, roles } }, new TextEncoder().encode(secret), {
+    token: jwt.sign({ user: { username, email, firstName, lastName, contactNumbers, cellId, cell, baseId, base, photo, roles, id } }, new TextEncoder().encode(secret), {
       issuer: 'capstone', // where was the JWT issued
       subject: user.username, // the user of the JWT
       audience: `${user.email} at capstone`, // the intended recipient of the JWT

@@ -3,33 +3,77 @@ import { Accordion, Card, Button, Form } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 
 const SubmissionFAQ = () => {
-  const { server } = useContext(AppContext);
-  const [faq, setFaq] = useState([])
-
+  const { server, user } = useContext(AppContext);
+  const [faq, setFaq] = useState([]);
+  const [newQuestion, setNewQuestion] = useState('');
   const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
   const [questionsList, setQuestionsList] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [ refresh, setRefresh ] = useState(false);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     fetch(`${server}/faq`)
-      .then(res => {
-        console.log(res);
-        return res.json();
-      })
-      .then(data => setFaq(data))
-      .catch(err => console.log(`Fetch failed. Error: ${err}`));
-  },[])
+      .then((res) => res.json())
+      .then((data) => setFaq(data))
+      .then(setRefresh(false))
+      .catch((err) => console.log(`Fetch failed. Error: ${err}`));
+  }, [server, refresh]);
 
   const handleQuestionChange = (event) => {
+    console.log(event.target.value)
     setQuestion(event.target.value);
+  };
+
+  const handleAnswerChange = (event) => {
+    setAnswer(event.target.value);
+  };
+
+  const handleNewQuestionChange = (event) => {
+    console.log(event.target.value)
+    setNewQuestion(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (question.trim() === '') return;
 
+    const response = fetch(`${server}/faq`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ 
+        question: question,
+        asked_by: user.id 
+      }),
+    });
     console.log(`User submitted question: ${question.trim()}`);
-    setQuestion('');
+    setRefresh(true)
+  };
+
+  const handleEdit = (index) => {
+    console.log(`User clicked "Edit" on FAQ item ${index}`);
+    setQuestion(faq[index].question);
+    setAnswer(faq[index].answer)
+    setIsEditing(index);
+  };
+
+  const handleSave = (faqId) => {
+    console.log(`User clicked "Save" on FAQ item ${faqId}`);
+    fetch(`${server}/faq/${faqId}`, {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
+      body: JSON.stringify({answer: answer, question: question, answered_by: user.id})
+    })
+    setIsEditing(false);
+    setRefresh(true)
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
   };
 
   const faqData = [
@@ -41,54 +85,70 @@ const SubmissionFAQ = () => {
       question: 'How do I join Spark Hub?',
       answer: 'You can join Spark Hub by signing up for an account and becoming a member of our community.',
     },
-    {
-      question: 'Is there a fee to join Spark Hub?',
-      answer: 'No, joining Spark Hub is completely free. It is an open platform for creative collaboration.',
-    },
-    {
-      question: 'How can I share my ideas on Spark Hub?',
-      answer: 'To share your ideas, you can create a new post in the relevant forum or community, or submit a proposal to your indiviual cell. Provide detailed information about your idea to encourage collaboration.',
-    },
-    {
-      question: 'Are there any guidelines for posting on Spark Hub?',
-      answer: 'Yes, we have guidelines to ensure a positive and respectful environment. Avoid offensive language and follow our community guidelines when posting.',
-    },
-    {
-      question: 'Can I edit or delete my posts?',
-      answer: 'Yes, registered users can edit or delete their own posts. You will find the options to edit or delete your posts in your user dashboard.',
-    },
-    {
-      question: 'How can I contact other members for collaboration?',
-      answer: 'You can use the forum feature on Spark Hub to connect with other members and discuss collaboration opportunities.',
-    },
   ];
 
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Frequently Asked Questions</h1>
       <Accordion>
-        {faqData.map((item, index) => (
-          <Accordion.Item key={index} eventKey={index}>
+        {faq.map((entry, index)=>
+          <Accordion.Item className="mt-3">
             <Accordion.Header>
-              <h4>{item.question}</h4>
+              <h4>{entry.question}</h4>
             </Accordion.Header>
-            <Accordion.Body>
-              {item.answer}
-            </Accordion.Body>
+            {isEditing === index ? (
+              <Accordion.Body>
+
+
+                <Form >
+                  <Form.Group controlId="formQuestion">
+                    <Form.Control
+                      type="text"
+                      value={question}
+                      onChange={handleQuestionChange}
+                    />
+                    <Form.Control
+                      type="text"
+                      value={answer}
+                      onChange={handleAnswerChange}
+                    />
+                    <Button variant="primary" onClick={() => handleSave(entry.id)}>
+                      Save
+                    </Button>
+                    <Button variant="danger" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                  </Form.Group>
+                </Form>
+
+
+
+
+              </Accordion.Body>
+            ) : (
+              <Accordion.Body eventKey={index.toString()}>
+                <p>{entry.answer}</p>
+                {user?.roles === 'site' &&(
+                  <button variant = "secondary" onClick={() => handleEdit(index)} className="ms-2">
+                   Edit
+                  </button>  
+                )}
+              </Accordion.Body>
+            )}
           </Accordion.Item>
-        ))}
+        )}    
       </Accordion>
-      <br/>
-      <br/>
 
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formQuestion">
-          <Form.Label><h3>Ask a Question</h3></Form.Label>
+          <Form.Label>
+            <h3>Ask a Question</h3>
+          </Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter your question"
-            value={question}
-            onChange={handleQuestionChange}
+            value={newQuestion}
+            onChange={handleNewQuestionChange}
           />
         </Form.Group>
         <Button variant="primary" type="submit" align="right">

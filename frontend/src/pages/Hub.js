@@ -66,10 +66,10 @@ function Hub() {
               Spark List
               <Button
                 variant="secondary"
-                href="http://localhost:3000/"
+                href="http://localhost:3000/cell-registration"
                 className=""
               >
-                Don't see your cell?
+                Register your cell
               </Button>
             </Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>

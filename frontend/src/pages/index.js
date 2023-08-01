@@ -9,6 +9,7 @@ import Forums from './Forums.js';
 import ProposalGuidelines from './ProposalGuidelines.js';
 import SubmissionFAQ from './SubmissionFAQ.js';
 import SubmitNewIdea from './SubmitNewIdea.js';
-import KylesCorner from './KylesCorner.js';
+import CellRegistration from './CellRegistration.js';
+import KylesCorner from './KylesCorner.js'; // I hate you Alex
 
-export { Hub, Cell, Project, ProposedProjects, ProposalForm, SignUp, Dashboard, Forums, ProposalGuidelines, SubmissionFAQ, SubmitNewIdea, KylesCorner };
+export { Hub, Cell, Project, ProposedProjects, ProposalForm, SignUp, Dashboard, Forums, ProposalGuidelines, SubmissionFAQ, SubmitNewIdea, CellRegistration, KylesCorner };

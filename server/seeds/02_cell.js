@@ -18,6 +18,7 @@ export async function seed(knex) {
       contact_number2: '123-555-9876',
       email: 'cell1@cell1.com',
       logo_url: '/images/travis.png',
+      is_approved: 'yes',
     },
     {
       base_id: 2,
@@ -30,6 +31,7 @@ export async function seed(knex) {
       contact_number2: '876-555-5432',
       email: 'cell2@cell2.com',
       logo_url: '/images/placeholder_logo.svg',
+      is_approved: 'yes',
     },
     {
       base_id: 3,
@@ -42,6 +44,7 @@ export async function seed(knex) {
       contact_number2: '345-555-9012',
       email: 'cell3@cell3.com',
       logo_url: '/images/placeholder_logo.svg',
+      is_approved: 'yes',
     },
   ]);
 }

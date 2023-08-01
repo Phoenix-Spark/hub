@@ -1,7 +1,7 @@
 import express from 'express';
+import multer from 'multer';
 import { addUser, doesUserExist, findUserById, User, getBaseAndCell, generateUserToken, loginUser, validateLogin } from '../Services/LoginService.js';
 import db from '../db.js';
-import multer from 'multer';
 
 const router = express.Router();
 

@@ -100,10 +100,60 @@ app.get('/news', async (req, res, next) => {
 
 app.get('/faq', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('faq');
+    const data = await db.select('*').from('faq').whereNot('answer', null);
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /faq ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.post('/faq', async (req, res, next) => {
+  try {
+    const data = await db('faq').insert({
+      question: req.body.question,
+      answer: null,
+      asked_by: req.body.userId,
+      answered_by: null,
+    });
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`POST /faq ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.patch('/faq/:faqId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('faq').where('id', req.params.faqId).update({
+      question: req.body.question,
+      answer: req.body.answer,
+      asked_by: req.body.userId,
+      answered_by: req.body.answered_by,
+    });
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`PATCH /faq/:faqId ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/faq/new', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('faq').where('answer', null);
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq-new ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.delete('/faq/:faqId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('faq').where('id', req.params.faqId).del();
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /faq/:faqId ERROR: ${e}`);
     next(e);
   }
 });
@@ -131,6 +181,39 @@ app.get('/userData/:username', async (req, res, next) => {
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /user/:username ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/base_list', async (req, res, next) => {
+  try {
+    const data = await db.select('base.id', 'base_name').from('base');
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /base_list ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.get('/cell_list', async (req, res, next) => {
+  try {
+    const registeredCells = await db('cell').select('*');
+
+    res.status(200).json(registeredCells);
+  } catch (e) {
+    console.error(`GET /cell_list ERROR: ${e}`);
+    next(e);
+  }
+});
+
+
+app.post('/cell_list', async (req, res, next) => {
+  try {
+    const cellData = req.body;
+    const insertedIds = await db('cell').insert(cellData);
+    res.status(200).json({ message: 'Cell registered successfully!', insertedId: insertedIds[0] });
+  } catch (e) {
+    console.error(`POST /cell_list ERROR: ${e}`);
     next(e);
   }
 });
