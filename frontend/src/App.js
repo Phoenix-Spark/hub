@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
 import { Header } from './components/index.js';
-import ProfileModal from './components/Profile/ProfileModal.jsx';
+import ViewProfileModal from './components/Modals/ViewProfile/ViewProfileModal.jsx';
 import AppContext from './AppContext.js';
 
 import './App.scss';
@@ -16,9 +16,20 @@ export default function App() {
   const [sparkList, setSparkList] = useState([]);
   const [showLogin, setShowLogin] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [profileModal, setProfileModal] = useState({show: false, userId: 0});
+  const [profileModal, setProfileModal] = useState({ show: false, userId: 0 });
 
-  const ContextObject = { server, user, setUser, sparkList, showLogin, setShowLogin, isDarkMode, setIsDarkMode, profileModal, setProfileModal };
+  const ContextObject = {
+    server,
+    user,
+    setUser,
+    sparkList,
+    showLogin,
+    setShowLogin,
+    isDarkMode,
+    setIsDarkMode,
+    profileModal,
+    setProfileModal,
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -82,7 +93,7 @@ export default function App() {
           <Outlet />
         </Container>
       </div>
-      <ProfileModal/>
+      <ViewProfileModal />
     </AppContext.Provider>
   );
 }

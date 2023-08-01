@@ -13,10 +13,13 @@ function Dashboard() {
   const currentPage = useParams();
   const { user } = useContext(AppContext);
   const [activeKey, setActiveKey] = useState('account');
+  const [refreshProjectList, setRefreshProjectList] = useState(0);
 
   useEffect(() => {
     if (currentPage.page === 'projects') {
       setActiveKey('userProjects');
+    } else if (currentPage.page === 'proposed-projects') {
+      setActiveKey('proposedProjects');
     }
   }, [currentPage]);
 
@@ -95,9 +98,20 @@ function Dashboard() {
                       <ProfileEditor />
                     </Tab.Pane>
                     <Tab.Pane eventKey="userProjects">
-                      <UserProjects></UserProjects>
+                      <UserProjects
+                        refreshProjectList={refreshProjectList}
+                        setRefreshProjectList={setRefreshProjectList}
+                      ></UserProjects>
                     </Tab.Pane>
-                    <Tab.Pane eventKey="proposedProjects">{user.roles && <ProposedProjects cell={user?.cellId ?? undefined} />}</Tab.Pane>
+                    <Tab.Pane eventKey="proposedProjects">
+                      {user.roles && (
+                        <ProposedProjects
+                          refreshProjectList={refreshProjectList}
+                          setRefreshProjectList={setRefreshProjectList}
+                          cell={user?.cellId ?? undefined}
+                        />
+                      )}
+                    </Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
                   </Tab.Content>
                 </Col>

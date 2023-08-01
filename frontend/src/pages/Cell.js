@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppContext from '../AppContext.js';
 import HorizontalTeamList from '../components/Cell/HorizontalTeamList.jsx';
 import ProjectList from '../components/Cell/ProjectList.jsx';
-import ProposalModal from '../components/Cell/ProposalModal.jsx';
+import AddProposalModal from '../components/Modals/Proposal/AddProposalModal.jsx';
 import { NewsList } from '../components/index.js';
 
 export default function Cell() {
@@ -38,7 +38,6 @@ export default function Cell() {
         const response = await fetch(`${server}/cell/${cell_endpoint}/news`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           if (!ignore) setNewsList(data);
         }
       } catch (e) {
@@ -105,9 +104,10 @@ export default function Cell() {
                   >
                     Submit New Proposal
                   </Button>
-                  <ProposalModal
+                  <AddProposalModal
                     show={showModal}
                     onHide={hideProposalModal}
+                    cellId={cellAllData?.id}
                   />
                 </>
               )}
