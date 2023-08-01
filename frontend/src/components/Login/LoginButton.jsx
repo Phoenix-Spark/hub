@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import LoginModal from './LoginModal.jsx';
+import LoginModal from '../Modals/Login/LoginModal.jsx';
 import AppContext from '../../AppContext.js';
 
 const LoginButton = () => {
