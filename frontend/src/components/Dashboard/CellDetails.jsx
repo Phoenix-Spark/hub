@@ -246,11 +246,11 @@ const CellDetails = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group>
+            <Form.Group className="pt-3">
               <Button
                 type="submit"
                 variant="primary"
-                className="mb-3"
+                className="mb-3 me-3"
               >
                 Save Changes
               </Button>
