@@ -4,7 +4,7 @@ import { Button, Card, Container } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 import { formatDate } from '../../utils/index.js';
 
-const ProposedProjects = ({ cell }) => {
+const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) => {
   const { server, user, setProfileModal } = useContext(AppContext);
   const [projectList, setProjectList] = useState([]);
 
@@ -61,7 +61,7 @@ const ProposedProjects = ({ cell }) => {
     getProposedProjects();
 
     return () => (ignore = true);
-  }, [user]);
+  }, [user, refreshProjectList]);
 
   return (
     <Container>
@@ -81,7 +81,7 @@ const ProposedProjects = ({ cell }) => {
             <Card.Body className="pt-2">
               <Card.Title className="border-bottom pb-2 align-middle">
                 <small className="align-middle">
-                  Proposed on: <span className="fw-normal">{formatDate('2020-01-01', true)}</span>
+                  Proposed on: <span className="fw-normal">{formatDate(project.date_proposed, true)}</span>
                 </small>
                 <div className="align-middle vr mx-3"></div>
                 <small className="align-middle">

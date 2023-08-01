@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import AppContext from '../AppContext.js';
 import HorizontalTeamList from '../components/Cell/HorizontalTeamList.jsx';
 import ProjectList from '../components/Cell/ProjectList.jsx';
-import ProposalModal from '../components/Cell/ProposalModal.jsx';
+import AddProposalModal from '../components/Modals/Proposal/AddProposalModal.jsx';
 import { NewsList } from '../components/index.js';
 
 export default function Cell() {
@@ -14,7 +14,7 @@ export default function Cell() {
   const [cellAllData, setCellAllData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [newsList, setNewsList] = useState([]);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let ignore = false;
@@ -26,7 +26,7 @@ export default function Cell() {
           const data = await response.json();
           if (!ignore) setCellAllData(data);
         } else if (response.status === 404) {
-          Navigate('/');
+          navigate('/');
         }
       } catch (e) {
         console.error(`Fetch failed. Error: ${e}`);
@@ -38,7 +38,6 @@ export default function Cell() {
         const response = await fetch(`${server}/cell/${cell_endpoint}/news`);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           if (!ignore) setNewsList(data);
         }
       } catch (e) {
@@ -56,6 +55,21 @@ export default function Cell() {
 
   const showProposalModal = () => setShowModal(true);
   const hideProposalModal = () => setShowModal(false);
+  /*
+            <Card.Header
+              as="h5"
+              className="justify-content-between"
+            >
+              Spark List
+              <Button
+                variant="secondary"
+                href="http://localhost:3000/"
+                className=""
+              >
+                Don't see your cell?
+              </Button>
+            </Card.Header>
+ */
 
   return (
     <>
@@ -68,7 +82,22 @@ export default function Cell() {
       <Row className="my-3">
         <Col md={8}>
           <Card className="h-100">
-            <Card.Header as="h5">Cell Mission</Card.Header>
+            <Card.Header
+              as="h5"
+              className="justify-content-between"
+            >
+              Cell Mission
+              {(user?.roles === 'cell' || user?.roles === 'site') && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    navigate('/dashboard/cell-details');
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+            </Card.Header>
             <Card.Body className="d-flex flex-column h-100">
               <Row>
                 <Col md="auto">
@@ -105,9 +134,10 @@ export default function Cell() {
                   >
                     Submit New Proposal
                   </Button>
-                  <ProposalModal
+                  <AddProposalModal
                     show={showModal}
                     onHide={hideProposalModal}
+                    cellId={cellAllData?.id}
                   />
                 </>
               )}

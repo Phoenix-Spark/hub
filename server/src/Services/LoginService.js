@@ -93,7 +93,7 @@ export async function getBaseAndCell(baseId, cellId) {
   return { base: base.base_name, cell: cell.cell_name };
 }
 
-async function findUser(username) {
+export async function findUser(username) {
   const dbUser = await getUserByField(username);
   if (!dbUser) return { user: undefined, password: undefined };
 

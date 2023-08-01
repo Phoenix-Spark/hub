@@ -1,5 +1,7 @@
 import express from 'express';
+import multer from 'multer';
 import db from '../db.js';
+import { findUser, findUserById } from '../Services/LoginService.js';
 
 const router = express.Router();
 
@@ -33,16 +35,111 @@ router.get('/:projectId/all', async (req, res, next) => {
   }
 });
 
+// const projectStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const uploadDir = process.env.UPLOAD_PATH || '/tmp/uploads/projects';
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+//     const fileType = file.mimetype === 'image/jpeg' ? '.jpg' : '.png';
+//     cb(null, `project-${uniqueSuffix}${fileType}`);
+//   },
+// });
+//
+const projectUpload = multer();
+
+router.post(
+  '/add',
+  async (req, res, next) => {
+    if (!req.session.user) {
+      return res.sendStatus(401);
+    }
+
+    const user = await findUserById(req.session.user);
+    if (!user) {
+      return res.sendStatus(401);
+    }
+    req.user = user;
+    return next();
+  },
+  projectUpload.none(),
+  async (req, res, next) => {
+    try {
+      console.log(req.body);
+      const { cellId, name, description, budget, proposedByUsername } = req.body;
+      const {
+        user: { id: userId },
+      } = await findUser(proposedByUsername);
+      console.log(userId);
+      const inserted = await db('project').insert(
+        {
+          cell_id: cellId,
+          name,
+          description,
+          budget,
+          proposed_by: userId,
+          date_proposed: db.fn.now(),
+          is_complete: false,
+        },
+        ['*']
+      );
+
+      res.status(200).json(inserted[0]);
+    } catch (e) {
+      console.error(`GET /projects/add ERROR: ${e}`);
+      next(e);
+    }
+  }
+);
+
 router.get('/:projectId', async (req, res, next) => {
   try {
     const data = await db.select('*').from('project').where('id', req.params.projectId);
 
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /projects/${req.params.projectId} ERROR: ${e}`);
+    console.error(`POST /projects/${req.params.projectId} ERROR: ${e}`);
     next(e);
   }
 });
+
+router.patch(
+  '/:projectId',
+  async (req, res, next) => {
+    if (!req.session.user) {
+      return res.sendStatus(401);
+    }
+
+    const user = await findUserById(req.session.user);
+    if (!user) {
+      return res.sendStatus(401);
+    }
+    req.user = user;
+    return next();
+  },
+  projectUpload.none(),
+  async (req, res, next) => {
+    try {
+      console.log(req.body);
+      const { name, description, budget } = req.body;
+
+      const updated = await db('project').first().where('id', req.params.projectId).update(
+        {
+          name,
+          description,
+          budget,
+        },
+        ['*']
+      );
+
+      res.status(200).json(updated);
+    } catch (e) {
+      console.error(`PATCH /projects/${req.params.projectId} ERROR: ${e}`);
+      next(e);
+    }
+  }
+);
 
 router.get('/:projectId/team', async (req, res, next) => {
   try {

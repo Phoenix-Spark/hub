@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import './Login.scss';
-import Login from './Login.jsx';
+import './LoginModal.scss';
+import Login from '../../Login/Login.jsx';
 
 const LoginModal = props => {
   // const [submitBtnEnabled, setSubmitBtnEnabled] = useState(false);

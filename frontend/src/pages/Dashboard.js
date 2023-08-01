@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Col, Nav, Row, Tab, Form, Button, Card } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import ProposedProjects from '../components/Dashboard/ProposedProjects.jsx';
@@ -8,11 +8,14 @@ import ProfileEditor from '../components/Dashboard/ProfileEditor.jsx';
 import UserProjects from '../components/Dashboard/UserProjects.jsx';
 
 import './Dashboard.scss';
+import CellDetails from '../components/Dashboard/CellDetails.jsx';
 
 function Dashboard() {
   const currentPage = useParams();
-  const { user } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { server, user } = useContext(AppContext);
   const [activeKey, setActiveKey] = useState('account');
+  const [refreshProjectList, setRefreshProjectList] = useState(0);
 
   useEffect(() => {
     setActiveKey(currentPage.page);
@@ -28,6 +31,11 @@ function Dashboard() {
     }
   };
 
+  const handleTabSelect = key => {
+    console.log(key);
+    navigate(`/dashboard/${key}`);
+  };
+
   return (
     <>
       {user && (
@@ -40,7 +48,7 @@ function Dashboard() {
               id="left-tabs-example"
               defaultActiveKey={currentPage.page}
               activeKey={activeKey}
-              onSelect={k => setActiveKey(k)}
+              onSelect={handleTabSelect}
             >
               <Row>
                 <Col sm={3}>
@@ -61,11 +69,27 @@ function Dashboard() {
                         eventKey="projects"
                         className="link-secondary"
                       >
-                        {(user?.roles === 'site' || user?.roles === 'cell') && 'Proposed '}Projects
+                        Your Projects
                       </Nav.Link>
                     </Nav.Item>
                     {(user?.roles === 'site' || user?.roles === 'cell') && (
-                    <>
+                      <>
+                      <Nav.Item>
+                        <Nav.Link
+                          eventKey="proposed-projects"
+                          className="link-secondary"
+                        >
+                          Proposed Projects
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link
+                          eventKey="cell-details"
+                          className="link-secondary"
+                        >
+                          Cell Details
+                        </Nav.Link>
+                      </Nav.Item>
                       <Nav.Item>
                         <Nav.Link
                           eventKey="admin-things"
@@ -89,11 +113,26 @@ function Dashboard() {
                 <Col sm={9}>
                   <Tab.Content className="border-start p-3">
                     <Tab.Pane eventKey="account">
-                        Tab with form for user to edit their profile things.
-                        <ProfileEditor />
+                      Tab with form for user to edit their profile things.
+                      <ProfileEditor />
                     </Tab.Pane>
                     <Tab.Pane eventKey="projects">
-                      {!user.roles ? <UserProjects /> : <ProposedProjects cell={user?.cellId ?? undefined} />}
+                      <UserProjects
+                        refreshProjectList={refreshProjectList}
+                        setRefreshProjectList={setRefreshProjectList}
+                      ></UserProjects>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="proposed-projects">
+                      {user.roles && (
+                        <ProposedProjects
+                          refreshProjectList={refreshProjectList}
+                          setRefreshProjectList={setRefreshProjectList}
+                          cell={user?.cellId ?? undefined}
+                        />
+                      )}
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="cell-details">
+                      <CellDetails></CellDetails>
                     </Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
                     <Tab.Pane eventKey="admin-faq"><AdminFAQ/></Tab.Pane>

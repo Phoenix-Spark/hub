@@ -207,8 +207,17 @@ export default function Header() {
                       as={Link}
                       to="/dashboard/projects"
                     >
-                      {user.roles === 'cell' || user.roles === 'site' ? 'Proposed Projects' : 'Your Projects'}
+                      Your Projects
                     </Dropdown.Item>
+                    {user.roles === 'site' ||
+                      (user.roles === 'cell' && (
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/proposed-projects"
+                        >
+                          Proposed Projects
+                        </Dropdown.Item>
+                      ))}
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
