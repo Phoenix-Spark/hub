@@ -15,7 +15,9 @@ function Dashboard() {
   const [activeKey, setActiveKey] = useState('account');
 
   useEffect(() => {
-    setActiveKey(currentPage.page);
+    if (currentPage.page === 'projects') {
+      setActiveKey('userProjects');
+    }
   }, [currentPage]);
 
   const displayRoles = () => {
@@ -58,33 +60,44 @@ function Dashboard() {
                     </Nav.Item>
                     <Nav.Item>
                       <Nav.Link
-                        eventKey="projects"
+                        eventKey="userProjects"
                         className="link-secondary"
                       >
-                        {(user?.roles === 'site' || user?.roles === 'cell') && 'Proposed '}Projects
+                        Your Projects
                       </Nav.Link>
                     </Nav.Item>
                     {(user?.roles === 'site' || user?.roles === 'cell') && (
-                      <Nav.Item>
-                        <Nav.Link
-                          eventKey="admin-things"
-                          className="link-secondary"
-                        >
-                          Admin Things
-                        </Nav.Link>
-                      </Nav.Item>
+                      <>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="proposedProjects"
+                            className="link-secondary"
+                          >
+                            Proposed Projects
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="admin-things"
+                            className="link-secondary"
+                          >
+                            Admin Things
+                          </Nav.Link>
+                        </Nav.Item>
+                      </>
                     )}
                   </Nav>
                 </Col>
                 <Col sm={9}>
                   <Tab.Content className="border-start p-3">
                     <Tab.Pane eventKey="account">
-                        Tab with form for user to edit their profile things.
-                        <ProfileEditor />
+                      Tab with form for user to edit their profile things.
+                      <ProfileEditor />
                     </Tab.Pane>
-                    <Tab.Pane eventKey="projects">
-                      {!user.roles ? <UserProjects /> : <ProposedProjects cell={user?.cellId ?? undefined} />}
+                    <Tab.Pane eventKey="userProjects">
+                      <UserProjects></UserProjects>
                     </Tab.Pane>
+                    <Tab.Pane eventKey="proposedProjects">{user.roles && <ProposedProjects cell={user?.cellId ?? undefined} />}</Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
                   </Tab.Content>
                 </Col>
