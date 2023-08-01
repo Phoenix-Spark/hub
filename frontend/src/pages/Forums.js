@@ -52,7 +52,7 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
 ]
 
 const Forums = () => {
-  const { server, setProfileModal } = useContext(AppContext);
+  const { server, user, setProfileModal } = useContext(AppContext);
   const [forumData, setForumData] = useState([]);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null); 
@@ -169,17 +169,28 @@ const Forums = () => {
   }
 
   const createPost = async (category_id, title, body) => {
+    console.log("create post")
     try {
-      const response = await fetch(`${server}/forum/${category_id}/posts`, {
-        method: 'POST',
+      console.log(JSON.stringify({
+        userId: user.id,
+        categoryId: category_id,
+        title: title,
+        body: body,
+      }))
+      const response = await fetch(`${server}/forum/post`, {
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
+        method: 'POST',
         body: JSON.stringify({
-          title,
-          body,
+          userId: user.id,
+          categoryId: category_id,
+          title: title,
+          body: body,
         }),
       });
+      console.log(response)
       if (!response.ok) {
         throw new Error('Failed to create your post');
       }

@@ -64,4 +64,25 @@ router.get('/comment/:commentId/replies', async (req, res, next) => {
   }
 });
 
+router.post('/post', async (req, res, next) => {
+  console.log('create post');
+  try {
+    const data = await db('post')
+      .insert({
+        users_id: req.body.userId,
+        category_id: req.body.category_id,
+        title: req.body.title,
+        body: req.body.body,
+        create_time: Date.now(),
+        is_edited: false,
+        edit_time: null,
+        views: 0,
+      });
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`POST /forum/post ERROR: ${e}`);
+    next(e);
+  }
+});
+
 export default router;

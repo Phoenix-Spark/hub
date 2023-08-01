@@ -7,7 +7,7 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [budget, setBudget] = useState('');
-  const [cellList, setCellList] = useState('');
+  const [cellList, setCellList] = useState([]);
   const [participants, setParticipants] = useState('');
   const [photos, setPhotos] = useState(null);
   const { server, user } = useContext(AppContext);
@@ -111,16 +111,16 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
           <Form.Label className="text-white">Cell</Form.Label>
           <Form.Select
             value={cellList}
-            onChange={e => setCellList({ cell: e.target.value })}
+            onChange={e => setCellList(e.target.value)}
             required
           >
             <option value="">Select a Cell Name</option>
-              {cellList?.map(cell => (
+              {cellList.map((cell) => (
                 <option
-                  key={cellList.id}
-                  value={cellList.cell_name}
+                  key={cell.id}
+                  value={cell.cell_name}
                 >
-                  {cellList.cell_name}
+                  {cell.cell_name}
                 </option>
               ))}
             <option value="createNewCell">Cell not listed? Please create a new cell first.</option>

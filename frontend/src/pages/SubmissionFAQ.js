@@ -36,8 +36,8 @@ const SubmissionFAQ = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (question.trim() === '') return;
-
+    if (newQuestion.trim() === '') return;
+    
     const response = fetch(`${server}/faq`, {
       credentials: 'include',
       headers: {
@@ -45,11 +45,11 @@ const SubmissionFAQ = () => {
       },
       method: 'POST',
       body: JSON.stringify({ 
-        question: question,
+        question: newQuestion.trim(),
         asked_by: user.id 
       }),
     });
-    console.log(`User submitted question: ${question.trim()}`);
+    console.log(`User submitted question: ${newQuestion.trim()}`);
     setRefresh(true)
   };
 
@@ -76,70 +76,69 @@ const SubmissionFAQ = () => {
     setIsEditing(false);
   };
 
-  const faqData = [
-    {
-      question: 'What is Spark Hub?',
-      answer: 'Spark Hub is a platform for creative individuals to collaborate and share ideas.',
-    },
-    {
-      question: 'How do I join Spark Hub?',
-      answer: 'You can join Spark Hub by signing up for an account and becoming a member of our community.',
-    },
-  ];
+  // const faqData = [
+  //   {
+  //     question: 'What is Spark Hub?',
+  //     answer: 'Spark Hub is a platform for creative individuals to collaborate and share ideas.',
+  //   },
+  //   {
+  //     question: 'How do I join Spark Hub?',
+  //     answer: 'You can join Spark Hub by signing up for an account and becoming a member of our community.',
+  //   },
+  // ];
 
   return (
     <div className="container mt-5">
       <h1 className="mb-4">Frequently Asked Questions</h1>
       <Accordion>
-        {faq.map((entry, index)=>
-          <Accordion.Item className="mt-3">
-            <Accordion.Header>
-              <h4>{entry.question}</h4>
-            </Accordion.Header>
-            {isEditing === index ? (
-              <Accordion.Body>
-
-
-                <Form >
-                  <Form.Group controlId="formQuestion">
-                    <Form.Control
-                      type="text"
-                      value={question}
-                      onChange={handleQuestionChange}
-                    />
-                    <Form.Control
-                      type="text"
-                      value={answer}
-                      onChange={handleAnswerChange}
-                    />
-                    <Button variant="primary" onClick={() => handleSave(entry.id)}>
-                      Save
-                    </Button>
-                    <Button variant="danger" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                  </Form.Group>
-                </Form>
-
-
-
-
-              </Accordion.Body>
-            ) : (
-              <Accordion.Body eventKey={index.toString()}>
-                <p>{entry.answer}</p>
-                {user?.roles === 'site' &&(
-                  <button variant = "secondary" onClick={() => handleEdit(index)} className="ms-2">
-                   Edit
-                  </button>  
-                )}
-              </Accordion.Body>
-            )}
-          </Accordion.Item>
+        {faq.map((entry, index)=> // This part isnt returning the jsx it needs to be surronded in () or { return () } kk
+          (
+            <Accordion.Item eventKey={index.toString()} className="mt-3">
+              <Accordion.Header>
+                <h4>{entry.question}</h4>
+              </Accordion.Header>
+              {(isEditing === index) ? 
+                (
+                  <Accordion.Body>
+                    <Form >
+                      <Form.Group controlId="formQuestion">
+                        <Form.Control
+                          type="text"
+                          value={question}
+                          onChange={handleQuestionChange}
+                        />
+                        <Form.Control
+                          type="text"
+                          value={answer}
+                          onChange={handleAnswerChange}
+                        />
+                        <Button variant="primary" onClick={() => handleSave(entry.id)}>
+                          Save
+                        </Button>
+                        <Button variant="danger" onClick={handleCancel}>
+                          Cancel
+                        </Button>
+                      </Form.Group>
+                    </Form>
+                  </Accordion.Body>
+                )
+                :(
+                  <Accordion.Body>
+                    <p>{entry.answer}</p>
+                    {user?.roles === 'site' &&(
+                      <button variant = "secondary" onClick={() => handleEdit(index)} className="ms-2">
+                      Edit
+                      </button>  
+                    )}
+                  </Accordion.Body>
+                )
+              }
+            </Accordion.Item>
+          )
         )}    
       </Accordion>
 
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} className="mt-5">
         <Form.Group controlId="formQuestion">
           <Form.Label>
             <h3>Ask a Question</h3>

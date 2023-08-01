@@ -1,5 +1,4 @@
 import express from 'express';
-import multer from 'multer';
 import db from '../db.js';
 import { findUserById, getUserRoles } from '../Services/LoginService.js';
 
@@ -13,25 +12,25 @@ router.get('/', (req, res) => {
 router.get('/:cellId/all', async (req, res, next) => {
   try {
     const cellData = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
-    const teamData = await db
+
+    const teamData = await db('users')
       .select('users.*')
-      .from('users')
       .join('cell', 'users.cell_id', '=', 'cell.base_id')
       .where('cell.cell_endpoint', req.params.cellId);
-    const currentProjectData = await db
+
+    const currentProjectData = await db('project')
       .select('project.*')
-      .from('project')
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
-      .andWhere('is_approved', true)
-      .andWhere('is_complete', false);
+      .andWhere('project.is_approved', true)
+      .andWhere('project.is_complete', false);
     const previousProjectData = await db
       .select('project.*')
       .from('project')
       .join('cell', 'cell.id', 'project.cell_id')
       .where('cell.cell_endpoint', req.params.cellId)
-      .andWhere('is_approved', true)
-      .andWhere('is_complete', true);
+      .andWhere('project.is_approved', true)
+      .andWhere('project.is_complete', true);
     const baseData = await db('base').select().where('id', cellData[0].id).first();
 
     const data = { ...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData, baseData };
@@ -49,65 +48,17 @@ router.get('/:cellId/all', async (req, res, next) => {
 
 router.get('/:cellId', async (req, res, next) => {
   try {
-    const data = await db.first().from('cell').where('cell_endpoint', req.params.cellId).orWhere('id', req.params.cellId);
+    const data = await db('cell').first().where('cell_endpoint', req.params.cellId).orWhere('id', req.params.cellId);
 
     if (!data) {
       return res.status(404).json({ message: 'Cell not found' });
     }
-
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
     next(e);
   }
 });
-
-const cellUpload = multer();
-
-router.patch(
-  '/:cellId',
-  async (req, res, next) => {
-    if (!req.session.user) {
-      return res.sendStatus(401);
-    }
-
-    const user = await findUserById(req.session.user);
-    if (!user) {
-      return res.sendStatus(401);
-    }
-    req.user = user;
-    return next();
-  },
-  cellUpload.none(),
-  async (req, res, next) => {
-    try {
-      // const data = await db.first().from('cell').where('cell_endpoint', req.params.cellId).orWhere('id', req.params.cellId);
-      console.log(req.body);
-      const { id, baseId, cellName, cellEndpoint, externalWebsite, cellMission, contactNumber1, contactNumber2, email } = req.body;
-      if (req.params.cellId !== id) {
-        return res.status(400).send({ msg: 'Wrong cell id found' });
-      }
-      const updated = await db('cell').first().where('id', id).update(
-        {
-          base_id: baseId,
-          cell_name: cellName,
-          cell_endpoint: cellEndpoint,
-          external_website: externalWebsite,
-          cell_mission: cellMission,
-          contact_number1: contactNumber1,
-          contact_number2: contactNumber2,
-          email,
-        },
-        ['*']
-      );
-
-      res.status(200).json(updated[0]);
-    } catch (e) {
-      console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
-      next(e);
-    }
-  }
-);
 
 router.get('/:cellId/team', async (req, res, next) => {
   try {
@@ -161,8 +112,8 @@ router.get(
         .join('cell', 'cell.id', 'project.cell_id')
         .join('users', 'users.id', 'project.proposed_by')
         .where(whereCondition)
-        .andWhere('is_approved', null)
-        .orderBy('date_proposed');
+        .andWhere('project.is_approved', null)
+        .orderBy('project.date_proposed');
 
       res.status(200).json(data ?? {});
     } catch (e) {
