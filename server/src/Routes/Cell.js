@@ -48,9 +48,9 @@ router.get('/:cellId/all', async (req, res, next) => {
 
 router.get('/:cellId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+    const data = await db.first().from('cell').where('cell_endpoint', req.params.cellId).orWhere('id', req.params.cellId);
 
-    if (data.length === 0) {
+    if (!data) {
       return res.status(404).json({ message: 'Cell not found' });
     }
 

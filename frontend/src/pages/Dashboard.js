@@ -8,10 +8,11 @@ import ProfileEditor from '../components/Dashboard/ProfileEditor.jsx';
 import UserProjects from '../components/Dashboard/UserProjects.jsx';
 
 import './Dashboard.scss';
+import CellDetails from '../components/Dashboard/CellDetails.jsx';
 
 function Dashboard() {
   const currentPage = useParams();
-  const { user } = useContext(AppContext);
+  const { server, user } = useContext(AppContext);
   const [activeKey, setActiveKey] = useState('account');
   const [refreshProjectList, setRefreshProjectList] = useState(0);
 
@@ -81,6 +82,14 @@ function Dashboard() {
                         </Nav.Item>
                         <Nav.Item>
                           <Nav.Link
+                            eventKey="cellDetails"
+                            className="link-secondary"
+                          >
+                            Cell Details
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
                             eventKey="admin-things"
                             className="link-secondary"
                           >
@@ -111,6 +120,9 @@ function Dashboard() {
                           cell={user?.cellId ?? undefined}
                         />
                       )}
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="cellDetails">
+                      Cell details go here if we had any.<CellDetails></CellDetails>
                     </Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
                   </Tab.Content>
