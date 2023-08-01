@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
 
 const CellDetails = () => {
-  const [validated, setValidated] = useState();
   const { server, user } = useContext(AppContext);
+  const [editSuccess, setEditSuccess] = useState(false);
+  const [validated, setValidated] = useState(false);
 
   const [nameValue, setNameValue] = useState('');
   const [baseValue, setBaseValue] = useState('');
@@ -18,6 +19,19 @@ const CellDetails = () => {
   const logoFileField = useRef();
   const idField = useRef();
 
+  const resetValues = data => {
+    setNameValue(data.cell_name);
+    setBaseValue(data.base_id);
+    setEndpointValue(data.cell_endpoint);
+    setWebsiteValue(data.external_website);
+    setMissionValue(data.cell_mission);
+    setContact1Value(data.contact_number1);
+    setContact2Value(data.contact_number2);
+    setEmailValue(data.email);
+    logoFileField.current.value = '';
+    idField.current.value = data.id;
+  };
+
   useEffect(() => {
     let ignore = false;
     const getCellData = async ignore => {
@@ -25,16 +39,7 @@ const CellDetails = () => {
       if (response.ok) {
         const data = await response.json();
         if (!ignore) {
-          setNameValue(data.cell_name);
-          setBaseValue(data.base_id);
-          setEndpointValue(data.cell_endpoint);
-          setWebsiteValue(data.external_website);
-          setMissionValue(data.cell_mission);
-          setContact1Value(data.contact_number1);
-          setContact2Value(data.contact_number2);
-          setEmailValue(data.email);
-          logoFileField.current.value = '';
-          idField.current.value = data.id;
+          resetValues(data);
         }
       }
     };
@@ -45,6 +50,13 @@ const CellDetails = () => {
       ignore = true;
     };
   }, [user, resetForm]);
+
+  useEffect(() => {
+    const hideEditSuccess = setTimeout(() => {
+      setEditSuccess(false);
+    }, 3000);
+    return () => clearTimeout(hideEditSuccess);
+  }, [editSuccess]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -62,15 +74,19 @@ const CellDetails = () => {
         const formData = new FormData(form);
 
         console.log(formData);
-        //
-        // const response = await fetch(`${server}/signup`, {
-        //   method: 'POST',
-        //   body: formData,
-        // });
-        //
-        // if (response.ok) {
-        //   const data = await response.json();
-        // }
+
+        const response = await fetch(`${server}/cell/${idField.current.value}`, {
+          credentials: 'include',
+          method: 'PATCH',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          resetValues(data);
+          setEditSuccess(true);
+        }
       } catch (e) {
         console.error('There was an error.', e);
       }
@@ -79,6 +95,7 @@ const CellDetails = () => {
 
   return (
     <>
+      {editSuccess && <Alert variant="success">Project edited successfully!</Alert>}
       <Row>
         <Col>
           <h1>Cell Details</h1>

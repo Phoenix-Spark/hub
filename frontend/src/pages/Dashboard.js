@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Col, Nav, Row, Tab } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import ProposedProjects from '../components/Dashboard/ProposedProjects.jsx';
@@ -12,16 +12,13 @@ import CellDetails from '../components/Dashboard/CellDetails.jsx';
 
 function Dashboard() {
   const currentPage = useParams();
+  const navigate = useNavigate();
   const { server, user } = useContext(AppContext);
   const [activeKey, setActiveKey] = useState('account');
   const [refreshProjectList, setRefreshProjectList] = useState(0);
 
   useEffect(() => {
-    if (currentPage.page === 'projects') {
-      setActiveKey('userProjects');
-    } else if (currentPage.page === 'proposed-projects') {
-      setActiveKey('proposedProjects');
-    }
+    setActiveKey(currentPage.page);
   }, [currentPage]);
 
   const displayRoles = () => {
@@ -32,6 +29,11 @@ function Dashboard() {
         return 'Site Admin';
       }
     }
+  };
+
+  const handleTabSelect = key => {
+    console.log(key);
+    navigate(`/dashboard/${key}`);
   };
 
   return (
@@ -46,7 +48,7 @@ function Dashboard() {
               id="left-tabs-example"
               defaultActiveKey={currentPage.page}
               activeKey={activeKey}
-              onSelect={k => setActiveKey(k)}
+              onSelect={handleTabSelect}
             >
               <Row>
                 <Col sm={3}>
@@ -64,7 +66,7 @@ function Dashboard() {
                     </Nav.Item>
                     <Nav.Item>
                       <Nav.Link
-                        eventKey="userProjects"
+                        eventKey="projects"
                         className="link-secondary"
                       >
                         Your Projects
@@ -74,7 +76,7 @@ function Dashboard() {
                       <>
                         <Nav.Item>
                           <Nav.Link
-                            eventKey="proposedProjects"
+                            eventKey="proposed-projects"
                             className="link-secondary"
                           >
                             Proposed Projects
@@ -82,7 +84,7 @@ function Dashboard() {
                         </Nav.Item>
                         <Nav.Item>
                           <Nav.Link
-                            eventKey="cellDetails"
+                            eventKey="cell-details"
                             className="link-secondary"
                           >
                             Cell Details
@@ -106,13 +108,13 @@ function Dashboard() {
                       Tab with form for user to edit their profile things.
                       <ProfileEditor />
                     </Tab.Pane>
-                    <Tab.Pane eventKey="userProjects">
+                    <Tab.Pane eventKey="projects">
                       <UserProjects
                         refreshProjectList={refreshProjectList}
                         setRefreshProjectList={setRefreshProjectList}
                       ></UserProjects>
                     </Tab.Pane>
-                    <Tab.Pane eventKey="proposedProjects">
+                    <Tab.Pane eventKey="proposed-projects">
                       {user.roles && (
                         <ProposedProjects
                           refreshProjectList={refreshProjectList}
@@ -121,8 +123,8 @@ function Dashboard() {
                         />
                       )}
                     </Tab.Pane>
-                    <Tab.Pane eventKey="cellDetails">
-                      Cell details go here if we had any.<CellDetails></CellDetails>
+                    <Tab.Pane eventKey="cell-details">
+                      <CellDetails></CellDetails>
                     </Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
                   </Tab.Content>
