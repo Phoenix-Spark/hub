@@ -33,12 +33,6 @@ stages:          # List of stages for jobs, and their order of execution
   - review
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
-  script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-
 docker-build:
     stage: build
     image: docker:latest
@@ -58,7 +52,7 @@ docker-build:
               echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
           fi
         - |
-          image_tag = "$CI_REGISTRY_IMAGE-server${tag}"
+          image_tag="$CI_REGISTRY_IMAGE-server${tag}"
           echo "Using this image tag": $image_tag"
         - docker build -f ./server/Dockerfile --pull -t "${image_tag}" .
         - docker push "$CI_REGISTRY_IMAGE-server${tag}"
