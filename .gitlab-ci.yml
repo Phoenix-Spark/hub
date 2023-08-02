@@ -53,11 +53,11 @@ docker-build-server:
           fi
 
         - |
-          image_tag="$CI_REGISTRY_IMAGE-server${tag}"
+          image_tag="$CI_REGISTRY_IMAGE/server${tag}"
           echo "Using this image tag: $image_tag"
 
         - docker build -f ./server/Dockerfile --pull -t "${image_tag}" ./server
-        - docker push "$CI_REGISTRY_IMAGE-server${tag}"
+        - docker push "${image_tag}"
 
         # Run this job in a branch where a Dockerfile exists
     rules:
@@ -86,11 +86,11 @@ docker-build-frontend:
           fi
 
         - |
-          image_tag="$CI_REGISTRY_IMAGE-frontend${tag}"
+          image_tag="$CI_REGISTRY_IMAGE/frontend${tag}"
           echo "Using this image tag: $image_tag"
 
         - docker build -f ./frontend/Dockerfile --pull -t "${image_tag}" ./frontend
-        - docker push "$CI_REGISTRY_IMAGE-frontend${tag}"
+        - docker push "${image_tag}"
         # Run this job in a branch where a Dockerfile exists
     rules:
       - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
