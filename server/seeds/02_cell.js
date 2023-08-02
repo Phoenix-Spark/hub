@@ -46,5 +46,31 @@ export async function seed(knex) {
       logo_url: '/images/placeholder_logo.svg',
       is_approved: 'yes',
     },
+    {
+      base_id: 4,
+      cell_name: 'Eglin Spark',
+      cell_endpoint: 'eglin',
+      external_website: 'https://cell4website.com',
+      cell_mission:
+        'tbd',
+      contact_number1: '234-525-6789',
+      contact_number2: '345-535-9012',
+      email: 'cell4@cell4.com',
+      logo_url: '/images/placeholder_logo.svg',
+      is_approved: 'no',
+    },
+    {
+      base_id: 5,
+      cell_name: 'Spark in Space',
+      cell_endpoint: 'vandenberg',
+      external_website: 'https://cell5website.com',
+      cell_mission:
+        'To be way better than any lame air force spark cell',
+      contact_number1: '666-525-6789',
+      contact_number2: '666-535-9012',
+      email: 'cell5@cell5.com',
+      logo_url: '/images/placeholder_logo.svg',
+      is_approved: 'no',
+    },
   ]);
 }

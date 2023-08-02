@@ -197,7 +197,7 @@ export default function Header() {
                     {`${user.firstName} ${user.lastName}`}
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
-                    <Dropdown.Header>Personal Section</Dropdown.Header>
+                    {/* <Dropdown.Header>Personal Section</Dropdown.Header> */}
                     <Dropdown.Item
                       as={Link}
                       to="dashboard/account"
@@ -210,30 +210,40 @@ export default function Header() {
                     >
                       Your Projects
                     </Dropdown.Item>
-                    {user.roles === 'site' ||
-                      (user.roles === 'cell' && (
-                        <>
-                          <Dropdown.Header>Admin Section</Dropdown.Header>
-                          <Dropdown.Item
-                            as={Link}
-                            to="/dashboard/proposed-projects"
-                          >
-                            Proposed Projects
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            as={Link}
-                            to="/dashboard/cell-details"
-                          >
-                            Cell Settings
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            as={Link}
-                            to="/dashboard/approve-faq"
-                          >
-                            Proposed FAQs
-                          </Dropdown.Item>
-                        </>
-                      ))}
+                    {(user.roles === 'site' || user.roles === 'cell') && (
+                      <>
+                        <Dropdown.Header>Cell Administration</Dropdown.Header>
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/proposed-projects"
+                        >
+                          Proposed Projects
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/cell-details"
+                        >
+                          Cell Settings
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/approve-faq"
+                        >
+                          Proposed FAQs
+                        </Dropdown.Item>
+                      </>
+                    )}
+                    {user.roles === 'site' && (
+                      <>
+                        <Dropdown.Header>Site Administration</Dropdown.Header>
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/proposed-cells"
+                        >
+                          Proposed Cells
+                        </Dropdown.Item>
+                      </>
+                    )}
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
                       className="text-danger"

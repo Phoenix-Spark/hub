@@ -44,31 +44,36 @@ export default function CellRegistration() {
 
   const generateSuggestedEndpoint = (baseName) => {
     const exclusions = [
-      "Army Depot", "Arsenal", "Fort", "Camp", "Air Reserve Base", 
-      "AFB", "Proving Ground", "Maneuver Training Center", "Coast Guard Air Station", 
-      "Joint Forces Training Base", "Military Ocean Terminal", "Naval Air Station", 
-      "Reserve Forces Training Area", "Presidio of", "Depot", "SFB", "SFS", 
-      "Air Force Base", "Space Force Base", "Ft", "Ft.", "Space Force Station", 
-      "Air Base", "Army Airfield", "Barracks", "Support Center", "Training Center", 
-      "Joint Training Center", "Proving Ground", "Air National Guard Base", 
-      "Military Post", "Joint National Guard Base", "Marine Corps Air Station", 
-      "MCAS", "MCRD", "MCB", "Hall", "MCLB", "Naval Base", "Field", 
-      "Joint Expeditionary Base", "Naval Weapons Station", "Naval Station"
+      "Depot", "Arsenal", "Camp", "Reserve", "AFB", "Proving", "Ground", "Maneuver", "Coast", "Guard", 
+      "Ocean", "Terminal", "Naval", "Depot", "SFB", "SFS", "Air", "Force", "Base", "Space", "Station", 
+      "Base", "Army", "Airfield", "Barracks", "Support", "Center", "Training", "Center", "ANGB", 
+      "Military", "Post", "Marine", "Corps", "MCAS", "MCRD", "MCB", "Hall", "MCLB", "Field"
     ];
-  
-    const words = baseName.toLowerCase().split(' ');
-  
-    const filteredWords = words.filter(word => !exclusions.some(exclusion => word.includes(exclusion.toLowerCase())));
+
+    let words = baseName.split(' ');
+    const filteredWords = words.filter(word => !exclusions.some(exclusion => word.includes(exclusion)));
   
     let endpoint = '';
-    if (baseName.includes("Joint Base") || baseName.includes("Academy")) {
-      endpoint = filteredWords.map(word => word[0]).join('');
-    } else {
-      endpoint = filteredWords.join('');
+    if (words[0] === "Joint" && words[1] === "Base") {
+        let abbreviation = '';
+        if (words[2].includes('-')) {
+          const hyphenatedParts = words[2].split('-');
+          abbreviation = hyphenatedParts.map(word => word[0].toLowerCase()).join('');
+        } else {
+      abbreviation = words.slice(2).map(word => word[0].toLowerCase()).join('');
     }
-  
+      endpoint = 'jb' + abbreviation;
+    } else {
+      endpoint = filteredWords.map(word => {
+        if (word.includes('-')) {
+          const hyphenatedParts = word.split('-');
+          return hyphenatedParts.map(part => part[0].toLowerCase() + part.slice(1)).join('-');
+        }
+        return word.toLowerCase();
+      }).join('-');
+    }
     return endpoint;
-  }
+  };
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -114,8 +119,7 @@ export default function CellRegistration() {
         <Col>
           <Form.Group controlId="baseName">
             <Form.Label>Base Name</Form.Label>
-            <Form.Control
-              as="select"
+            <Form.Select
               name="base_name"
               value={formData.base_name}
               onChange={handleChange}
@@ -130,7 +134,7 @@ export default function CellRegistration() {
                   {base.base_name}
                 </option>
               ))}
-            </Form.Control>
+            </Form.Select>
           </Form.Group>
         </Col>
 

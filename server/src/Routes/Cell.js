@@ -110,10 +110,11 @@ router.patch(
 router.get('/:cellId/team', async (req, res, next) => {
   try {
     const data = await db
-      .select('*')
+      .select('users.id', 'users.username','users.first_name as firstName','users.last_name as lastName','users.email','users.photo_url as photo','users.contact_number1 as contactNumber1','users.contact_number2 as contactNumber2','users.bio')
       .from('users')
       .join('cell', 'users.cell_id', '=', 'cell.base_id')
-      .where('cell.cell_endpoint', req.params.cellId);
+      .where('cell.cell_endpoint', req.params.cellId)
+      .orWhere('cell.id', req.params.cellId);
 
     res.status(200).json(data);
   } catch (e) {

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { Accordion, Button, Col, Form, Row, ListGroup, Modal } from 'react-bootstrap';
+import { Accordion, Button, Col, Form, Row, ListGroup, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 import { formatDate } from '../utils/index.js';
 
@@ -56,13 +56,26 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
 const Forums = () => {
   const { server, user, setProfileModal } = useContext(AppContext);
   const [forumData, setForumData] = useState([]);
+
+  //Post's States:
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [postTitle, setPostTitle] = useState('');
   const [postBody, setPostBody] = useState('');
   const [postsToShow, setPoststoShow] = useState(10);
-  const [totalPosts, setTotalPosts] = useState(0);
+
+  //Comment's States:
+  const [commentBody, setCommentBody] = useState('');
+  const [showAddCommentModal, setShowAddCommentModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPostIndex, setSelectedPostIndex] = useState(null);
+
+  //Reply's States:
+  const [replyBody, setReplyBody] = useState('');
+  const [selectedComment, setSelectedComment] = useState(null);
+  const [selectedCommentIndex, setSelectedCommentIndex] = useState(null);
+  const [showReplyModal, setShowReplyModal] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -77,15 +90,15 @@ const Forums = () => {
         })
         .then(data => {
           const newData = [...data];
-          newData.forEach(cat=>{
+          newData.forEach(cat => {
             cat.posts = [];
-          })
-          setForumData(newData)
-        })
+          });
+          setForumData(newData);
+        });
     } catch (e) {
       console.error('There was an error.', e);
     }
-  }
+  };
 
   const fetchPosts = async (category_index, category_id) => {
     try {
@@ -96,17 +109,17 @@ const Forums = () => {
         })
         .then(data => {
           const newData = [...forumData];
-          const newPosts = data
-          newPosts.forEach(post=>{
+          const newPosts = data;
+          newPosts.forEach(post => {
             post.comments = [];
-          })
-          newData[category_index].posts.push(...newPosts)
-          setForumData(newData)
-        })
+          });
+          newData[category_index].posts.push(...newPosts);
+          setForumData(newData);
+        });
     } catch (e) {
       console.error('There was an error.', e);
     }
-  }
+  };
 
   const fetchComments = async (category_index, post_index, post_id) => {
     try {
@@ -118,16 +131,16 @@ const Forums = () => {
         .then(data => {
           const newData = [...forumData];
           const newComments = data;
-          newComments.forEach(comment=>{
+          newComments.forEach(comment => {
             comment.replies = [];
-          })
-          newData[category_index].posts[post_index].comments.push(...newComments)
-          setForumData(newData)
-        })
+          });
+          newData[category_index].posts[post_index].comments.push(...newComments);
+          setForumData(newData);
+        });
     } catch (e) {
       console.error('There was an error.', e);
     }
-  }
+  };
 
   const fetchReplies = async (category_index, post_index, comment_index, comment_id) => {
     try {
@@ -138,37 +151,34 @@ const Forums = () => {
         })
         .then(data => {
           const newData = [...forumData];
-          newData[category_index].posts[post_index].comments[comment_index].replies.push(...data)
-          setForumData(newData)
-        })
+          newData[category_index].posts[post_index].comments[comment_index].replies.push(...data);
+          setForumData(newData);
+        });
     } catch (e) {
       console.error('There was an error.', e);
     }
-  }
+  };
 
   const handleCategoryEnter = (category_index, category_id) => {
-    if(forumData[category_index].posts.length===0){
-      fetchPosts(category_index, category_id)
-    }else{
-
+    if (forumData[category_index].posts.length === 0) {
+      fetchPosts(category_index, category_id);
+    } else {
     }
-  }
+  };
 
   const handlePostEnter = (category_index, post_index, post_id) => {
-    if(forumData[category_index].posts[post_index].comments.length===0){
-      fetchComments(category_index, post_index, post_id)
-    }else{
-
+    if (forumData[category_index].posts[post_index].comments.length === 0) {
+      fetchComments(category_index, post_index, post_id);
+    } else {
     }
-  }
+  };
 
   const handleCommentEnter = (category_index, post_index, comment_index, comment_id) => {
-    if(forumData[category_index].posts[post_index].comments[comment_index].replies.length===0){
-      fetchReplies(category_index, post_index, comment_index, comment_id)
-    }else{
-
+    if (forumData[category_index].posts[post_index].comments[comment_index].replies.length === 0) {
+      fetchReplies(category_index, post_index, comment_index, comment_id);
+    } else {
     }
-  }
+  };
 
   const createPost = async (category_id, category_index, title, body) => {
     try {
@@ -185,7 +195,7 @@ const Forums = () => {
           body: body,
         }),
       });
-      console.log(response)
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to create your post');
       }
@@ -193,37 +203,38 @@ const Forums = () => {
       console.log('New post created:', data);
 
       let newData = [...forumData];
-      console.log("user = ", user)
-      newData[category_index].posts.unshift({...data, comments: [], username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
-      setForumData(newData)
+      console.log('user = ', user);
+      newData[category_index].posts.unshift({ ...data, comments: [], username: user.username, photo_url: user.photo }); //fakes local data until real refresh})
+      setForumData(newData);
       handleCloseCreatePostModal();
-
     } catch (error) {
       console.error('Error creating a post', error);
     }
-  }
+  };
 
   const handleCreatePost = (category_id, category_index) => {
     const title = postTitle;
     const body = postBody;
     createPost(category_id, category_index, title, body);
-  }
+  };
 
   const handleCloseCreatePostModal = () => {
     setSelectedCategory(null);
     setSelectedCategoryIndex(null);
     setShowCreatePostModal(false);
-  }
+    setPostTitle('');
+    setPostBody('');
+  };
 
   const handleShowCreatePostModal = (category_id, category_index) => {
     setSelectedCategory(category_id);
     setSelectedCategoryIndex(category_index);
     setShowCreatePostModal(true);
-  }
+  };
 
   //Add Comment Functionality
   const addComment = async (category_index, post_index, post_id, body) => {
-    console.log("create comment")
+    console.log('create comment');
     try {
       const response = await fetch(`${server}/forum/comment`, {
         credentials: 'include',
@@ -237,7 +248,7 @@ const Forums = () => {
           body: body,
         }),
       });
-      console.log(response)
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to create your comment');
       }
@@ -245,17 +256,40 @@ const Forums = () => {
       console.log('New comment created:', data);
 
       let newData = [...forumData];
-      newData[category_index].posts[post_index].push({...data, replies: [], username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
-      setForumData(newData)
-      //handleCloseCreatePostModal();
-
+      console.log(category_index, post_index, post_id, body);
+      console.log(newData);
+      console.log(newData.posts);
+      newData[category_index].posts[post_index].comments.push({ ...data, replies: [], username: user.username, photo_url: user.photo }); //fakes local data until real refresh})
+      setForumData(newData);
+      handleCloseAddCommentModal();
     } catch (error) {
       console.error('Error creating a comment', error);
     }
-  }
+  };
 
-  const addReply = async (category_index, post_index, comment_index, comment_id, body) => {
-    console.log("create reply")
+  const handleAddComment = (category_index, post_index, post_id) => {
+    const body = commentBody;
+    addComment(category_index, post_index, post_id, body);
+  };
+
+  const handleShowAddCommentModal = (category_index, post_index, post_id) => {
+    setSelectedCategoryIndex(category_index);
+    setSelectedPostIndex(post_index);
+    setSelectedPost(post_id);
+    setShowAddCommentModal(true);
+  };
+
+  const handleCloseAddCommentModal = () => {
+    setSelectedCategoryIndex(null);
+    setSelectedPostIndex(null);
+    setSelectedPost(null);
+    setShowAddCommentModal(false);
+    setCommentBody('');
+  };
+
+  //Reply functionalities:
+  const reply = async (category_index, post_index, comment_index, comment_id, body) => {
+    console.log('create reply');
     try {
       const response = await fetch(`${server}/forum/reply`, {
         credentials: 'include',
@@ -269,7 +303,7 @@ const Forums = () => {
           body: body,
         }),
       });
-      console.log(response)
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to create your reply');
       }
@@ -277,17 +311,43 @@ const Forums = () => {
       console.log('New reply created:', data);
 
       let newData = [...forumData];
-      newData[category_index].posts[post_index].comments[comment_index].push({...data, username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
-      setForumData(newData)
-      //handleCloseCreatePostModal();
-
+      newData[category_index].posts[post_index].comments[comment_index].replies.push({
+        ...data,
+        username: user.username,
+        photo_url: user.photo,
+      }); //fakes local data until real refresh})
+      setForumData(newData);
+      handleCloseReplyModal();
     } catch (error) {
       console.error('Error creating a reply', error);
     }
-  }
+  };
 
-  const handleDeletePost = async (postId, postIndex) => {
-    try{
+  const handleReply = (category_index, post_index, comment_index, comment_id) => {
+    const body = replyBody;
+    reply(category_index, post_index, comment_index, comment_id, body);
+  };
+
+  const handleShowReplyModal = (category_index, post_index, comment_index, comment_id) => {
+    setSelectedCategoryIndex(category_index);
+    setSelectedPostIndex(post_index);
+    setSelectedCommentIndex(comment_index);
+    setSelectedComment(comment_id);
+    setShowReplyModal(true);
+  };
+
+  const handleCloseReplyModal = () => {
+    setSelectedCategoryIndex(null);
+    setSelectedPostIndex(null);
+    setSelectedCommentIndex(null);
+    setSelectedComment(null);
+    setShowReplyModal(false);
+    setReplyBody('');
+  };
+
+  //Delete functionalities
+  const handleDeletePost = async (postId, postIndex, catIndex) => {
+    try {
       const response = await fetch(`${server}/forum/post/${postId}`, {
         method: 'DELETE',
         headers: {
@@ -299,13 +359,16 @@ const Forums = () => {
         throw new Error('Failed to delete the post.');
       }
       console.log('Post deleted successfully.');
+      let newData = [...forumData];
+      newData[catIndex].posts.splice(postIndex, 1);
+      setForumData(newData);
     } catch (error) {
       console.error('Error deleting the post:', error);
     }
-  }
+  };
 
-  const handleDeleteComment = async (commentId, commentIndex) => {
-    try{
+  const handleDeleteComment = async (commentId, commentIndex, postIndex, catIndex) => {
+    try {
       const response = await fetch(`${server}/forum/comment/${commentId}`, {
         method: 'DELETE',
         headers: {
@@ -314,63 +377,126 @@ const Forums = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete the post.');
+        throw new Error('Failed to delete the comment.');
       }
       console.log('Comment deleted successfully.');
+      let newData = [...forumData];
+      newData[catIndex].posts[postIndex].comments.splice(commentIndex, 1);
+      setForumData(newData);
     } catch (error) {
       console.error('Error deleting the comment:', error);
     }
-  }
-  
-  const handleDeleteReply = (replyId, replyIndex) => {
-    //need Delete route
-    console.log("need Delete route")
-  }
+  };
 
-  return(
-    <><br/>
-    <h1>Forums</h1>
+  const handleDeleteReply = async (replyId, replyIndex, commentIndex, postIndex, catIndex) => {
+    try {
+      const response = await fetch(`${server}/forum/reply/${replyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete the reply.');
+      }
+      console.log('Reply deleted successfully.');
+      let newData = [...forumData];
+      newData[catIndex].posts[postIndex].comments[commentIndex].replies.splice(replyIndex, 1);
+      setForumData(newData); //why is this not causing rerender???
+    } catch (error) {
+      console.error('Error deleting the reply:', error);
+    }
+  };
+
+  return (
+    <>
+      <br />
+      <h1>Forums</h1>
       <Accordion className="mt-5">
-        {forumData?.map((category,cat_index)=>
-          <Accordion.Item key={cat_index} eventKey={cat_index}>
-            <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
-            <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
+        {forumData?.map((category, cat_index) => (
+          <Accordion.Item
+            key={cat_index}
+            eventKey={cat_index}
+          >
+            <Accordion.Header>
+              <h2>{category.name}</h2>
+            </Accordion.Header>
+            <Accordion.Body onEnter={() => handleCategoryEnter(cat_index, category.id)}>
               <div className="d-flex justify-content-between">
                 <h4>{category.detail}</h4>
-                <Button disabled={!user} onClick={() => handleShowCreatePostModal(category.id, cat_index)}>Create A Post...</Button>
+                <Button
+                  disabled={!user}
+                  onClick={() => handleShowCreatePostModal(category.id, cat_index)}
+                >
+                  Create a Post...
+                </Button>
               </div>
               <Accordion className="mt-5">
-                {forumData[cat_index].posts.map((post,post_index)=>
-                  <Accordion.Item key={post_index} eventKey={post_index}>
+                {forumData[cat_index].posts.map((post, post_index) => (
+                  <Accordion.Item
+                    key={post_index}
+                    eventKey={post_index}
+                  >
                     <Accordion.Header>
                       <div className="d-flex w-100 me-4 justify-content-between">
                         <div className="d-flex">
-                          {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeletePost(post.id, post.index)}>Delete</Button>:<></>}
+                          {user?.roles === 'site' ? (
+                            <Button
+                              style={{ height: '50px', flex: 'none' }}
+                              variant="danger"
+                              onClick={() => handleDeletePost(post.id, post.index, cat_index)}
+                            >
+                              Delete
+                            </Button>
+                          ) : (
+                            <></>
+                          )}
                           <h5>{post.title}</h5>
                         </div>
-                        <PostUserTag post={post}/>
+                        <PostUserTag post={post} />
                       </div>
                     </Accordion.Header>
-                    <Accordion.Body onEnter={()=>handlePostEnter(cat_index, post_index, post.id)}>
+                    <Accordion.Body onEnter={() => handlePostEnter(cat_index, post_index, post.id)}>
                       {post.body}
-                      <br/><br/>
+                      <br />
+                      <br />
                       <div className="d-flex justify-content-between">
                         <h4>{`Comments(${forumData[cat_index].posts[post_index].comments.length}):`}</h4>
-                        <Button disabled={!user}>Add Comment...</Button>
+                        <Button
+                          disabled={!user}
+                          onClick={() => handleShowAddCommentModal(cat_index, post_index, post.id)}
+                        >
+                          Add Comment...
+                        </Button>
                       </div>
                       <Accordion className="mt-5">
-                        {forumData[cat_index].posts[post_index].comments.map((comment,comment_index)=>
-                          <Accordion.Item key={`com-${cat_index}-${comment_index}`} eventKey={comment_index}>
+                        {forumData[cat_index].posts[post_index].comments.map((comment, comment_index) => (
+                          <Accordion.Item
+                            key={comment_index}
+                            eventKey={comment_index}
+                          >
                             <Accordion.Header>
                               <div className="d-flex w-100 me-4 justify-content-between">
-                                {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteComment(comment.id, comment.index)}>Delete</Button>:<></>}
-                                <h6>{comment.body.substring(0,63).concat("...")}</h6>
+                                {user?.roles === 'site' ? (
+                                  <Button
+                                    style={{ height: '50px', flex: 'none' }}
+                                    variant="danger"
+                                    onClick={() => handleDeleteComment(comment.id, comment_index, post_index, cat_index)}
+                                  >
+                                    Delete
+                                  </Button>
+                                ) : (
+                                  <></>
+                                )}
+                                <h6>{comment.body.substring(0, 63).concat('...')}</h6>
                                 <CommentUserTag comment={comment} />
                               </div>
                             </Accordion.Header>
-                            <Accordion.Body onEnter={()=>handleCommentEnter(cat_index, post_index, comment_index, comment.id)}>
+                            <Accordion.Body onEnter={() => handleCommentEnter(cat_index, post_index, comment_index, comment.id)}>
                               {comment.body}
-                              <br/><br/>
+                              <br />
+                              <br />
                               <Accordion>
                                 <Accordion.Item eventKey="0">
                                   <Accordion.Header>
@@ -381,91 +507,207 @@ const Forums = () => {
                                   </Accordion.Header>
                                   <Accordion.Body>
                                     <ListGroup>
-                                      {comment.replies.map(reply=>
-                                        <ListGroup.Item>
+                                      {comment.replies.map((reply, reply_index) => (
+                                        <ListGroup.Item key={reply_index}>
                                           <div className="d-flex w-100 me-4 justify-content-between">
-                                            {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteReply(reply.id, reply.index)}>Delete</Button>:<></>}
+                                            {user?.roles === 'site' ? (
+                                              <Button
+                                                style={{ height: '50px', flex: 'none' }}
+                                                variant="danger"
+                                                onClick={() =>
+                                                  handleDeleteReply(reply.id, reply_index, comment_index, post_index, cat_index)
+                                                }
+                                              >
+                                                Delete
+                                              </Button>
+                                            ) : (
+                                              <></>
+                                            )}
                                             <h6 className="me-5">{reply.body}</h6>
-                                            <h6><ReplyUserTag reply={reply}/></h6>
+                                            <h6>
+                                              <ReplyUserTag reply={reply} />
+                                            </h6>
                                           </div>
                                         </ListGroup.Item>
-                                      )}
+                                      ))}
                                     </ListGroup>
-                                    <div className='mt-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                      <Button style={{textAlign: 'right'}} disabled={!user}>Reply...</Button>
+                                    <div
+                                      className="mt-3"
+                                      style={{ display: 'flex', justifyContent: 'flex-end' }}
+                                    >
+                                      <Button
+                                        style={{ textAlign: 'right' }}
+                                        disabled={!user}
+                                        onClick={() => handleShowReplyModal(cat_index, post_index, comment_index, reply.id)}
+                                      >
+                                        Reply...
+                                      </Button>
                                     </div>
                                   </Accordion.Body>
                                 </Accordion.Item>
                               </Accordion>
                             </Accordion.Body>
                           </Accordion.Item>
-                        )}
-                        <br/><br/>
+                        ))}
+                        <br />
+                        <br />
                         <Button disabled={true}>Load More Comments....</Button>
                       </Accordion>
                     </Accordion.Body>
                   </Accordion.Item>
-                )}
-                <br/><br/>
+                ))}
+                <br />
+                <br />
                 <Button disabled={true}>Load More Posts....</Button>
               </Accordion>
             </Accordion.Body>
           </Accordion.Item>
-        )}
+        ))}
       </Accordion>
       {/* <TheForum/> */}
 
+      {/*Post Modal*/}
       {showCreatePostModal && selectedCategory !== null && (
-      <Modal
-        size= 'lg'
-        centered
-        show={showCreatePostModal} onHide={handleCloseCreatePostModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create a New Post</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId='postTitle'>
-            <Form.Label>Title</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter post title'
-              value={postTitle}
-              onChange={(e) => setPostTitle(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId='postBody'>
-            <Form.Label>Body</Form.Label>
-            <Form.Control
-              as='textarea'
-              rows={4}
-              placeholder='Type here'
-              value={postBody}
-              onChange={(e) => setPostBody(e.target.value)}
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleCloseCreatePostModal}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={() => handleCreatePost(selectedCategory, selectedCategoryIndex)}>
-            Create Post
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal
+          size="lg"
+          centered
+          show={showCreatePostModal}
+          onHide={handleCloseCreatePostModal}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Create a New Post</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="postTitle">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter post title"
+                value={postTitle}
+                onChange={e => setPostTitle(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group controlId="postBody">
+              <Form.Label>Body</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                placeholder="Type here"
+                value={postBody}
+                onChange={e => setPostBody(e.target.value)}
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={handleCloseCreatePostModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => handleCreatePost(selectedCategory, selectedCategoryIndex)}
+            >
+              Create Post
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+      {/*Comment Modal*/}
+      {showAddCommentModal && selectedPost !== null && (
+        <Modal
+          size="lg"
+          centered
+          show={showAddCommentModal}
+          onHide={handleCloseAddCommentModal}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add a Comment</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="commentBody">
+              <Form.Label>Body</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                placeholder="Type here"
+                value={commentBody}
+                onChange={e => setCommentBody(e.target.value)}
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={handleCloseAddCommentModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => handleAddComment(selectedCategoryIndex, selectedPostIndex, selectedPost)}
+            >
+              {' '}
+              {/*needs: (category_index, post_index, post_id) */}
+              Add Comment
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+      {/*Reply Modal*/}
+      {showReplyModal && selectedComment !== null && (
+        <Modal
+          size="lg"
+          centered
+          show={showReplyModal}
+          onHide={handleCloseReplyModal}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Reply Back</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="replyBody">
+              <Form.Label>Body</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={4}
+                placeholder="Type here"
+                value={replyBody}
+                onChange={e => setReplyBody(e.target.value)}
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={handleCloseReplyModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => handleReply(selectedCategoryIndex, selectedPostIndex, selectedCommentIndex, selectedComment)}
+            >
+              Reply
+            </Button>
+          </Modal.Footer>
+        </Modal>
       )}
     </>
-  )
+  );
 
-  function PostUserTag({post}) {
-    return(
+  function PostUserTag({ post }) {
+    return (
       <Row>
         <Col md="auto">
           <img
             style={{ height: '50px', width: '50px' }}
             src={post.photo_url}
             alt=""
-            onClick={()=>setProfileModal({show: true, userId: post.users_id})}
+            onClick={() => setProfileModal({ show: true, userId: post.users_id })}
           />
         </Col>
         <Col>
@@ -474,19 +716,19 @@ const Forums = () => {
             <h4>{post.username}</h4>
           </div>
         </Col>
-     </Row>
-    )
+      </Row>
+    );
   }
 
-  function CommentUserTag({comment}) {
-    return(
+  function CommentUserTag({ comment }) {
+    return (
       <Row>
         <Col md="auto">
           <img
             style={{ height: '40px', width: '40px' }}
             src={comment.photo_url}
             alt=""
-            onClick={()=>setProfileModal({show: true, userId: comment.users_id})}
+            onClick={() => setProfileModal({ show: true, userId: comment.users_id })}
           />
         </Col>
         <Col>
@@ -496,18 +738,21 @@ const Forums = () => {
           </div>
         </Col>
       </Row>
-    )
+    );
   }
 
-  function ReplyUserTag({reply}) {
-    return(
-      <Row ml="5" style={{ minWidth: '250px' }}>
+  function ReplyUserTag({ reply }) {
+    return (
+      <Row
+        ml="5"
+        style={{ minWidth: '250px' }}
+      >
         <Col md="auto">
           <img
             style={{ height: '30px', width: '30px' }}
             src={reply.photo_url}
             alt=""
-            onClick={()=>setProfileModal({show: true, userId: reply.users_id})}
+            onClick={() => setProfileModal({ show: true, userId: reply.users_id })}
           />
         </Col>
         <Col>
@@ -517,106 +762,102 @@ const Forums = () => {
           </div>
         </Col>
       </Row>
-    )
+    );
   }
-}
+};
 export default Forums;
 
+// function TheForum() {
+//   return(
+//     <><br/><br/><br/><br/><br/>
+//       <h1>Forums</h1>
+//       <Accordion className="mt-5">
+//         {forumData?.map((category,cat_index)=>
+//           <Accordion.Item key={cat_index} eventKey={cat_index}>
+//             <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
+//             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
+//               <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button>Create A Post....</Button></div>
+//               <Posts cat_index={cat_index}/>
+//               </Accordion.Body>
+//           </Accordion.Item>
+//         )}
+//       </Accordion>
+//     </>
+//   )
+// }
 
+// function Posts({cat_index}) {
+//   return(
+//     <Accordion className="mt-5">
+//       {forumData[cat_index].posts.map((post,post_index)=>
+//         <Accordion.Item key={post_index} eventKey={post_index}>
+//           <Accordion.Header>
+//             <div className="d-flex w-100 me-4 justify-content-between">
+//               <h5>{post.title}</h5>
+//               <PostUserTag post={post}/>
+//             </div>
+//           </Accordion.Header>
+//           <Accordion.Body onEntered={()=>handlePostEnter(cat_index, post_index, post.id)}>
+//             {post.body}
+//             <br/><br/>
+//             <div className="d-flex justify-content-between"><h4>Comments:</h4><Button>Add Comment....</Button></div>
+//             <Comments cat_index={cat_index} post_index={post_index}/>
+//           </Accordion.Body>
+//         </Accordion.Item>
+//       )}
+//       <br/><br/>
+//       <Button>Load More Posts....</Button>
+//     </Accordion>
+//   )
+// }
 
+// function Comments({cat_index, post_index}) {
+//   return(
+//     <Accordion className="mt-5">
+//       {forumData[cat_index].posts[post_index].comments.map((comment,comment_index)=>
+//         <Accordion.Item key={comment_index} eventKey={comment_index}>
+//           <Accordion.Header>
+//             <div className="d-flex w-100 me-4 justify-content-between">
+//               <h6>{comment.body.substring(0,63).concat("...")}</h6>
+//               <CommentUserTag comment={comment} />
+//             </div>
+//           </Accordion.Header>
+//           <Accordion.Body onEnter={()=>handleCommentEnter(cat_index, post_index, comment_index, comment.id)}>
+//             {comment.body}
+//             <br/><br/>
+//             <Replies comment={comment}/>
+//           </Accordion.Body>
+//         </Accordion.Item>
+//       )}
+//       <br/><br/>
+//       <Button>Load More Comments....</Button>
+//     </Accordion>
+//   )
+// }
 
-
-  // function TheForum() {
-  //   return(
-  //     <><br/><br/><br/><br/><br/>
-  //       <h1>Forums</h1>
-  //       <Accordion className="mt-5">
-  //         {forumData?.map((category,cat_index)=>
-  //           <Accordion.Item key={cat_index} eventKey={cat_index}>
-  //             <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
-  //             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
-  //               <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button>Create A Post....</Button></div>
-  //               <Posts cat_index={cat_index}/>
-  //               </Accordion.Body>
-  //           </Accordion.Item>
-  //         )}
-  //       </Accordion>
-  //     </>
-  //   )
-  // }
-
-  // function Posts({cat_index}) {
-  //   return(
-  //     <Accordion className="mt-5">
-  //       {forumData[cat_index].posts.map((post,post_index)=>
-  //         <Accordion.Item key={post_index} eventKey={post_index}>
-  //           <Accordion.Header>
-  //             <div className="d-flex w-100 me-4 justify-content-between">
-  //               <h5>{post.title}</h5>
-  //               <PostUserTag post={post}/>
-  //             </div>
-  //           </Accordion.Header>
-  //           <Accordion.Body onEntered={()=>handlePostEnter(cat_index, post_index, post.id)}>
-  //             {post.body}
-  //             <br/><br/>
-  //             <div className="d-flex justify-content-between"><h4>Comments:</h4><Button>Add Comment....</Button></div>
-  //             <Comments cat_index={cat_index} post_index={post_index}/>
-  //           </Accordion.Body>
-  //         </Accordion.Item>
-  //       )}
-  //       <br/><br/>
-  //       <Button>Load More Posts....</Button>
-  //     </Accordion>
-  //   )
-  // }
-
-  // function Comments({cat_index, post_index}) {
-  //   return(
-  //     <Accordion className="mt-5">
-  //       {forumData[cat_index].posts[post_index].comments.map((comment,comment_index)=>
-  //         <Accordion.Item key={comment_index} eventKey={comment_index}>
-  //           <Accordion.Header>
-  //             <div className="d-flex w-100 me-4 justify-content-between">
-  //               <h6>{comment.body.substring(0,63).concat("...")}</h6>
-  //               <CommentUserTag comment={comment} />
-  //             </div>
-  //           </Accordion.Header>
-  //           <Accordion.Body onEnter={()=>handleCommentEnter(cat_index, post_index, comment_index, comment.id)}>
-  //             {comment.body}
-  //             <br/><br/>
-  //             <Replies comment={comment}/>
-  //           </Accordion.Body>
-  //         </Accordion.Item>
-  //       )}
-  //       <br/><br/>
-  //       <Button>Load More Comments....</Button>
-  //     </Accordion>
-  //   )
-  // }
-
-  // function Replies({comment}) {
-  //   return(
-  //     <Accordion>
-  //       <Accordion.Item eventKey="0">
-  //         <Accordion.Header>
-  //           <div className="d-flex w-100 me-4 justify-content-between">
-  //               <h6>Replies</h6>
-  //               <h6>{comment.replies.length}</h6>
-  //           </div>
-  //         </Accordion.Header>
-  //         <Accordion.Body>
-  //           <ListGroup>
-  //               {comment.replies.map(reply=>
-  //               <ListGroup.Item>
-  //                   <div className="d-flex w-100 me-4 justify-content-between">
-  //                   <h6 className="me-5">{reply.body}</h6>
-  //                   <h6><ReplyUserTag reply={reply}/></h6>
-  //                   </div>
-  //               </ListGroup.Item>
-  //               )}
-  //           </ListGroup>
-  //         </Accordion.Body>
-  //       </Accordion.Item>
-  //     </Accordion>
-  //   )
-  // }
+// function Replies({comment}) {
+//   return(
+//     <Accordion>
+//       <Accordion.Item eventKey="0">
+//         <Accordion.Header>
+//           <div className="d-flex w-100 me-4 justify-content-between">
+//               <h6>Replies</h6>
+//               <h6>{comment.replies.length}</h6>
+//           </div>
+//         </Accordion.Header>
+//         <Accordion.Body>
+//           <ListGroup>
+//               {comment.replies.map(reply=>
+//               <ListGroup.Item>
+//                   <div className="d-flex w-100 me-4 justify-content-between">
+//                   <h6 className="me-5">{reply.body}</h6>
+//                   <h6><ReplyUserTag reply={reply}/></h6>
+//                   </div>
+//               </ListGroup.Item>
+//               )}
+//           </ListGroup>
+//         </Accordion.Body>
+//       </Accordion.Item>
+//     </Accordion>
+//   )
+// }

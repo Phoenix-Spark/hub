@@ -13,7 +13,7 @@ router.get('/:projectId/all', async (req, res, next) => {
   try {
     const projectData = await db.select('*').from('project').where('id', req.params.projectId);
     const teamData = await db
-      .select('users.*')
+      .select('users.id', 'users.username','users.first_name as firstName','users.last_name as lastName','users.email','users.photo_url as photo','users.contact_number1 as contactNumber1','users.contact_number2 as contactNumber2','users.bio')
       .from('project')
       .join('project_users', 'project.id', 'project_users.project_id')
       .join('users', 'users.id', 'project_users.users_id')
@@ -85,7 +85,14 @@ router.post(
         ['*']
       );
 
-      res.status(200).json(inserted[0]);
+      const newTeam = await db('project_users').insert({
+        project_id: inserted[0].id,
+        users_id: userId,
+      }, ['*']);
+
+      const newProject = { team: newTeam[0], project: inserted[0]};
+
+      res.status(200).json(newProject);
     } catch (e) {
       console.error(`GET /projects/add ERROR: ${e}`);
       next(e);
@@ -143,8 +150,16 @@ router.patch(
 
 router.get('/:projectId/team', async (req, res, next) => {
   try {
-    const data = await db
+    /*
+    const teamData = await db
       .select('users.*')
+      .from('project')
+      .join('project_users', 'project.id', 'project_users.project_id')
+      .join('users', 'users.id', 'project_users.users_id')
+      .where('project.id', req.params.projectId);
+      */
+    const data = await db
+      .select('users.id', 'users.username','users.first_name as firstName','users.last_name as lastName','users.email','users.photo_url as photo','users.contact_number1 as contactNumber1','users.contact_number2 as contactNumber2','users.bio')
       .from('project')
       .join('project_users', 'project.id', 'project_users.project_id')
       .join('users', 'users.id', 'project_users.users_id')
@@ -153,6 +168,83 @@ router.get('/:projectId/team', async (req, res, next) => {
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /projects/${req.params.projectId}/team ERROR: ${e}`);
+    next(e);
+  }
+});
+
+const teamUpload = multer();
+
+router.post('/:projectId/team/add', teamUpload.none(), async (req, res, next) => {
+  try {
+    let newMembers = [];
+    const {member: newMemberIds, projectId} = req.body;
+
+    if (Array.isArray(newMemberIds)) {
+      const promises = [];
+      
+      newMemberIds.forEach(async (id) => {
+        promises.push(findUserById(parseInt(id, 10)));
+      });
+      const result = await Promise.all(promises);
+      
+      newMembers = [...result];
+    } else {
+      newMembers.push(await findUserById(parseInt(newMemberIds, 10)));    
+
+    }      
+    
+    const dbPromises = [];
+    newMembers.forEach(member => {
+      dbPromises.push(
+        db('project_users').insert({
+          project_id: projectId,
+          users_id: member.id,
+        }, ['*'])
+      );
+    });
+
+    const dbResult = await Promise.all(dbPromises);
+
+    res.status(200).json({ dbResult });
+  } catch (e) {
+    console.error(`POST /projects/${req.params.projectId}/team/add ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.delete('/:projectId/team/remove', teamUpload.none(), async (req, res, next) => {
+  try {
+    let membersToRemove = [];
+    const {member: memberIds, projectId} = req.body;
+
+    if (Array.isArray(memberIds)) {
+      const promises = [];
+      
+      memberIds.forEach(async (id) => {
+        promises.push(findUserById(parseInt(id, 10)));
+      });
+      const result = await Promise.all(promises);
+      
+      membersToRemove = [...result];
+    } else {
+      membersToRemove.push(await findUserById(parseInt(memberIds, 10)));    
+
+    }      
+    
+    const dbPromises = [];
+    membersToRemove.forEach(member => {
+      dbPromises.push(
+        db('project_users').select().where('project_id', projectId).andWhere('users_id', member.id).delete()
+      );
+    });
+
+    const dbResult = await Promise.all(dbPromises);
+
+    console.log(dbResult);
+
+    res.status(200).json({ dbResult });
+  } catch (e) {
+    console.error(`GET /projects/${req.params.projectId}/tags ERROR: ${e}`);
     next(e);
   }
 });

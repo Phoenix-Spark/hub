@@ -29,7 +29,7 @@ export default function ProfileEditor() {
 
     fetch(`${server}/cell_list`)
       .then(response => response.json())
-      .then(data => setCellList(data))
+      .then(data => setCellList(data.filter(cell => cell.is_approved === 'yes')))
       .catch(error => console.error('Error fetching cell list:', error));
   }, []);
 

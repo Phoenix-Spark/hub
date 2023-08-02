@@ -6,7 +6,7 @@ export function up(knex) {
   return knex.schema.createTable('reply', table => {
     table.increments('id');
     table.integer('comment_id');
-    table.foreign('comment_id').references('comment.id');
+    table.foreign('comment_id').references('comment.id').onDelete('CASCADE');
     table.integer('users_id');
     table.foreign('users_id').references('users.id');
     table.string('body', 1024);

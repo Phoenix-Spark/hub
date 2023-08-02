@@ -1,16 +1,27 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Container, Form, InputGroup, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import AppContext from '../../../AppContext.js';
 
-const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess }) => {
+const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess, showCellList, isModal = true }) => {
   const { server, user } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [nameValue, setNameValue] = useState(projectData?.name ?? '');
   const [descriptionVal, setDescriptionVal] = useState(projectData?.description ?? '');
   const [budgetValue, setBudgetValue] = useState(projectData?.budget ?? '');
+  const [cellList, setCellList] = useState([]);
+  const [cellValue, setCellValue] = useState(cellId);
   const isPatchRequest = useRef(!!projectData);
+
+  useEffect(() => {
+    fetch(`${server}/cell_list`)
+      .then(response => response.json())
+      .then(data => {
+        setCellList(data.filter(cell => cell.is_approved === 'yes'))
+      })
+      .catch(error => console.error('Error fetching cell list:', error));
+  }, []);
 
   const addNewProject = async formData => {
     const response = await fetch(`${server}/project/add`, {
@@ -79,7 +90,10 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess 
           refreshList(prev => prev + 1);
           setSuccess(true);
         }
-        hideModal();
+
+        if (isModal) {
+          hideModal();
+        }
       } catch (error) {
         // TODO: Show errors on modal in an alert or something
         console.error('Error submitting proposal:', error);
@@ -99,7 +113,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess 
           type="hidden"
           name="cellId"
           id="cellId"
-          value={cellId}
+          value={cellValue}
         />
         <Form.Group
           className="mb-3"
@@ -146,7 +160,6 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess 
               required
               name="budget"
               min={0}
-              step={100}
               value={budgetValue}
               onChange={e => setBudgetValue(e.target.value)}
             />
@@ -155,7 +168,31 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess 
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
           <Form.Control.Feedback type="invalid">Please enter an estimated budget for your project.</Form.Control.Feedback>
         </Form.Group>
-
+        {showCellList && (
+        <Form.Group
+          className="mb-3"
+          controlId="cell"
+        >
+          <Form.Label className="text-white">Cell</Form.Label>
+          <Form.Select
+            value={cellValue}
+            onChange={(e) => setCellValue(e.target.value)}
+            required
+          >
+            <option value="">Select a Cell Name</option>
+              {cellList.map((cell) => (
+                <option
+                  key={cell.id}
+                  value={cell.id}
+                >
+                  {cell.cell_name}
+                </option>
+              ))}
+            <option value="createNewCell">Cell not listed? Please create a new cell first.</option>
+            {/* Want to be able to select actual Cell */}
+          </Form.Select>
+        </Form.Group>
+        )}
         <div className="my-5 d-flex justify-content-end">
           <Button
             variant="primary"
@@ -173,6 +210,9 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess 
           </Button>
         </div>
       </Form>
+
+
+
 
       <Modal
         show={showSuccessModal}
