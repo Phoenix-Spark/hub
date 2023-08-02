@@ -37,14 +37,14 @@ services:
       - backend
 
   frontend:
-    image: ${IMAGE}-frontend:${COMMIT_SLUG}
+    image: ${IMAGE}/frontend:${COMMIT_SLUG}
     ports:
       - '80'
     labels:
       - "traefik.http.routers.capstonedev.rule=Host(`capstone.dev.apps.techpulse.us`)"
 
   server:
-    image: ${IMAGE}-server:${COMMIT_SLUG}
+    image: ${IMAGE}/server:${COMMIT_SLUG}
     ports:
       - '80'
     labels:

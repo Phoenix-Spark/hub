@@ -37,7 +37,7 @@ services:
       - backend
 
   frontend:
-    image: ${IMAGE}-frontend:latest
+    image: ${IMAGE}/frontend:latest
     ports:
       - '80'
     labels:
@@ -50,7 +50,7 @@ services:
 
 
   server:
-    image: ${IMAGE}-server:${COMMIT_SLUG}
+    image: ${IMAGE}/server:${COMMIT_SLUG}
     ports:
       - '80'
     labels:
