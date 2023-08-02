@@ -13,18 +13,6 @@ services:
     networks:
       - backend
 
-  adminer:
-    image: docker.io/adminer
-    restart: always
-    depends_on:
-      - db
-    ports:
-      - "8080:8080"
-    environment:
-      - ADMINER_DESIGN=pepa-linha-dark
-    networks:
-      - backend
-
   redis:
     image: docker.io/redis
     restart: always
