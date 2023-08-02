@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { CellRouter, ProjectRouter, UserRouter, ForumRouter, FaqRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
@@ -72,6 +72,7 @@ app.use('/cell', CellRouter);
 app.use('/project', ProjectRouter);
 app.use('/user', UserRouter);
 app.use('/forum', ForumRouter);
+app.use('/faq', FaqRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Server running.' });
@@ -94,66 +95,6 @@ app.get('/news', async (req, res, next) => {
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /news ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.get('/faq', async (req, res, next) => {
-  try {
-    const data = await db.select('*').from('faq').whereNot('answer', null);
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /faq ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.post('/faq', async (req, res, next) => {
-  try {
-    const data = await db('faq').insert({
-      question: req.body.question,
-      answer: null,
-      asked_by: req.body.userId,
-      answered_by: null,
-    });
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`POST /faq ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.patch('/faq/:faqId', async (req, res, next) => {
-  try {
-    const data = await db.select('*').from('faq').where('id', req.params.faqId).update({
-      question: req.body.question,
-      answer: req.body.answer,
-      asked_by: req.body.userId,
-      answered_by: req.body.answered_by,
-    });
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`PATCH /faq/:faqId ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.get('/faq/new', async (req, res, next) => {
-  try {
-    const data = await db.select('*').from('faq').where('answer', null);
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /faq-new ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.delete('/faq/:faqId', async (req, res, next) => {
-  try {
-    const data = await db.select('*').from('faq').where('id', req.params.faqId).del();
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`DELETE /faq/:faqId ERROR: ${e}`);
     next(e);
   }
 });
@@ -188,15 +129,14 @@ app.get('/userData/:username', async (req, res, next) => {
     const data = await db
       .select(
         'username',
+        'password',
         'first_name as firstName',
         'last_name as lastName',
         'email',
         'photo_url as photo',
         'contact_number1 as contactNumber1',
         'contact_number2 as contactNumber2',
-        'bio',
-        'base_id as baseId',
-        'cell_id as cellId'
+        'bio'
       )
       .from('users')
       .where('users.username', req.params.username);
@@ -239,4 +179,37 @@ app.post('/cell_list', async (req, res, next) => {
   }
 });
 
+app.delete('/cell_list/:id', async (req, res, next) => {
+  try {
+    const cellId = req.params.id;
+
+    const deletedCount = await db('cell').where('id', cellId).del();
+
+    if (deletedCount === 1) {
+      res.status(200).json({ message: 'Cell deleted successfully!' });
+    } else {
+      res.status(404).json({ message: 'Cell not found or already deleted.' });
+    }
+  } catch (e) {
+    console.error(`DELETE /cell_list/:id ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.patch('/cell_list/:id', async (req, res, next) => {
+  try {
+    const cellId = req.params.id;
+
+    const updatedCount = await db('cell').where({ id: cellId, is_approved: 'no' }).update({ is_approved: 'yes' });
+
+    if (updatedCount === 1) {
+      res.status(200).json({ message: 'Cell approved successfully!' });
+    } else {
+      res.status(404).json({ message: 'Cell not found or already approved.' });
+    }
+  } catch (e) {
+    console.error(`PATCH /approve_cell/:id ERROR: ${e}`);
+    next(e);
+  }
+});
 export default app;

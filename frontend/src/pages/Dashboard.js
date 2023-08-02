@@ -7,6 +7,7 @@ import ProposedProjects from '../components/Dashboard/ProposedProjects.jsx';
 import ProfileEditor from '../components/Dashboard/ProfileEditor.jsx';
 import UserProjects from '../components/Dashboard/UserProjects.jsx';
 import AdminFAQ from '../components/Dashboard/AdminFAQ.jsx';
+import ProposedCells from '../components/Dashboard/ProposedCells.jsx';
 
 import './Dashboard.scss';
 import CellDetails from '../components/Dashboard/CellDetails.jsx';
@@ -75,7 +76,7 @@ function Dashboard() {
                     </Nav.Item>
                     {(user?.roles === 'site' || user?.roles === 'cell') && (
                       <>
-                        <h5 className="mt-4 border-bottom pb-2">Admin Section</h5>
+                        <h5 className="mt-4 border-bottom pb-2">Cell Administration</h5>
                         <Nav.Item>
                           <Nav.Link
                             eventKey="proposed-projects"
@@ -100,12 +101,17 @@ function Dashboard() {
                             Proposed FAQs
                           </Nav.Link>
                         </Nav.Item>
+                      </>
+                    )}
+                    {user?.roles === 'site' && (
+                      <>
+                        <h5 className="mt-4 border-bottom pb-2">Site Administration</h5>
                         <Nav.Item>
                           <Nav.Link
-                            eventKey="admin-things"
+                            eventKey="proposed-cells"
                             className="link-secondary"
                           >
-                            Admin Things
+                            Proposed Cells
                           </Nav.Link>
                         </Nav.Item>
                       </>
@@ -115,7 +121,6 @@ function Dashboard() {
                 <Col sm={9}>
                   <Tab.Content className="border-start p-3">
                     <Tab.Pane eventKey="account">
-                      Tab with form for user to edit their profile things.
                       <ProfileEditor />
                     </Tab.Pane>
                     <Tab.Pane eventKey="projects">
@@ -123,6 +128,9 @@ function Dashboard() {
                         refreshProjectList={refreshProjectList}
                         setRefreshProjectList={setRefreshProjectList}
                       ></UserProjects>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="proposed-cells">
+                        <ProposedCells />
                     </Tab.Pane>
                     <Tab.Pane eventKey="proposed-projects">
                       {user.roles && (

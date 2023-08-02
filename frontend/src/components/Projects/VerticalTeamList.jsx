@@ -8,28 +8,27 @@ function VerticalTeamList({ team }) {
     return (
     <ListGroup style={{ overflowY: 'auto' }}>
       {team?.map((item, index) => {
-        const imgUrl = item.photo_url
-          ? item.photo_url.startsWith('https')
-            ? item.photo_url
-            : `http://localhost:3000/uploads/${item.photo_url}`
+        const imgUrl = item.photo
+          ? item.photo.startsWith('https')
+            ? item.photo
+            : `http://localhost:3000/uploads/${item.photo}`
           : `../images/placeholder_logo.svg`;
         return (
           <ListGroup.Item
             action
             key={index}
           >
-            <Row>
+            <Row onClick={()=>setProfileModal({show: true, userId: item.id})}>
               <Col md="auto">
                 <img
                   style={{ height: '64px', width: '64px' }}
                   src={imgUrl}
                   alt=""
-                  onClick={()=>setProfileModal({show: true, userId: item.id})}
                 />
               </Col>
               <Col>
                 <div style={{ fontWeight: 'bold' }}>
-                  {item.first_name} {item.last_name}
+                  {item.firstName} {item.lastName}
                 </div>
               </Col>
             </Row>

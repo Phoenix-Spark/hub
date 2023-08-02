@@ -8,7 +8,7 @@ import SparkyList from '../components/Hub/SparkyList.jsx';
 import { NewsList } from '../components/index.js';
 
 function Hub() {
-  const { server, sparkList } = useContext(AppContext);
+  const { user, server, sparkList } = useContext(AppContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [newsList, setNewsList] = useState([]);
 
@@ -65,6 +65,7 @@ function Hub() {
               className="justify-content-between"
             >
               Spark List
+              {user && (
               <Button
                 as={Link}
                 variant="secondary"
@@ -72,7 +73,7 @@ function Hub() {
                 className=""
               >
                 Register your cell
-              </Button>
+              </Button>)}
             </Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>
               <SparkyList sparkList={filteredSparkList} />

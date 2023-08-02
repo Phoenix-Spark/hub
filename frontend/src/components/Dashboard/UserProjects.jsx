@@ -21,6 +21,10 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
     setIsProjEditModalShowing(false);
   };
 
+  const handleProposalSubmitSuccess = () => {
+    setIsProjEditModalShowing(false); // Close the proposal modal after successful submission
+  };
+
   useEffect(() => {
     let ignore = false;
 
@@ -99,6 +103,7 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
         onHide={hideProjectEditModal}
         refreshList={setRefreshProjectList}
         onSuccess={setEditSuccess}
+        onSubmitSuccess={handleProposalSubmitSuccess}
       ></EditProposalModal>
     </Container>
   );

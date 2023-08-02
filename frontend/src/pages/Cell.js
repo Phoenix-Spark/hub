@@ -55,21 +55,6 @@ export default function Cell() {
 
   const showProposalModal = () => setShowModal(true);
   const hideProposalModal = () => setShowModal(false);
-  /*
-            <Card.Header
-              as="h5"
-              className="justify-content-between"
-            >
-              Spark List
-              <Button
-                variant="secondary"
-                href="http://localhost:3000/"
-                className=""
-              >
-                Don't see your cell?
-              </Button>
-            </Card.Header>
- */
 
   return (
     <>
@@ -87,7 +72,7 @@ export default function Cell() {
               className="justify-content-between"
             >
               Cell Mission
-              {(user?.roles === 'cell' || user?.roles === 'site') && (
+              {((user?.roles === 'cell' || user?.roles === 'site') && (parseInt(user?.cellId, 10) === cellAllData.id)) && (
                 <Button
                   variant="secondary"
                   onClick={() => {

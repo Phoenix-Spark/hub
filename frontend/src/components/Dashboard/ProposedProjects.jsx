@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Container } from 'react-bootstrap';
+import { Button, Card, Container, Modal } from 'react-bootstrap';
 
 import AppContext from '../../AppContext.js';
 import { formatDate } from '../../utils/index.js';
@@ -7,8 +7,21 @@ import { formatDate } from '../../utils/index.js';
 const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) => {
   const { server, user, setProfileModal } = useContext(AppContext);
   const [projectList, setProjectList] = useState([]);
+  const [feedbackComment, setFeedbackComment] = useState();
+  const [selectedProject, setSelectedProject] = useState(null);
 
   /** TODO: Provide feedback that elements have been removed, an alert or something **/
+  const [showCommentModal, setShowCommentModal] = useState(false);
+
+  // Function to open the comment modal when clicking Deny
+  const openCommentModal = () => {
+    setShowCommentModal(true);
+  };
+
+  // Function to close the comment modal
+  const closeCommentModal = () => {
+    setShowCommentModal(false);
+  };
 
   const removeProject = id => {
     const newList = projectList.filter(item => item.id !== id);
@@ -26,17 +39,39 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
     } catch (e) {}
   };
 
-  const handleDeny = async project => {
+  const handleDenySubmit = async () => {
     try {
-      console.log('Denying', project);
-      const response = await fetch(`${server}/project/${project.id}/deny`, {
-        method: 'POST',
-      });
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
-      removeProject(data.id);
-    } catch (e) {}
+      if (selectedProject) {
+        console.log('Denying', selectedProject);
+        const response = await fetch(`${server}/project/${selectedProject.id}/deny`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            feedbackComment: feedbackComment,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          removeProject(data.id);
+
+          // Close the comment modal after successful denial
+          setShowCommentModal(false);
+        } else {
+          console.error('Error denying project:', response);
+        }
+      }
+    } catch (e) {
+      console.error(`Error denying project: ${e}`);
+    }
+  };
+
+  const handleDeny = async project => {
+    setSelectedProject(project);
+    setShowCommentModal(true);
   };
 
   useEffect(() => {
@@ -126,8 +161,42 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
           </Card>
         );
       })}
+
+      <Modal
+        show={showCommentModal}
+        onHide={() => setShowCommentModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Deny Project</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <textarea
+            rows={5} // You can adjust the number of rows to increase or decrease the height
+            value={feedbackComment}
+            onChange={e => setFeedbackComment(e.target.value)}
+            placeholder="Enter your feedback comment..."
+            style={{ width: '100%' }} // Set the width of the textarea
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowCommentModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDenySubmit}
+          >
+            Deny
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
-};
+  };
+
+
 
 export default ProposedProjects;

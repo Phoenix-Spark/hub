@@ -106,7 +106,7 @@ router.post('/comment', async (req, res, next) => {
 
 router.post('/reply', async (req, res, next) => {
   try {
-    const data = await db('comment')
+    const data = await db('reply')
       .insert({
         comment_id: req.body.commentId,
         users_id: req.body.userId,
