@@ -33,5 +33,6 @@ export async function seed(knex) {
     { base_name: 'McConnell AFB', lat: 37.62616042293943, lng: -97.26160408270825 },
     { base_name: 'Fort Lee', lat: 37.244470917557174, lng: -77.3374905374704 },
     { base_name: 'Dover AFB', lat: 39.12861741900317, lng: -75.45504921932934 },
+    { base_name: 'Joint Base Lewis-McChord', lat: 47.108666232, lng: -122.558831098 },
   ]);
 }

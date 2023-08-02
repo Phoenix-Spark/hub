@@ -65,7 +65,6 @@ router.get('/comment/:commentId/replies', async (req, res, next) => {
 });
 
 router.post('/post', async (req, res, next) => {
-  console.log('create post');
   try {
     const data = await db('post')
       .insert({
@@ -82,6 +81,74 @@ router.post('/post', async (req, res, next) => {
     res.status(200).json(data[0]);
   } catch (e) {
     console.error(`POST /forum/post ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.post('/comment', async (req, res, next) => {
+  try {
+    const data = await db('comment')
+      .insert({
+        post_id: req.body.postId,
+        users_id: req.body.userId,
+        body: req.body.body,
+        create_time: new Date().toISOString(),
+        is_edited: false,
+        edit_time: null,
+      })
+      .returning('*');
+    res.status(200).json(data[0]);
+  } catch (e) {
+    console.error(`POST /forum/comment ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.post('/reply', async (req, res, next) => {
+  try {
+    const data = await db('comment')
+      .insert({
+        comment_id: req.body.commentId,
+        users_id: req.body.userId,
+        body: req.body.body,
+        create_time: new Date().toISOString(),
+        is_edited: false,
+        edit_time: null,
+      })
+      .returning('*');
+    res.status(200).json(data[0]);
+  } catch (e) {
+    console.error(`POST /forum/reply ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.delete('/post/:postId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('post').where('id', req.params.postId).del();
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`DELETE /forum/post/:postId ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.delete('/comment/:commentId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('comment').where('id', req.params.commentId).del();
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`DELETE /forum/comment/:commentId ERROR: ${e}`);
+    next(e);
+  }
+});
+
+router.delete('/reply/:replyId', async (req, res, next) => {
+  try {
+    const data = await db.select('*').from('reply').where('id', req.params.replyId).del();
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`DELETE /forum/reply/:replyId ERROR: ${e}`);
     next(e);
   }
 });

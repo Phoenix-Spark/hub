@@ -42,6 +42,34 @@ export default function CellRegistration() {
     });
   };
 
+  const generateSuggestedEndpoint = (baseName) => {
+    const exclusions = [
+      "Army Depot", "Arsenal", "Fort", "Camp", "Air Reserve Base", 
+      "AFB", "Proving Ground", "Maneuver Training Center", "Coast Guard Air Station", 
+      "Joint Forces Training Base", "Military Ocean Terminal", "Naval Air Station", 
+      "Reserve Forces Training Area", "Presidio of", "Depot", "SFB", "SFS", 
+      "Air Force Base", "Space Force Base", "Ft", "Ft.", "Space Force Station", 
+      "Air Base", "Army Airfield", "Barracks", "Support Center", "Training Center", 
+      "Joint Training Center", "Proving Ground", "Air National Guard Base", 
+      "Military Post", "Joint National Guard Base", "Marine Corps Air Station", 
+      "MCAS", "MCRD", "MCB", "Hall", "MCLB", "Naval Base", "Field", 
+      "Joint Expeditionary Base", "Naval Weapons Station", "Naval Station"
+    ];
+  
+    const words = baseName.toLowerCase().split(' ');
+  
+    const filteredWords = words.filter(word => !exclusions.some(exclusion => word.includes(exclusion.toLowerCase())));
+  
+    let endpoint = '';
+    if (baseName.includes("Joint Base") || baseName.includes("Academy")) {
+      endpoint = filteredWords.map(word => word[0]).join('');
+    } else {
+      endpoint = filteredWords.join('');
+    }
+  
+    return endpoint;
+  }
+
   const handleSubmit = event => {
     event.preventDefault();
 
@@ -51,6 +79,7 @@ export default function CellRegistration() {
     const cellObject = {
       base_id: selectedBaseId,
       cell_name: formData.cell_name,
+      cell_endpoint: generateSuggestedEndpoint(selectedBase.base_name),
       external_website: formData.external_website,
       cell_mission: formData.cell_mission,
       contact_number1: formData.contact_number1,
@@ -59,6 +88,7 @@ export default function CellRegistration() {
       logo_url: formData.logo_url,
       is_approved: 'no',
     };
+    console.log(cellObject);
     fetch(`${server}/cell_list`, {
       method: 'POST',
       headers: {

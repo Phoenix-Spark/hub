@@ -61,6 +61,8 @@ const Forums = () => {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [postTitle, setPostTitle] = useState('');
   const [postBody, setPostBody] = useState('');
+  const [postsToShow, setPoststoShow] = useState(10);
+  const [totalPosts, setTotalPosts] = useState(0);
 
   useEffect(() => {
     fetchCategories();
@@ -144,8 +146,7 @@ const Forums = () => {
     }
   }
 
-  const handleCategoryEnter = (category_index, category_id) =>
-  {
+  const handleCategoryEnter = (category_index, category_id) => {
     if(forumData[category_index].posts.length===0){
       fetchPosts(category_index, category_id)
     }else{
@@ -153,8 +154,7 @@ const Forums = () => {
     }
   }
 
-  const handlePostEnter = (category_index, post_index, post_id) =>
-  {
+  const handlePostEnter = (category_index, post_index, post_id) => {
     if(forumData[category_index].posts[post_index].comments.length===0){
       fetchComments(category_index, post_index, post_id)
     }else{
@@ -162,8 +162,7 @@ const Forums = () => {
     }
   }
 
-  const handleCommentEnter = (category_index, post_index, comment_index, comment_id) =>
-  {
+  const handleCommentEnter = (category_index, post_index, comment_index, comment_id) => {
     if(forumData[category_index].posts[post_index].comments[comment_index].replies.length===0){
       fetchReplies(category_index, post_index, comment_index, comment_id)
     }else{
@@ -172,14 +171,7 @@ const Forums = () => {
   }
 
   const createPost = async (category_id, category_index, title, body) => {
-    console.log("create post")
     try {
-      console.log(JSON.stringify({
-        userId: user.id,
-        categoryId: category_id,
-        title: title,
-        body: body,
-      }))
       const response = await fetch(`${server}/forum/post`, {
         credentials: 'include',
         headers: {
@@ -229,16 +221,107 @@ const Forums = () => {
     setShowCreatePostModal(true);
   }
 
-  const handleDeletePost = (postId, postIndex) => {
-    //need Delete route
-    console.log("need Delete route")
+  //Add Comment Functionality
+  const addComment = async (category_index, post_index, post_id, body) => {
+    console.log("create comment")
+    try {
+      const response = await fetch(`${server}/forum/comment`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          postId: post_id,
+          userId: user.id,
+          body: body,
+        }),
+      });
+      console.log(response)
+      if (!response.ok) {
+        throw new Error('Failed to create your comment');
+      }
+      const data = await response.json();
+      console.log('New comment created:', data);
+
+      let newData = [...forumData];
+      newData[category_index].posts[post_index].push({...data, replies: [], username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
+      setForumData(newData)
+      //handleCloseCreatePostModal();
+
+    } catch (error) {
+      console.error('Error creating a comment', error);
+    }
   }
 
-  const handleDeleteComment = (commentId, commentIndex) => {
-    //need Delete route
-    console.log("need Delete route")
+  const addReply = async (category_index, post_index, comment_index, comment_id, body) => {
+    console.log("create reply")
+    try {
+      const response = await fetch(`${server}/forum/reply`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          commentId: comment_id,
+          userId: user.id,
+          body: body,
+        }),
+      });
+      console.log(response)
+      if (!response.ok) {
+        throw new Error('Failed to create your reply');
+      }
+      const data = await response.json();
+      console.log('New reply created:', data);
+
+      let newData = [...forumData];
+      newData[category_index].posts[post_index].comments[comment_index].push({...data, username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
+      setForumData(newData)
+      //handleCloseCreatePostModal();
+
+    } catch (error) {
+      console.error('Error creating a reply', error);
+    }
   }
 
+  const handleDeletePost = async (postId, postIndex) => {
+    try{
+      const response = await fetch(`${server}/forum/post/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete the post.');
+      }
+      console.log('Post deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting the post:', error);
+    }
+  }
+
+  const handleDeleteComment = async (commentId, commentIndex) => {
+    try{
+      const response = await fetch(`${server}/forum/comment/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete the post.');
+      }
+      console.log('Comment deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting the comment:', error);
+    }
+  }
+  
   const handleDeleteReply = (replyId, replyIndex) => {
     //need Delete route
     console.log("need Delete route")
@@ -254,7 +337,7 @@ const Forums = () => {
             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
               <div className="d-flex justify-content-between">
                 <h4>{category.detail}</h4>
-                <Button onClick={() => handleShowCreatePostModal(category.id, cat_index)}>Create A Post....</Button>
+                <Button disabled={!user} onClick={() => handleShowCreatePostModal(category.id, cat_index)}>Create A Post...</Button>
               </div>
               <Accordion className="mt-5">
                 {forumData[cat_index].posts.map((post,post_index)=>
@@ -262,7 +345,7 @@ const Forums = () => {
                     <Accordion.Header>
                       <div className="d-flex w-100 me-4 justify-content-between">
                         <div className="d-flex">
-                          {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeletePost(post.id, post.index)}>Delete</Button>:<></>}
+                          {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeletePost(post.id, post.index)}>Delete</Button>:<></>}
                           <h5>{post.title}</h5>
                         </div>
                         <PostUserTag post={post}/>
@@ -273,14 +356,14 @@ const Forums = () => {
                       <br/><br/>
                       <div className="d-flex justify-content-between">
                         <h4>{`Comments(${forumData[cat_index].posts[post_index].comments.length}):`}</h4>
-                        <Button>Add Comment....</Button>
+                        <Button disabled={!user}>Add Comment...</Button>
                       </div>
                       <Accordion className="mt-5">
                         {forumData[cat_index].posts[post_index].comments.map((comment,comment_index)=>
                           <Accordion.Item key={`com-${cat_index}-${comment_index}`} eventKey={comment_index}>
                             <Accordion.Header>
                               <div className="d-flex w-100 me-4 justify-content-between">
-                                {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteComment(comment.id, comment.index)}>Delete</Button>:<></>}
+                                {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteComment(comment.id, comment.index)}>Delete</Button>:<></>}
                                 <h6>{comment.body.substring(0,63).concat("...")}</h6>
                                 <CommentUserTag comment={comment} />
                               </div>
@@ -301,13 +384,16 @@ const Forums = () => {
                                       {comment.replies.map(reply=>
                                         <ListGroup.Item>
                                           <div className="d-flex w-100 me-4 justify-content-between">
-                                            {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteReply(reply.id, reply.index)}>Delete</Button>:<></>}
+                                            {user?.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteReply(reply.id, reply.index)}>Delete</Button>:<></>}
                                             <h6 className="me-5">{reply.body}</h6>
                                             <h6><ReplyUserTag reply={reply}/></h6>
                                           </div>
                                         </ListGroup.Item>
                                       )}
                                     </ListGroup>
+                                    <div className='mt-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                      <Button style={{textAlign: 'right'}} disabled={!user}>Reply...</Button>
+                                    </div>
                                   </Accordion.Body>
                                 </Accordion.Item>
                               </Accordion>
@@ -433,6 +519,12 @@ const Forums = () => {
       </Row>
     )
   }
+}
+export default Forums;
+
+
+
+
 
   // function TheForum() {
   //   return(
@@ -528,5 +620,3 @@ const Forums = () => {
   //     </Accordion>
   //   )
   // }
-}
-export default Forums;

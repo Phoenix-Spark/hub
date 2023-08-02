@@ -153,7 +153,7 @@ app.delete('/faq/:faqId', async (req, res, next) => {
     const data = await db.select('*').from('faq').where('id', req.params.faqId).del();
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /faq/:faqId ERROR: ${e}`);
+    console.error(`DELETE /faq/:faqId ERROR: ${e}`);
     next(e);
   }
 });

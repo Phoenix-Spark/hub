@@ -8,6 +8,7 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
   const [projectDescription, setProjectDescription] = useState('');
   const [budget, setBudget] = useState('');
   const [cellList, setCellList] = useState([]);
+  const [cellValue, setCellValue] = useState('');
   const [participants, setParticipants] = useState('');
   const [photos, setPhotos] = useState(null);
   const { server, user } = useContext(AppContext);
@@ -110,8 +111,8 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
         >
           <Form.Label className="text-white">Cell</Form.Label>
           <Form.Select
-            value={cellList}
-            onChange={e => setCellList(e.target.value)}
+            value={cellValue}
+            onChange={(e) => setCellValue(e.target.value)}
             required
           >
             <option value="">Select a Cell Name</option>
