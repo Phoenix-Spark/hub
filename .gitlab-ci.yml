@@ -1,0 +1,157 @@
+# This file is a template, and might need editing before it works on your project.
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+#
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+image: node:latest
+
+services:
+  - postgres:latest
+  - redis:latest
+
+cache:
+  paths:
+    - node_modules/
+    - server/node_modules/
+    - frontend/node_modules/
+
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - deploy
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+
+docker-build:
+    stage: build
+    image: docker:latest
+    services:
+      - docker:dind
+    before_script:
+      - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+    script:
+        - |
+            if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+                tag=""
+                echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
+            else
+                tag=":$CI_COMMIT_REF_SLUG"
+                echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
+            fi
+            - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+            - docker push "$CI_REGISTRY_IMAGE${tag}"
+        # Run this job in a branch where a Dockerfile exists
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+        exists:
+          - Dockerfile
+      - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy_review:
+  stage: review
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - docker run --detach --publish-all --name $CONTAINER_NAME --label "traefik.http.routers.$CI_ENVIRONMENT_SLUG-review.rule=Host(\`$CI_ENVIRONMENT_SLUG.review.apps.techpulse.us\`)" --network=traefik-network $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: http://$CI_ENVIRONMENT_SLUG.review.apps.techpulse.us
+    on_stop: stop_review
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+  tags:
+    - shell
+    - app-review
+    - deploy
+
+stop_review:
+  stage: review
+  before_script:
+    - ''
+  script:
+    - docker stop $CONTAINER_NAME
+    - docker rm $CONTAINER_NAME
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  when: manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+  tags:
+    - shell
+    - app-review
+    - deploy
+
+deploy-dev:
+  stage: deploy
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - tag="develop"
+    - docker pull $CI_REGISTRY_IMAGE:${tag}
+    - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_dev -f dev.yml up -d --build
+  environment:
+    name: dev
+    url: http://capstone.dev.apps.techpulse.us
+  tags:
+    - shell
+    - app-review
+    - deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+deploy-staging:
+  stage: deploy
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - tag="latest"
+    - docker pull $CI_REGISTRY_IMAGE:${tag}
+    - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_staging -f staging.yml up -d --build
+  environment:
+    name: staging
+    url: http://capstone.staging.apps.techpulse.us
+  tags:
+    - shell
+    - app-review
+    - deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy-prod:
+  stage: deploy
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:latest
+    - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_prod -f production.yml up -d --build
+  environment:
+    name: production
+    url: https://capstone.apps.jmidd.dev
+  tags:
+    - shell
+    - deploy-prod
+  when: manual
+  only:
+    - main
+
