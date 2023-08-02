@@ -56,8 +56,10 @@ docker-build:
                 tag=":$CI_COMMIT_REF_SLUG"
                 echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
             fi
-            - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
-            - docker push "$CI_REGISTRY_IMAGE${tag}"
+            - docker build -f ./server/Dockerfile --pull -t "$CI_REGISTRY_IMAGE-server${tag}" .
+            - docker push "$CI_REGISTRY_IMAGE-server${tag}"
+            - docker build -f ./frontend/Dockerfile --pull -t "$CI_REGISTRY_IMAGE-frontend${tag}" .
+            - docker push "$CI_REGISTRY_IMAGE-frontend${tag}"
         # Run this job in a branch where a Dockerfile exists
     rules:
       - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
