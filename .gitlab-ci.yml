@@ -33,7 +33,7 @@ stages:          # List of stages for jobs, and their order of execution
   - review
   - deploy
 
-docker-build:
+docker-build-server:
     stage: build
     image: docker:latest
     services:
@@ -51,14 +51,44 @@ docker-build:
               tag=":$CI_COMMIT_REF_SLUG"
               echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
           fi
+
         - |
           image_tag="$CI_REGISTRY_IMAGE-server${tag}"
           echo "Using this image tag": $image_tag"
+
         - docker build -f ./server/Dockerfile --pull -t "${image_tag}" ./server
         - docker push "$CI_REGISTRY_IMAGE-server${tag}"
+
+        # Run this job in a branch where a Dockerfile exists
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+        exists:
+          - Dockerfile
+      - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+docker-build-frontend:
+    stage: build
+    image: docker:latest
+    services:
+      - docker:dind
+    before_script:
+      - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+    script:
+        - |
+          if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+              tag=""
+              echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
+              
+          else
+              tag=":$CI_COMMIT_REF_SLUG"
+              echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
+          fi
+
         - |
           image_tag="$CI_REGISTRY_IMAGE-frontend${tag}"
           echo "Using this image tag": $image_tag"
+
         - docker build -f ./frontend/Dockerfile --pull -t "${image_tag}" ./frontend
         - docker push "$CI_REGISTRY_IMAGE-frontend${tag}"
         # Run this job in a branch where a Dockerfile exists
