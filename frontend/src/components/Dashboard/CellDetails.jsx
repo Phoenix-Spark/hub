@@ -18,6 +18,7 @@ const CellDetails = () => {
   const [resetForm, setResetForm] = useState(0);
   const logoFileField = useRef();
   const idField = useRef(user?.cellId);
+  const [baseList, setBaseList] = useState([]);
 
   const resetValues = data => {
     setNameValue(data.cell_name);
@@ -33,12 +34,19 @@ const CellDetails = () => {
   };
 
   useEffect(() => {
+    fetch(`${server}/base_list`)
+      .then(response => response.json())
+      .then(data => setBaseList(data))
+      .catch(error => console.error('Error fetching base list:', error));
+  }, []);
+
+  useEffect(() => {
     let ignore = false;
     const getCellData = async ignore => {
       const response = await fetch(`${server}/cell/${user?.cellId}`);
       if (response.ok) {
         const data = await response.json();
-        console.log('cell details',data);
+        console.log('cell details', data);
         if (!ignore) {
           resetValues(data);
         }
@@ -115,17 +123,27 @@ const CellDetails = () => {
               className="mb-3"
               controlId="baseId"
             >
-              <Form.Label>Base ID</Form.Label>
-              <Form.Control
-                required
-                type="text"
-                placeholder="Enter a base"
-                name="baseId"
+              <Form.Label>Base</Form.Label>
+              <Form.Select
+                name="base_name"
                 value={baseValue}
-                onChange={e => setBaseValue(e.target.value)}
-              ></Form.Control>
+                onChange={e => {
+                  setBaseValue(e.target.value);
+                }}
+                required
+              >
+                <option value="">Select a Base Name</option>
+                {baseList.map(base => (
+                  <option
+                    key={base.id}
+                    value={base.id}
+                  >
+                    {base.base_name}
+                  </option>
+                ))}
+              </Form.Select>
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              <Form.Control.Feedback type="invalid">Please enter a base.</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">Please select a base.</Form.Control.Feedback>
             </Form.Group>
             <Form.Group
               className="mb-3"

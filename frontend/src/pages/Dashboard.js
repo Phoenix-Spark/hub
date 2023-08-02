@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Col, Nav, Row, Tab, Form, Button, Card } from 'react-bootstrap';
+import React, { useContext, useEffect, useState } from 'react';
+import { Col, Nav, Row, Tab } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
@@ -75,39 +75,39 @@ function Dashboard() {
                     </Nav.Item>
                     {(user?.roles === 'site' || user?.roles === 'cell') && (
                       <>
-                      <Nav.Item>
-                        <Nav.Link
-                          eventKey="proposed-projects"
-                          className="link-secondary"
-                        >
-                          Proposed Projects
-                        </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link
-                          eventKey="cell-details"
-                          className="link-secondary"
-                        >
-                          Cell Details
-                        </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link
-                          eventKey="admin-things"
-                          className="link-secondary"
-                        >
-                          Admin Things
-                        </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                        <Nav.Link
-                        eventKey="admin-faq"
-                        className="link-secondary"
-                        >
-                        Admin-FAQ
-                        </Nav.Link>
-                      </Nav.Item>
-                    </>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="proposed-projects"
+                            className="link-secondary"
+                          >
+                            Proposed Projects
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="cell-details"
+                            className="link-secondary"
+                          >
+                            Cell Details
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="admin-things"
+                            className="link-secondary"
+                          >
+                            Admin Things
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="approve-faq"
+                            className="link-secondary"
+                          >
+                            Admin-FAQ
+                          </Nav.Link>
+                        </Nav.Item>
+                      </>
                     )}
                   </Nav>
                 </Col>
@@ -136,7 +136,9 @@ function Dashboard() {
                       <CellDetails></CellDetails>
                     </Tab.Pane>
                     <Tab.Pane eventKey="admin-things">All the admin things here to add cells, approve projects, and manage users</Tab.Pane>
-                    <Tab.Pane eventKey="admin-faq"><AdminFAQ/></Tab.Pane>
+                    <Tab.Pane eventKey="approve-faq">
+                      <AdminFAQ />
+                    </Tab.Pane>
                   </Tab.Content>
                 </Col>
               </Row>
