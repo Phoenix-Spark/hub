@@ -54,12 +54,12 @@ docker-build:
         - |
           image_tag="$CI_REGISTRY_IMAGE-server${tag}"
           echo "Using this image tag": $image_tag"
-        - docker build -f ./server/Dockerfile --pull -t "${image_tag}" .
+        - docker build -f ./server/Dockerfile --pull -t "${image_tag}" ./server
         - docker push "$CI_REGISTRY_IMAGE-server${tag}"
         - |
-          image_tag = "$CI_REGISTRY_IMAGE-frontend${tag}"
+          image_tag="$CI_REGISTRY_IMAGE-frontend${tag}"
           echo "Using this image tag": $image_tag"
-        - docker build -f ./frontend/Dockerfile --pull -t "${image_tag}" .
+        - docker build -f ./frontend/Dockerfile --pull -t "${image_tag}" ./frontend
         - docker push "$CI_REGISTRY_IMAGE-frontend${tag}"
         # Run this job in a branch where a Dockerfile exists
     rules:
