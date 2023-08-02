@@ -16,7 +16,7 @@ const CellDetails = () => {
   const [contact2Value, setContact2Value] = useState('');
   const [emailValue, setEmailValue] = useState('');
   const [resetForm, setResetForm] = useState(0);
-  const logoFileField = useRef();
+  // const logoFileField = useRef();
   const idField = useRef(user?.cellId);
   const [baseList, setBaseList] = useState([]);
 
@@ -29,7 +29,7 @@ const CellDetails = () => {
     setContact1Value(data.contact_number1);
     setContact2Value(data.contact_number2);
     setEmailValue(data.email);
-    logoFileField.current.value = '';
+    // logoFileField.current.value = '';
     idField.current.value = data.id;
   };
 
@@ -253,7 +253,7 @@ const CellDetails = () => {
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
               <Form.Control.Feedback type="invalid">Please enter a valid email address.</Form.Control.Feedback>
             </Form.Group>
-            <Form.Group
+            {/**<Form.Group
               className="mb-3"
               controlId="cellLogo"
             >
@@ -263,7 +263,7 @@ const CellDetails = () => {
                 type="file"
                 name="cellLogo"
               ></Form.Control>
-            </Form.Group>
+            </Form.Group>**/}
 
             <Form.Group className="pt-3">
               <Button

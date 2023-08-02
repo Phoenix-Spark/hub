@@ -75,6 +75,7 @@ function Dashboard() {
                     </Nav.Item>
                     {(user?.roles === 'site' || user?.roles === 'cell') && (
                       <>
+                        <h5 className="mt-4 border-bottom pb-2">Admin Section</h5>
                         <Nav.Item>
                           <Nav.Link
                             eventKey="proposed-projects"
@@ -93,18 +94,18 @@ function Dashboard() {
                         </Nav.Item>
                         <Nav.Item>
                           <Nav.Link
-                            eventKey="admin-things"
+                            eventKey="approve-faq"
                             className="link-secondary"
                           >
-                            Admin Things
+                            Proposed FAQs
                           </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
                           <Nav.Link
-                            eventKey="approve-faq"
+                            eventKey="admin-things"
                             className="link-secondary"
                           >
-                            Admin-FAQ
+                            Admin Things
                           </Nav.Link>
                         </Nav.Item>
                       </>
