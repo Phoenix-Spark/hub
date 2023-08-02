@@ -1,0 +1,73 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=spark_hub
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db-data-capstone:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  adminer:
+    image: docker.io/adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DESIGN=pepa-linha-dark
+    networks:
+      - backend
+
+  redis:
+    image: docker.io/redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1
+    networks:
+      - backend
+
+  frontend:
+    image: ${IMAGE}-frontend:latest
+    ports:
+      - '80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.capstoneapp.rule=Host(`capstone.apps.jmidd.dev`)"
+      - "traefik.http.routers.capstoneapp.tls=true"
+      - "traefik.http.routers.capstoneapp.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.capstoneapp.tls.domains[0].main=capstone.apps.jmidd.dev"
+      - "traefik.docker.network=external"
+
+
+  server:
+    image: ${IMAGE}-server:${COMMIT_SLUG}
+    ports:
+      - '80'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.capstoneapi.rule=Host(`capstoneapi.apps.jmidd.dev`)"
+      - "traefik.http.routers.capstoneapi.tls=true"
+      - "traefik.http.routers.capstoneapi.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.capstoneapi.tls.domains[0].main=capstoneapi.apps.jmidd.dev"
+      - "traefik.docker.network=external"
+    
+volumes:
+  db-data-capstone:
+  redis-data:
+
+networks:
+    default:
+        name: external
+        external: true
+    backend:
+

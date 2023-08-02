@@ -2,6 +2,6 @@ FROM node:latest
 RUN mkdir -p /server
 WORKDIR /server
 COPY  . /server
-EXPOSE 8080
+EXPOSE 80
 RUN npm install
 CMD npm run migrate_seed_start
