@@ -70,15 +70,16 @@ router.post('/post', async (req, res, next) => {
     const data = await db('post')
       .insert({
         users_id: req.body.userId,
-        category_id: req.body.category_id,
+        category_id: req.body.categoryId,
         title: req.body.title,
         body: req.body.body,
-        create_time: Date.now(),
+        create_time: new Date().toISOString(),
         is_edited: false,
         edit_time: null,
         views: 0,
-      });
-    res.status(200).json(data);
+      })
+      .returning('*');
+    res.status(200).json(data[0]);
   } catch (e) {
     console.error(`POST /forum/post ERROR: ${e}`);
     next(e);

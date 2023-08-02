@@ -3,12 +3,13 @@ import { Accordion, Button, Col, Form, Row, ListGroup, Modal } from 'react-boots
 import AppContext from '../AppContext.js';
 import { formatDate } from '../utils/index.js';
 
+/*
 const dataStructure = [   //this demonstrates the format of the forumData state variable below
-  {                       //dummyData[0] (Category)
+  {                       //dummyData[0] (Category 0)
     name: '',
     detail: ``,
     posts: [
-      {                   //dummyData[0].posts[0]
+      {                   //dummyData[0].posts[0] (Post 0)
         id: 1,
         users_id: 1,
         category_id: 1,
@@ -21,7 +22,7 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
         username: '',
         photo_url: '',
         comments: [
-          {               //dummyData[0].posts[0].comments[0]
+          {               //dummyData[0].posts[0].comments[0] (Comment 0)
             id: 1,
             post_id: 1,
             users_id: 1,
@@ -32,7 +33,7 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
             username: '',
             photo_url: '',
             replies: [
-              {               //dummyData[0].posts[0].comments[0].replies[0]
+              {               //dummyData[0].posts[0].comments[0].replies[0] (Reply 0)
                 id: 1,
                 comment_id: 1,
                 users_id: 1,
@@ -50,12 +51,14 @@ const dataStructure = [   //this demonstrates the format of the forumData state 
     ]
   }//, more categories...
 ]
+*/
 
 const Forums = () => {
   const { server, user, setProfileModal } = useContext(AppContext);
   const [forumData, setForumData] = useState([]);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null); 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [postTitle, setPostTitle] = useState('');
   const [postBody, setPostBody] = useState('');
 
@@ -168,7 +171,7 @@ const Forums = () => {
     }
   }
 
-  const createPost = async (category_id, title, body) => {
+  const createPost = async (category_id, category_index, title, body) => {
     console.log("create post")
     try {
       console.log(JSON.stringify({
@@ -195,9 +198,12 @@ const Forums = () => {
         throw new Error('Failed to create your post');
       }
       const data = await response.json();
-
       console.log('New post created:', data);
 
+      let newData = [...forumData];
+      console.log("user = ", user)
+      newData[category_index].posts.unshift({...data, comments: [], username: user.username, photo_url: user.photo }) //fakes local data until real refresh})
+      setForumData(newData)
       handleCloseCreatePostModal();
 
     } catch (error) {
@@ -205,20 +211,37 @@ const Forums = () => {
     }
   }
 
-  const handleCreatePost = (category_id) => {
+  const handleCreatePost = (category_id, category_index) => {
     const title = postTitle;
     const body = postBody;
-    createPost(category_id, title, body);
+    createPost(category_id, category_index, title, body);
   }
 
   const handleCloseCreatePostModal = () => {
     setSelectedCategory(null);
+    setSelectedCategoryIndex(null);
     setShowCreatePostModal(false);
   }
 
-  const handleShowCreatePostModal = (category_id) => {
+  const handleShowCreatePostModal = (category_id, category_index) => {
     setSelectedCategory(category_id);
+    setSelectedCategoryIndex(category_index);
     setShowCreatePostModal(true);
+  }
+
+  const handleDeletePost = (postId, postIndex) => {
+    //need Delete route
+    console.log("need Delete route")
+  }
+
+  const handleDeleteComment = (commentId, commentIndex) => {
+    //need Delete route
+    console.log("need Delete route")
+  }
+
+  const handleDeleteReply = (replyId, replyIndex) => {
+    //need Delete route
+    console.log("need Delete route")
   }
 
   return(
@@ -229,13 +252,19 @@ const Forums = () => {
           <Accordion.Item key={cat_index} eventKey={cat_index}>
             <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
-              <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button onClick={() => handleShowCreatePostModal(category.id)}>Create A Post....</Button></div>
+              <div className="d-flex justify-content-between">
+                <h4>{category.detail}</h4>
+                <Button onClick={() => handleShowCreatePostModal(category.id, cat_index)}>Create A Post....</Button>
+              </div>
               <Accordion className="mt-5">
                 {forumData[cat_index].posts.map((post,post_index)=>
                   <Accordion.Item key={post_index} eventKey={post_index}>
                     <Accordion.Header>
                       <div className="d-flex w-100 me-4 justify-content-between">
-                        <h5>{post.title}</h5>
+                        <div className="d-flex">
+                          {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeletePost(post.id, post.index)}>Delete</Button>:<></>}
+                          <h5>{post.title}</h5>
+                        </div>
                         <PostUserTag post={post}/>
                       </div>
                     </Accordion.Header>
@@ -251,6 +280,7 @@ const Forums = () => {
                           <Accordion.Item key={`com-${cat_index}-${comment_index}`} eventKey={comment_index}>
                             <Accordion.Header>
                               <div className="d-flex w-100 me-4 justify-content-between">
+                                {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteComment(comment.id, comment.index)}>Delete</Button>:<></>}
                                 <h6>{comment.body.substring(0,63).concat("...")}</h6>
                                 <CommentUserTag comment={comment} />
                               </div>
@@ -271,6 +301,7 @@ const Forums = () => {
                                       {comment.replies.map(reply=>
                                         <ListGroup.Item>
                                           <div className="d-flex w-100 me-4 justify-content-between">
+                                            {user.roles==='site'?<Button style={{height: '50px', flex: 'none'}} variant='danger' onClick={()=>handleDeleteReply(reply.id, reply.index)}>Delete</Button>:<></>}
                                             <h6 className="me-5">{reply.body}</h6>
                                             <h6><ReplyUserTag reply={reply}/></h6>
                                           </div>
@@ -299,7 +330,7 @@ const Forums = () => {
       {/* <TheForum/> */}
 
       {showCreatePostModal && selectedCategory !== null && (
-      <Modal 
+      <Modal
         size= 'lg'
         centered
         show={showCreatePostModal} onHide={handleCloseCreatePostModal}>
@@ -309,18 +340,29 @@ const Forums = () => {
         <Modal.Body>
           <Form.Group controlId='postTitle'>
             <Form.Label>Title</Form.Label>
-            <Form.Control type='text' placeholder='Enter post title' />
+            <Form.Control
+              type='text'
+              placeholder='Enter post title'
+              value={postTitle}
+              onChange={(e) => setPostTitle(e.target.value)}
+            />
           </Form.Group>
           <Form.Group controlId='postBody'>
             <Form.Label>Body</Form.Label>
-            <Form.Control as='textarea' rows={4} placeholder='Type here' />
+            <Form.Control
+              as='textarea'
+              rows={4}
+              placeholder='Type here'
+              value={postBody}
+              onChange={(e) => setPostBody(e.target.value)}
+            />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant='secondary' onClick={handleCloseCreatePostModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={() => handleCreatePost(selectedCategory)}>
+          <Button variant="primary" onClick={() => handleCreatePost(selectedCategory, selectedCategoryIndex)}>
             Create Post
           </Button>
         </Modal.Footer>
