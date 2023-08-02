@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Button, Container, Form, Modal } from 'react-bootstrap';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Container, Form, InputGroup, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import AppContext from '../AppContext.js';
 
@@ -39,7 +39,6 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
       });
 
       if (response.ok) {
-        
         // add the submitted project to the proposed list
         addProjectToProposedList({
           projectName,
@@ -51,7 +50,6 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
 
         // Show the success modal
         setShowSuccessModal(true);
-
       } else {
         // Handle error case
         console.error('Failed to submit proposal');
@@ -60,7 +58,7 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
       console.error('Error submitting proposal:', error);
     }
   };
-  
+
   return (
     <Container className="my-4">
       <h2 className="text-center text-white fw-bold mb-4">Submit New Idea</h2>
@@ -96,13 +94,19 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
           className="mb-3"
           controlId="budget"
         >
-          <Form.Label className="text-white">Budget</Form.Label>
-          <Form.Control
-            type="text"
-            value={budget}
-            onChange={e => setBudget(e.target.value)}
-            required
-          />
+          <Form.Label className="text-white">Estimated Budget</Form.Label>
+          <InputGroup>
+            <InputGroup.Text>$</InputGroup.Text>
+            <Form.Control
+              type="number"
+              required
+              name="budget"
+              min={0}
+              step={100}
+              value={budget}
+              onChange={e => setBudget(e.target.value)}
+            />
+          </InputGroup>
         </Form.Group>
 
         <Form.Group
@@ -116,41 +120,17 @@ const SubmitNewIdea = ({ addProjectToProposedList }) => {
             required
           >
             <option value="">Select a Cell Name</option>
-              {cellList.map((cell) => (
-                <option
-                  key={cell.id}
-                  value={cell.cell_name}
-                >
-                  {cell.cell_name}
-                </option>
-              ))}
+            {cellList.map(cell => (
+              <option
+                key={cell.id}
+                value={cell.cell_name}
+              >
+                {cell.cell_name}
+              </option>
+            ))}
             <option value="createNewCell">Cell not listed? Please create a new cell first.</option>
             {/* Want to be able to select actual Cell */}
           </Form.Select>
-        </Form.Group>
-
-        <Form.Group
-          className="mb-3"
-          controlId="participants"
-        >
-          <Form.Label className="text-white">Participants</Form.Label>
-          <Form.Control
-            type="text"
-            value={participants}
-            onChange={e => setParticipants(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group
-          className="mb-3"
-          controlId="photos"
-        >
-          <Form.Label className="text-white">Photos</Form.Label>
-          <Form.Control
-            type="file"
-            onChange={e => setPhotos(e.target.files[0])}
-          />
         </Form.Group>
 
         <div className="my-5 d-flex justify-content-end">

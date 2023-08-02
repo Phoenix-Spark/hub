@@ -197,6 +197,7 @@ export default function Header() {
                     {`${user.firstName} ${user.lastName}`}
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
+                    <Dropdown.Header>Personal Section</Dropdown.Header>
                     <Dropdown.Item
                       as={Link}
                       to="dashboard/account"
@@ -211,14 +212,35 @@ export default function Header() {
                     </Dropdown.Item>
                     {user.roles === 'site' ||
                       (user.roles === 'cell' && (
-                        <Dropdown.Item
-                          as={Link}
-                          to="/dashboard/proposed-projects"
-                        >
-                          Proposed Projects
-                        </Dropdown.Item>
+                        <>
+                          <Dropdown.Header>Admin Section</Dropdown.Header>
+                          <Dropdown.Item
+                            as={Link}
+                            to="/dashboard/proposed-projects"
+                          >
+                            Proposed Projects
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            as={Link}
+                            to="/dashboard/cell-details"
+                          >
+                            Cell Settings
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            as={Link}
+                            to="/dashboard/approve-faq"
+                          >
+                            Proposed FAQs
+                          </Dropdown.Item>
+                        </>
                       ))}
-                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item
+                      className="text-danger"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>

@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import db from '../db.js';
 import { findUserById, getUserRoles } from '../Services/LoginService.js';
 
@@ -59,6 +60,52 @@ router.get('/:cellId', async (req, res, next) => {
     next(e);
   }
 });
+
+const cellUpload = multer();
+
+router.patch(
+  '/:cellId',
+  async (req, res, next) => {
+    if (!req.session.user) {
+      return res.sendStatus(401);
+    }
+
+    const user = await findUserById(req.session.user);
+    if (!user) {
+      return res.sendStatus(401);
+    }
+    req.user = user;
+    return next();
+  },
+  cellUpload.none(),
+  // eslint-disable-next-line consistent-return
+  async (req, res, next) => {
+    try {
+      const { id, baseId, cellName, cellEndpoint, externalWebsite, cellMission, contactNumber1, contactNumber2, email } = req.body;
+      if (req.params.cellId !== id) {
+        return res.status(400).send({ msg: 'Wrong cell id found' });
+      }
+      const updated = await db('cell').first().where('id', id).update(
+        {
+          base_id: baseId,
+          cell_name: cellName,
+          cell_endpoint: cellEndpoint,
+          external_website: externalWebsite,
+          cell_mission: cellMission,
+          contact_number1: contactNumber1,
+          contact_number2: contactNumber2,
+          email,
+        },
+        ['*']
+      );
+
+      res.status(200).json(updated[0]);
+    } catch (e) {
+      console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
+      next(e);
+    }
+  }
+);
 
 router.get('/:cellId/team', async (req, res, next) => {
   try {
