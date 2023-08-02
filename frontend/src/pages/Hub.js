@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 import AppContext from '../AppContext.js';
 import MapChart from '../components/Hub/MapChart.jsx';
@@ -65,8 +66,9 @@ function Hub() {
             >
               Spark List
               <Button
+                as={Link}
                 variant="secondary"
-                href="http://localhost:3000/cell-registration"
+                to="/cell-registration"
                 className=""
               >
                 Register your cell

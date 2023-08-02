@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ProjectRouter, UserRouter, ForumRouter } from './Routes/index.js';
+import { CellRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
@@ -160,8 +160,19 @@ app.delete('/faq/:faqId', async (req, res, next) => {
 
 app.get('/profile/:userId', async (req, res, next) => {
   try {
-    const data = await
-    db.select('users.username','users.first_name','users.last_name','users.email','users.photo_url','users.contact_number1','users.contact_number2','users.bio','cell.cell_name', 'cell.logo_url')
+    const data = await db
+      .select(
+        'users.username',
+        'users.first_name',
+        'users.last_name',
+        'users.email',
+        'users.photo_url',
+        'users.contact_number1',
+        'users.contact_number2',
+        'users.bio',
+        'cell.cell_name',
+        'cell.logo_url'
+      )
       .from('users')
       .join('cell', 'users.cell_id', 'cell.id')
       .where('users.id', req.params.userId);
@@ -174,8 +185,19 @@ app.get('/profile/:userId', async (req, res, next) => {
 
 app.get('/userData/:username', async (req, res, next) => {
   try {
-    const data = await
-    db.select('username', 'password','first_name as firstName','last_name as lastName','email','photo_url as photo','contact_number1 as contactNumber1','contact_number2 as contactNumber2','bio')
+    const data = await db
+      .select(
+        'username',
+        'first_name as firstName',
+        'last_name as lastName',
+        'email',
+        'photo_url as photo',
+        'contact_number1 as contactNumber1',
+        'contact_number2 as contactNumber2',
+        'bio',
+        'base_id as baseId',
+        'cell_id as cellId'
+      )
       .from('users')
       .where('users.username', req.params.username);
     res.status(200).json(data);
