@@ -36,7 +36,7 @@ const sessionOptions = {
 };
 
 const corsOptions = {
-origin: ['127.0.0.1:3000', 'localhost:3000', /\.staging\.apps\.techpulse\.us$/],
+origin: ['127.0.0.1:3000', 'localhost:3000', /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/],
   credentials: true,
 };
 
