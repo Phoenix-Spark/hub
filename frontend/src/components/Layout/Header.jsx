@@ -9,7 +9,8 @@ import LoginButton from '../Login/LoginButton.jsx';
 import './Header.scss';
 
 export default function Header() {
-  const { server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
+  const { frontendUrl, server, user, setUser, showLogin, setShowLogin, isDarkMode, setIsDarkMode } = useContext(AppContext);
+  const [imgUrl, setImgUrl] = useState();
   const [showDropdown, setShowDropdown] = useState(false);
   const [fadeAnimation, setFadeAnimation] = useState(false);
 
@@ -27,6 +28,13 @@ export default function Header() {
           header.classList.remove('scrolled');
         }
       }
+      if (user) {
+      setImgUrl(user.photo
+        ? user.photo.startsWith('https')
+          ? user.photo
+          : `${frontendUrl}/uploads/${user.photo}`
+        : `../images/placeholder_logo.svg`);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -37,11 +45,28 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+      if (user) {
+      setImgUrl(user.photo
+        ? user.photo.startsWith('https')
+          ? user.photo
+          : `${frontendUrl}/uploads/${user.photo}`
+        : `../images/placeholder_logo.svg`);
+      }
+  }, [user])
+
+  useEffect(() => {
     if (location.pathname === '/signup') {
       setShowLogin(false);
     } else {
       setShowLogin(true);
-    }
+    }  
+    if (user) {
+    setImgUrl(user.photo
+      ? user.photo.startsWith('https')
+        ? user.photo
+        : `${frontendUrl}/uploads/${user.photo}`
+      : `../images/placeholder_logo.svg`);
+  }
   }, [location]);
 
   async function handleLogout() {
@@ -51,16 +76,8 @@ export default function Header() {
 
     if (response.ok) {
       setUser(null);
+      navigate('/');
     }
-  }
-
-  let imgUrl = '';
-  if (user) {
-    imgUrl = user.photo
-      ? user.photo.startsWith('https')
-        ? user.photo
-        : `${server}/uploads/${user.photo}`
-      : `../images/placeholder_logo.svg`;
   }
 
   const toggleDarkMode = () => {
@@ -94,7 +111,7 @@ export default function Header() {
           to="/"
         >
           <Image
-            src="http://localhost:3000/images/travis.png"
+            src={`${frontendUrl}/images/travis.png`}
             alt="Spark Hub Logo"
             width={90}
           />
@@ -129,12 +146,6 @@ export default function Header() {
                 to="/SubmissionFAQ"
               >
                 Submission FAQ
-              </NavDropdown.Item>
-              <NavDropdown.Item
-                as={NavLink}
-                to="/KylesCorner"
-              >
-                Kyle's Corner
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Link
@@ -202,7 +213,7 @@ export default function Header() {
                       as={Link}
                       to="dashboard/account"
                     >
-                      Account Settings
+                      Profile
                     </Dropdown.Item>
                     <Dropdown.Item
                       as={Link}
@@ -223,13 +234,7 @@ export default function Header() {
                           as={Link}
                           to="/dashboard/cell-details"
                         >
-                          Cell Settings
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          as={Link}
-                          to="/dashboard/approve-faq"
-                        >
-                          Proposed FAQs
+                          Cell Details
                         </Dropdown.Item>
                       </>
                     )}
@@ -241,6 +246,12 @@ export default function Header() {
                           to="/dashboard/proposed-cells"
                         >
                           Proposed Cells
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          as={Link}
+                          to="/dashboard/approve-faq"
+                        >
+                          Proposed FAQs
                         </Dropdown.Item>
                       </>
                     )}

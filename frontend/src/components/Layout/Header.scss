@@ -4,7 +4,7 @@
 @import "~bootstrap/scss/mixins";
 
 
-.nav-link{
+#Header .nav-link{
   $tab-links-color: $white;
   
   color: RGBA(to-rgb($tab-links-color), 1) !important;
@@ -13,7 +13,7 @@
 }
 
 @include color-mode(dark) {
-  .nav-link{
+  #Header .nav-link{
 
     $tab-links-color: $gray-300;
   

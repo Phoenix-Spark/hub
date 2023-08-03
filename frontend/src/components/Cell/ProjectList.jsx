@@ -9,6 +9,7 @@ import {firstSentence} from '../../utils/index.js';
 function ProjectList({ projects }) {
   return (
     <ListGroup style={{ overflowY: 'auto' }}>
+      {projects?.length === 0 && 'No Projects to show.'}
       {projects?.map((item, index) => (
         <ListGroup.Item
           action

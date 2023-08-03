@@ -116,10 +116,10 @@ export async function logoutHandler(req, res) {
   });
 }
 
-router.get('/:userName/projects(/:filter)?', async (req, res, next) => {
+router.get('/:userId/projects(/:filter)?', async (req, res, next) => {
   try {
-    const user = await db('users').select('id').where('first_name', req.params.userName).first();
-    const projects = await db('project').select().where('proposed_by', user.id).orderByRaw('is_approved NULLS FIRST');
+    // const user = await db('users').select('id').where('id', req.params.userId).first();
+    const projects = await db('project').select().where('proposed_by', req.params.userId).orderByRaw('is_approved NULLS FIRST');
 
     res.status(200).json(projects);
   } catch (e) {

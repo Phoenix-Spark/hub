@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Form, Image, Modal, Row, ListGroup } from 'react-bootstrap';
+import AppContext from '../../../AppContext.js';
 
 const AddMemberModal = ({isModalShowing, hideModal, refreshMemberList, server, memberList, projectId}) => {
+  const { frontendUrl } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddMembers = async (e) => {
@@ -48,15 +50,21 @@ const AddMemberModal = ({isModalShowing, hideModal, refreshMemberList, server, m
         <Row>
           <Col>
             <ListGroup as="ul">
-              {Array.from(memberList).map(member => (
+              {Array.from(memberList).map(member => {
+                let imgUrl = member.photo
+                  ? member.photo.startsWith('https')
+                    ? member.photo
+                    : `${frontendUrl}/uploads/${member.photo}`
+                  : `../images/placeholder_logo.svg`
+                return (
                 <ListGroup.Item as="li">
                   <input type="checkbox" className="btn-check" name="member" value={member.id} id={`member-${member.id}`}/>
                   <label className="btn btn-outline-secondary w-100 text-start border-0" htmlFor={`member-${member.id}`}>
-                    <Image src={member.photo} width="47" className="me-2 border border-black" />
+                    <Image src={imgUrl} width="47" className="me-2 border border-black" />
                     {`${member.firstName} ${member.lastName}`}
                   </label>
                 </ListGroup.Item>
-              )
+              )}
             )}
             </ListGroup>
           </Col>

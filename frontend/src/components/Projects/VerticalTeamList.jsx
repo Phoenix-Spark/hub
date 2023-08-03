@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import AppContext from '../../AppContext.js';
 
 function VerticalTeamList({ team }) {
-    const { setProfileModal } = useContext(AppContext);
+    const { frontendUrl, setProfileModal } = useContext(AppContext);
 
     return (
     <ListGroup style={{ overflowY: 'auto' }}>
@@ -11,12 +11,12 @@ function VerticalTeamList({ team }) {
         const imgUrl = item.photo
           ? item.photo.startsWith('https')
             ? item.photo
-            : `http://localhost:3000/uploads/${item.photo}`
+            : `${frontendUrl}/uploads/${item.photo}`
           : `../images/placeholder_logo.svg`;
         return (
           <ListGroup.Item
             action
-            key={index}
+            key={`${item}-${index}`}
           >
             <Row onClick={()=>setProfileModal({show: true, userId: item.id})}>
               <Col md="auto">

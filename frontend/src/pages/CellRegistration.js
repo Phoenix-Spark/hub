@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
-// import multer from 'multer';
 import AppContext from '../AppContext.js';
 
 export default function CellRegistration() {
@@ -113,12 +112,12 @@ export default function CellRegistration() {
 
   return (
     isSubmitted ? <h5 className="mt-5">Thank you for submitting {formData.cell_name} to Spark Hub! Please allow 3-5 business days for administrator review.</h5> : 
-    <Form onSubmit={handleSubmit}>
+    <Form className="mt-4 mb-0 ms-5 me-5" onSubmit={handleSubmit}>
       <h2>Cell Add Request</h2><hr />
       <Row>
         <Col>
           <Form.Group controlId="baseName">
-            <Form.Label>Base Name</Form.Label>
+            <Form.Label className='mt-1'>Base Name</Form.Label>
             <Form.Select
               name="base_name"
               value={formData.base_name}
@@ -140,7 +139,7 @@ export default function CellRegistration() {
 
         <Col>
           <Form.Group controlId="cellName">
-            <Form.Label>Cell Name</Form.Label>
+            <Form.Label className='mt-1'>Cell Name</Form.Label>
             <Form.Control
               type="text"
               name="cell_name"
@@ -156,7 +155,7 @@ export default function CellRegistration() {
       <Row>
         <Col>
           <Form.Group controlId="externalWebsite">
-            <Form.Label>External Website (optional)</Form.Label>
+            <Form.Label className='mt-3'>External Website (optional)</Form.Label>
             <Form.Control
               type="url"
               name="external_website"
@@ -169,7 +168,7 @@ export default function CellRegistration() {
       </Row>
 
       <Form.Group controlId="cellMission">
-        <Form.Label>Cell Mission (optional)</Form.Label>
+        <Form.Label className='mt-3'>Cell Mission (optional)</Form.Label>
         <Form.Control
           as="textarea"
           name="cell_mission"
@@ -182,7 +181,7 @@ export default function CellRegistration() {
       <Row>
         <Col>
           <Form.Group controlId="contactNumber1">
-            <Form.Label>Contact Number 1</Form.Label>
+            <Form.Label className='mt-3'>Contact Number 1</Form.Label>
             <Form.Control
               type="tel"
               name="contact_number1"
@@ -196,7 +195,7 @@ export default function CellRegistration() {
         </Col>
         <Col>
           <Form.Group controlId="contactNumber2">
-            <Form.Label>Contact Number 2 (optional)</Form.Label>
+            <Form.Label className='mt-3'>Contact Number 2 (optional)</Form.Label>
             <Form.Control
               type="tel"
               name="contact_number2"
@@ -210,7 +209,7 @@ export default function CellRegistration() {
       </Row>
 
       <Form.Group controlId="email">
-        <Form.Label>Email</Form.Label>
+        <Form.Label className='mt-3'>Email</Form.Label>
         <Form.Control
           type="email"
           name="email"
@@ -221,15 +220,15 @@ export default function CellRegistration() {
         />
       </Form.Group>
 
-      <Form.Group controlId="logoUrl">
-        <Form.Label>Logo (optional)</Form.Label>
+      <Form.Group className='mb-3' controlId="logoUrl">
+        <Form.Label className='mt-3'>Logo (optional)</Form.Label>
         <Form.Control type="file" accept=".jpg, .png" onChange={handleLogoChange} />
       </Form.Group>
 
       <Button
         variant="primary"
         type="submit"
-        className='mt-3'
+        className='mt-4'
       >
         Submit
       </Button>

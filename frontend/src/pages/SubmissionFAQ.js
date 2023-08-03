@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Accordion, Card, Button, Form } from 'react-bootstrap';
+import { Accordion, Card, Button, Form, Alert } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 
 const SubmissionFAQ = () => {
@@ -11,12 +11,14 @@ const SubmissionFAQ = () => {
   const [questionsList, setQuestionsList] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [ refresh, setRefresh ] = useState(false);
+  const [ showSubmitAlert, setShowSubmitAlert] = useState(false);
 
   useEffect(() => {
     fetch(`${server}/faq`)
       .then((res) => res.json())
       .then((data) => setFaq(data))
       .then(setRefresh(false))
+      .then(console.log("should have new data"))
       .catch((err) => console.log(`Fetch failed. Error: ${err}`));
   }, [server, refresh]);
 
@@ -51,6 +53,8 @@ const SubmissionFAQ = () => {
     });
     console.log(`User submitted question: ${newQuestion.trim()}`);
     setRefresh(true)
+    setNewQuestion('')
+    setShowSubmitAlert(true)
   };
 
   const handleEdit = (index) => {
@@ -76,16 +80,25 @@ const SubmissionFAQ = () => {
     setIsEditing(false);
   };
 
-  // const faqData = [
-  //   {
-  //     question: 'What is Spark Hub?',
-  //     answer: 'Spark Hub is a platform for creative individuals to collaborate and share ideas.',
-  //   },
-  //   {
-  //     question: 'How do I join Spark Hub?',
-  //     answer: 'You can join Spark Hub by signing up for an account and becoming a member of our community.',
-  //   },
-  // ];
+  const handleDeleteFaq = (event, faqId, index) => {
+    event.stopPropagation()
+    fetch(`${server}/faq/${faqId}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'DELETE',
+    })
+    .then((response) => {
+      if (response.ok) {
+        console.log("delete")
+        setFaq(faq.toSpliced(index, 1))
+      } else {
+        console.error('Failed to delete FAQ:', response.status);
+      }
+    })
+    .catch(error => console.error('Error while deleting FAQ:', error));
+  };
 
   return (
     <div className="container mt-5">
@@ -95,6 +108,18 @@ const SubmissionFAQ = () => {
           (
             <Accordion.Item eventKey={index.toString()} className="mt-3">
               <Accordion.Header>
+                {user?.roles === 'site' ? (
+                  <Button
+                    className='me-3'
+                    style={{ height: '50px', flex: 'none' }}
+                    variant="danger"
+                    onClick={(event) => handleDeleteFaq(event, entry.id, index)}
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  <></>
+                )}
                 <h4>{entry.question}</h4>
               </Accordion.Header>
               {(isEditing === index) ? 
@@ -126,9 +151,9 @@ const SubmissionFAQ = () => {
                   <Accordion.Body>
                     <p>{entry.answer}</p>
                     {user?.roles === 'site' &&(
-                      <button variant = "secondary" onClick={() => handleEdit(index)} className="ms-2">
+                      <Button variant = "secondary" onClick={() => handleEdit(index)} className="ms-2">
                       Edit
-                      </button>  
+                      </Button>  
                     )}
                   </Accordion.Body>
                 )
@@ -150,10 +175,24 @@ const SubmissionFAQ = () => {
             onChange={handleNewQuestionChange}
           />
         </Form.Group>
-        <Button variant="primary" type="submit" align="right">
+        <Button disabled={!user} variant="primary" type="submit" align="right">
           Submit
-        </Button>
+        </Button>{!user?' Please log in or create an account to ask questions.':''}
       </Form>
+
+
+      <Alert show={showSubmitAlert} variant="success">
+        <Alert.Heading>Thank you!</Alert.Heading>
+        <p>
+          Thank you for submitting a question. When your question is answered, it will be displayed on this page.
+        </p>
+        <hr />
+        <div className="d-flex justify-content-end">
+          <Button onClick={() => setShowSubmitAlert(false)} variant="outline-success">
+            Close
+          </Button>
+        </div>
+      </Alert>
 
       <Accordion className="mt-4">
         {questionsList.map((q, index) => (

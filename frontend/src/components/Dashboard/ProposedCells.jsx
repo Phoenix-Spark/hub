@@ -50,8 +50,24 @@ function ProposedCells() {
   };
 
   const handleApproval = cellId => {
+    const cellToUpdate = unapprovedCells.find(cell => cell.id === cellId);
+  
+    if (!cellToUpdate) {
+      console.error(`Cell with id ${cellId} not found in unapprovedCells.`);
+      return;
+    }
+  
+    const updates = {
+      is_approved: 'yes',
+      cell_endpoint: cellToUpdate.cell_endpoint,
+    };
+  
     fetch(`${server}/cell_list/${cellId}`, {
       method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
     })
       .then(response => response.json())
       .then(data => {
@@ -62,6 +78,7 @@ function ProposedCells() {
         console.error('Error approving cell:', error);
       });
   };
+  
 
   const handleDenial = cellId => {
     fetch(`${server}/cell_list/${cellId}`, {
@@ -92,7 +109,20 @@ function ProposedCells() {
               <Card.Title>{cell?.cell_name}</Card.Title>
               <Card.Text>
                 Located at: {baseInfo[cell?.base_id - 1]?.base_name} {/*TODO this will break as we continue messing with the db- make a more robust way to call data*/}
-              <Form.Group className="mb-0 d-flex align-items-center">
+
+                External website: {cell?.external_website || 'Not Provided'}
+                <br />
+                Cell mission: {cell?.cell_mission || 'Not Provided'}
+                <br />
+                Contact number 1: {cell?.contact_number1}
+                <br />
+                Contact number 2: {cell?.contact_number2 || 'Not Provided'}
+                <br />
+                Email: {cell?.email}
+                <br />
+                Logo URL: {cell?.logo_url || 'Not Provided'}
+              </Card.Text>              
+              <Form.Group className="mb-3 d-flex align-items-baseline align-middle">
                 <Form.Label className="me-3 text-nowrap">Suggested Endpoint: </Form.Label>
                 <Form.Control
                   type="text"
@@ -101,18 +131,9 @@ function ProposedCells() {
                   onChange={(e) => handleEndpointChange(cell?.id, e.target.value)}
                 />
               </Form.Group>
-                External website: {cell?.external_website ? cell.external_website : 'Not Provided'}
-                <br />
-                Cell mission: {cell?.cell_mission ? cell.cell_mission : 'Not Provided'}
-                <br />
-                Contact number 1: {cell?.contact_number1}
-                <br />
-                Contact number 2: {cell?.contact_number2 ? cell.contact_number2 : 'Not Provided'}
-                <br />
-                Email: {cell?.email}
-                <br />
-                Logo URL: {cell?.logo_url ? cell.logo_url : 'Not Provided'}
-              </Card.Text>
+
+            </Card.Body>
+            <Card.Footer className="d-flex justify-content-between">              
               <Button
                 variant="success"
                 onClick={() => handleApproval(cell?.id)}
@@ -126,7 +147,7 @@ function ProposedCells() {
               >
                 Deny
               </Button>
-            </Card.Body>
+              </Card.Footer>
           </Card>
         ))
       )}

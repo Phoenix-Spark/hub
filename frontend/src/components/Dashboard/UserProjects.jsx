@@ -30,7 +30,7 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
 
     const getUserProjects = async () => {
       try {
-        const response = await fetch(`${server}/user/${user.firstName}/projects`);
+        const response = await fetch(`${server}/user/${user.id}/projects`);
         if (response.ok) {
           const data = await response.json();
           console.log(data);
@@ -74,26 +74,31 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
             <Card.Body>
               <Card.Title>{project.name}</Card.Title>
               <Card.Subtitle className={subtitleClasses}>{approvalStatus}</Card.Subtitle>
+              {project.is_approved === false && (<Card.Text><strong>Reason: </strong>{project?.comments}</Card.Text>)}
             </Card.Body>
-            <Card.Footer>
-              {project.is_approved && (
+            {project.is_approved !== false && (
+              <Card.Footer>
+                {project.is_approved && (
+                  <Button
+                    type="button"
+                    variant="success"
+                    onClick={() => navigate(`/project/${project.id}`)}
+                    className="me-3"
+                  >
+                    View Project
+                  </Button>
+                )}
+                
                 <Button
                   type="button"
-                  onClick={() => navigate(`/project/${project.id}`)}
-                  className="me-3"
+                  onClick={() => {
+                    showProjectEditModal(project);
+                  }}
                 >
-                  View Project
+                  Edit
                 </Button>
-              )}
-              <Button
-                type="button"
-                onClick={() => {
-                  showProjectEditModal(project);
-                }}
-              >
-                Edit
-              </Button>
-            </Card.Footer>
+              </Card.Footer>
+            )}
           </Card>
         );
       })}

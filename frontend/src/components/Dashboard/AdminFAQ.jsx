@@ -1,14 +1,12 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import { Button, Card, Form } from 'react-bootstrap';
+import { useEffect, useState, useContext, useRef } from 'react';
+import { Button, Card, Form, Alert } from 'react-bootstrap';
 import AppContext from '../../AppContext.js';
-
 
 function AdminFAQ() {
   const { server, user } = useContext(AppContext);
   const [ newQuestions, setNewQuestions ] = useState([]);
   const [ refresh, setRefresh ] = useState(false);
-  const renderCounter  = useRef(0);
-    renderCounter.current = renderCounter.current + 1;
+  const [ showAnsweredAlert, setShowAnsweredAlert ] = useState(false)
 
   useEffect(()=>{
     fetch(`${server}/faq/new`)
@@ -31,7 +29,9 @@ function AdminFAQ() {
       body: JSON.stringify({answer: e.currentTarget.formAnswer.value, answered_by: user.id})
     })
     .then(res=>console.log("submit", res))
-    .then(setRefresh(true))//truing this triggers useEffect to fetch again.
+    .then(()=>{
+      setShowAnsweredAlert(true);
+      setRefresh(true)})//truing this triggers useEffect to fetch again.
   }
 
   const handleDelete = (faqId) => {
@@ -48,10 +48,21 @@ function AdminFAQ() {
 
   return(
     <>
-      <h2>Submitted FAQ Questions: Renders: {renderCounter.current}</h2>
+      <h2>Submitted FAQ Questions:</h2>
+      <Alert show={showAnsweredAlert} variant="success">
+        <Alert.Heading>Thank you!</Alert.Heading>
+        <p>
+          Thank you for answering a question. This answer will now be displayed on the Proposal FAQ page.
+        </p>
+        <hr />
+        <div className="d-flex justify-content-end">
+          <Button onClick={() => setShowAnsweredAlert(false)} variant="outline-success">
+            Close
+          </Button>
+        </div>
+      </Alert>
       {newQuestions.map((question, index)=>
-        <>
-          <Card key={`${question}-${index}`} className="mt-4">
+          <Card key={`${question.id}`} className="mt-4">
             <Card.Header as="h5" className="d-flex justify-content-between">
               <span>{question.question}</span>
               <span>
@@ -83,7 +94,6 @@ function AdminFAQ() {
               </Form>
             </Card.Body>
           </Card>
-        </>
       )}
     </>
   )
