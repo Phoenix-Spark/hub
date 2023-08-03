@@ -22,16 +22,16 @@ services:
 
   server:
     image: ${IMAGE}/server:${COMMIT_SLUG}
+    ports:
+      - "3001"
     depends_on:
       - redis
       - db
-    ports:
-      - "3001"
     environment:
       - DB_CONNECTION_STRING=postgres://postgres:password@db:5432/spark_hub
       - REDIS_CONN_STRING=redis://redis:6379
     labels:
-      - "traefik.http.routers.capstoneapistaging.rule=Host(`capi.staging.apps.techpulse.us`)"
+      - "traefik.http.routers.capstoneapistaging.rule=Host(`api.capstone.staging.apps.techpulse.us`)"
     networks:
       - backend
       - frontend
@@ -43,7 +43,7 @@ services:
     depends_on:
       - server
     environment:
-      - REACT_APP_SERVER_ADDRESS=http://capi.staging.apps.techpulse.us
+      - REACT_APP_SERVER_ADDRESS=http://api.capstone.staging.apps.techpulse.us
     labels:
       - "traefik.http.routers.capstonestaging.rule=Host(`capstone.staging.apps.techpulse.us`)"
     networks:
