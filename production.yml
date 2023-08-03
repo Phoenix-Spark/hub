@@ -16,19 +16,21 @@ services:
     restart: always
     volumes:
       - redis-data:/data
-    command: redis-server --save 60 1 --loglevel verbose
+    command: redis-server --save 60 1
     networks:
       - backend
 
   server:
-    image: ${IMAGE}/server:latest
+    image: ${IMAGE}/server:latest # localhost/capstone-server
     depends_on:
       - redis
       - db
     environment:
-      - DB_CONNECTION_STRING=postgres://postgres:password@db:5432/spark_hub
-      - REDIS_CONN_STRING=redis://redis:6379
-      - UPLOAD_PATH=/server/public/uploads
+      - DB_CONN_STRING=postgres://postgres:password@db:5432/spark_hub
+      - REDIS_CONN=redis://redis:6379
+      - UPLOAD_PATH=/uploads
+    volumes:
+      - img-upload:/uploads
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.capstoneapi.rule=Host(`api.capstone.apps.jmidd.dev`)"
@@ -41,11 +43,11 @@ services:
       frontend:
 
   frontend:
-    image: ${IMAGE}/frontend:latest
+    image: ${IMAGE}/frontend:latest #  localhost/capstone-frontend
     depends_on:
       - server
-    environment:
-      - REACT_APP_SERVER_ADDRESS=https://api.capstone.apps.jmidd.dev
+    volumes:
+      - img-upload:/usr/share/nginx/html/images/uploads
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.capstoneapp.rule=Host(`capstone.apps.jmidd.dev`)"
@@ -55,11 +57,11 @@ services:
       - "traefik.docker.network=external"
     networks:
       - frontend
-
     
 volumes:
   db-data-capstone:
   redis-data:
+  img-upload:
 
 networks:
     frontend:

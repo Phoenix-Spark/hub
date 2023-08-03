@@ -7,13 +7,13 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ProjectRouter, UserRouter, ForumRouter, FaqRouter } from './Routes/index.js';
+import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
 
 const redisClient = createClient({
-  url: process.env.REDIS_CONN_STRING
+  url: process.env.REDIS_CONN,
 });
 try {
   await redisClient.connect();
@@ -36,7 +36,7 @@ const sessionOptions = {
 };
 
 const corsOptions = {
-origin: ['127.0.0.1:3000', 'localhost:3000', /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/],
+  origin: ['127.0.0.1:3000', 'localhost:3000', /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/, 'localhost:8000'],
   credentials: true,
 };
 

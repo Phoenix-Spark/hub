@@ -34,9 +34,7 @@ services:
       - "traefik.docker.network=traefik-network"
     networks:
       backend:
-        priority: 100
       frontend:
-        priority: 1000
 
   frontend:
     image: ${IMAGE}/frontend:${COMMIT_SLUG}
