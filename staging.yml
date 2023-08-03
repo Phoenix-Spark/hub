@@ -26,6 +26,8 @@ services:
 
   frontend:
     image: ${IMAGE}/frontend:${COMMIT_SLUG}
+    environment:
+      - SERVER_STRING=http://capstoneapi.dev.apps.techpulse.us
     ports:
       - '80'
     labels:
@@ -33,6 +35,12 @@ services:
 
   server:
     image: ${IMAGE}/server:${COMMIT_SLUG}
+    depends_on:
+      - redis
+      - db
+    environment:
+      - DB_CONNECTION_STRING=postgres://postgres:password@db:5432/spark_hub
+      - REDIS_CONN_STRING=redis://redis:6379
     ports:
       - '80'
     labels:
@@ -47,4 +55,3 @@ networks:
         name: traefik-network
         external: true
     backend:
-

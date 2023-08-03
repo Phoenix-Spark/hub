@@ -12,7 +12,9 @@ import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
 
-const redisClient = createClient();
+const redisClient = createClient({
+  url: process.env.REDIS_CONN_STRING
+});
 try {
   await redisClient.connect();
 } catch (e) {
