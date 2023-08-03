@@ -36,7 +36,7 @@ function Hub() {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col className='mb-3'>
           <Card>
             <Card.Header as="h5">Mission</Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>
@@ -53,10 +53,11 @@ function Hub() {
           </Card>
         </Col>
       </Row>
-      <Row className="my-3">
+      <Row>
         <Col
           sm={12}
           md={6}
+          className='mb-3'
           style={{ maxHeight: '400px', minHeight: '400px' }}
         >
           <Card className="h-100">
@@ -75,12 +76,12 @@ function Hub() {
                 Register your cell
               </Button>)}
             </Card.Header>
-            <Card.Body style={{ borderRadius: '10px' }}>
-              <SparkyList sparkList={filteredSparkList} />
+            <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
+              <SparkyList className='h-100' sparkList={filteredSparkList} />
             </Card.Body>
           </Card>
         </Col>
-        <Col style={{ maxHeight: '400px', minHeight: '400px' }}>
+        <Col className='mb-3' style={{ maxHeight: '400px', minHeight: '400px' }}>
           <Card style={{ height: '100%' }}>
             <Card.Header as="h5">News</Card.Header>
             <Card.Body className="d-flex flex-column h-75">

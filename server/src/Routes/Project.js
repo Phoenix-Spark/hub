@@ -291,13 +291,15 @@ router.post('/:projectId/approve', async (req, res, next) => {
     }
   } catch (e) {
     console.error(`Caught an exception. ${e}`);
+    next(e);
   }
 });
 router.post('/:projectId/deny', async (req, res, next) => {
   try {
     //    table.boolean('is_approved');
     //     table.date('date_approved');
-    const denied = await db('project').where('id', req.params.projectId).update({ is_approved: false, date_approved: db.fn.now() }, ['id']);
+    console.log('deny', req.body);
+    const denied = await db('project').where('id', req.params.projectId).update({ is_approved: false, date_approved: db.fn.now(), comments: req.body?.comment }, ['id']);
 
     if (denied.length > 0) {
       res.status(200).json(denied[0]);
@@ -306,6 +308,7 @@ router.post('/:projectId/deny', async (req, res, next) => {
     }
   } catch (e) {
     console.error(`Caught an exception. ${e}`);
+    next(e);
   }
 });
 

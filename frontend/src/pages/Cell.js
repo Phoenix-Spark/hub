@@ -60,7 +60,7 @@ export default function Cell() {
     <>
       <Row>
         <Col>
-          <h1 className="my-3">Welcome to, {cellAllData.cell_name}!</h1>
+          <h1 className="my-3">Welcome to {cellAllData.cell_name}!</h1>
           <h4>Located at {cellAllData.baseData?.base_name}</h4>
         </Col>
       </Row>
@@ -92,7 +92,7 @@ export default function Cell() {
                     alt=""
                   />
                 </Col>
-                <Col>{cellAllData?.cell_mission}</Col>
+                <Col>{cellAllData.cell_mission || 'No mission yet.'}</Col>
               </Row>
             </Card.Body>
           </Card>
@@ -100,12 +100,13 @@ export default function Cell() {
         <Col md={4}>
           <Card className="h-100">
             <Card.Header as="h5">Project Proposal</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">
+            <Card.Body className="d-flex flex-column justify-content-center h-100">
               {user && (
                 <>
                   {parseInt(user.cellId, 10) === cellAllData.id && (
                     <Button
                       variant="primary"
+                      className="mb-3"
                       as={Link}
                       to={`/dashboard/projects`}
                     >
@@ -115,7 +116,6 @@ export default function Cell() {
                   <Button
                     variant="success"
                     onClick={showProposalModal}
-                    className="mt-3"
                   >
                     Submit New Proposal
                   </Button>
@@ -157,7 +157,7 @@ export default function Cell() {
         <Col style={{ maxHeight: '300px' }}>
           <Card className="h-100">
             <Card.Header as="h5">Current Projects</Card.Header>
-            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
+            <Card.Body className="d-flex flex-column h-100 overflow-y-auto">
               <ProjectList projects={cellAllData.current_projects} />
             </Card.Body>
           </Card>
@@ -165,7 +165,7 @@ export default function Cell() {
         <Col style={{ maxHeight: '300px' }}>
           <Card className="h-100">
             <Card.Header as="h5">Previous Projects</Card.Header>
-            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
+            <Card.Body className="d-flex flex-column h-100 overflow-y-auto">
               <ProjectList projects={cellAllData.previous_projects} />
             </Card.Body>
           </Card>
@@ -175,7 +175,7 @@ export default function Cell() {
         <Col>
           <Card style={{ maxHeight: '415px' }}>
             <Card.Header as="h5">Recent News</Card.Header>
-            <Card.Body className="d-flex flex-column h-100 overflow-scroll">
+            <Card.Body className="d-flex flex-column h-100 overflow-y-auto">
               <NewsList newsList={newsList}></NewsList>
             </Card.Body>
           </Card>

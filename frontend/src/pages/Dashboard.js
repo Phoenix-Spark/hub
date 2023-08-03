@@ -20,6 +20,7 @@ function Dashboard() {
   const [refreshProjectList, setRefreshProjectList] = useState(0);
 
   useEffect(() => {
+    // reload data on tab change?
     setActiveKey(currentPage.page);
   }, [currentPage]);
 
@@ -63,7 +64,7 @@ function Dashboard() {
                         eventKey="account"
                         className="link-secondary"
                       >
-                        Account Settings
+                        Profile
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
@@ -93,14 +94,7 @@ function Dashboard() {
                             Cell Details
                           </Nav.Link>
                         </Nav.Item>
-                        <Nav.Item>
-                          <Nav.Link
-                            eventKey="approve-faq"
-                            className="link-secondary"
-                          >
-                            Proposed FAQs
-                          </Nav.Link>
-                        </Nav.Item>
+
                       </>
                     )}
                     {user?.roles === 'site' && (
@@ -112,6 +106,14 @@ function Dashboard() {
                             className="link-secondary"
                           >
                             Proposed Cells
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link
+                            eventKey="approve-faq"
+                            className="link-secondary"
+                          >
+                            Proposed FAQs
                           </Nav.Link>
                         </Nav.Item>
                       </>

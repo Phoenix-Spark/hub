@@ -6,14 +6,13 @@ import { formatDate } from '../../utils/index.js';
 function NewsList({ newsList }) {
   return (
     <ListGroup
-      style={{ overflowY: 'scroll' }}
-      className="h-100"
+      className="h-100 overflow-y-auto"
     >
+      {newsList?.length === 0 && 'No recent news.'}
       {newsList.map((item, index) => (
         <ListGroup.Item
           action
-          to={'/'}
-          as={Link}
+          style={{cursor: 'initial'}}
           key={index}
         >
           <Row>

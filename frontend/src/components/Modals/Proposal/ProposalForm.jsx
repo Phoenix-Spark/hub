@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button, Container, Form, InputGroup, Modal } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AppContext from '../../../AppContext.js';
 
 const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess, showCellList, isModal = true }) => {
@@ -13,6 +13,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
   const [cellList, setCellList] = useState([]);
   const [cellValue, setCellValue] = useState(cellId);
   const isPatchRequest = useRef(!!projectData);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${server}/cell_list`)
@@ -89,6 +90,8 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
         if (isPatchRequest.current) {
           refreshList(prev => prev + 1);
           setSuccess(true);
+        } else {
+          setShowSuccessModal(true);
         }
 
         if (isModal) {
@@ -103,7 +106,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
 
   return (
     <Container className="my-4">
-      <h2 className="text-center text-white fw-bold mb-4">Project Proposal</h2>
+      <h2 className="text-center fw-bold mb-4">Project Proposal</h2>
       <Form
         noValidate
         validated={validated}
@@ -119,7 +122,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
           className="mb-3"
           controlId="projectName"
         >
-          <Form.Label className="text-white">Project Name</Form.Label>
+          <Form.Label>Project Name</Form.Label>
           <Form.Control
             type="text"
             required
@@ -135,7 +138,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
           className="mb-3"
           controlId="projectDescription"
         >
-          <Form.Label className="text-white">Project Description</Form.Label>
+          <Form.Label>Project Description</Form.Label>
           <Form.Control
             as="textarea"
             rows={5}
@@ -152,7 +155,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
           className="mb-3"
           controlId="budget"
         >
-          <Form.Label className="text-white">Budget</Form.Label>
+          <Form.Label>Budget</Form.Label>
           <InputGroup>
             <InputGroup.Text>$</InputGroup.Text>
             <Form.Control
@@ -169,31 +172,30 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
           <Form.Control.Feedback type="invalid">Please enter an estimated budget for your project.</Form.Control.Feedback>
         </Form.Group>
         {showCellList && (
-        <Form.Group
-          className="mb-3"
-          controlId="cell"
-        >
-          <Form.Label className="text-white">Cell</Form.Label>
-          <Form.Select
-            value={cellValue}
-            onChange={(e) => setCellValue(e.target.value)}
-            required
+          <Form.Group
+            className="mb-3"
+            controlId="cell"
           >
-            <option value="">Select a Cell Name</option>
-              {cellList.map((cell) => (
+            <Form.Label>Cell</Form.Label>
+            <Form.Select
+              value={cellValue}
+              onChange={e => setCellValue(e.target.value)}
+              required
+            >
+              <option value="">Select a Cell Name</option>
+              {cellList.map(cell => (
                 <option
                   key={cell.id}
                   value={cell.id}
                 >
                   {cell.cell_name}
                 </option>
-              ))}
-            <option value="createNewCell">Cell not listed? Please create a new cell first.</option>
-            {/* Want to be able to select actual Cell */}
-          </Form.Select>
-        </Form.Group>
+              ))}              
+            </Form.Select>
+            <p className="ms-1 mt-1">Cell not listed? Create a new cell first on the homepage by clicking "Register your cell".</p>            
+          </Form.Group>
         )}
-        <div className="my-5 d-flex justify-content-end">
+        <div className="my-5 d-flex justify-content-between">
           <Button
             variant="primary"
             type="submit"
@@ -203,16 +205,19 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
           <Button
             type="button"
             variant="danger"
-            onClick={hideModal}
+            onClick={() => {
+                if(isModal) {
+                  hideModal();
+                } else {
+                  navigate('/')
+                }
+            }}
             className="ms-3"
           >
             Cancel
           </Button>
         </div>
       </Form>
-
-
-
 
       <Modal
         show={showSuccessModal}
@@ -230,7 +235,7 @@ const ProposalForm = ({ cellId, projectData, hideModal, refreshList, setSuccess,
             Close
           </Button>
 
-          <Link to="dashboard/projects">
+          <Link to="/dashboard/projects">
             <Button variant="primary">Go to Proposed Projects</Button>
           </Link>
         </Modal.Footer>

@@ -7,7 +7,7 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { CellRouter, ProjectRouter, UserRouter, ForumRouter, FaqRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
@@ -15,6 +15,7 @@ const app = express();
 const redisClient = createClient({
   url: process.env.REDIS_CONN,
 });
+
 try {
   await redisClient.connect();
 } catch (e) {
@@ -203,8 +204,11 @@ app.delete('/cell_list/:id', async (req, res, next) => {
 app.patch('/cell_list/:id', async (req, res, next) => {
   try {
     const cellId = req.params.id;
+    const updates = req.body;
 
-    const updatedCount = await db('cell').where({ id: cellId, is_approved: 'no' }).update({ is_approved: 'yes' });
+    const updatedCount = await db('cell')
+      .where({ id: cellId, is_approved: 'no' })
+      .update({ ...updates, is_approved: 'yes' });
 
     if (updatedCount === 1) {
       res.status(200).json({ message: 'Cell approved successfully!' });
@@ -216,4 +220,6 @@ app.patch('/cell_list/:id', async (req, res, next) => {
     next(e);
   }
 });
+
+
 export default app;

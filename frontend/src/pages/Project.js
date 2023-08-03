@@ -86,6 +86,10 @@ export default function Project() {
         if(!found) potentialTeam.add(data[i]);
       }
 
+      potentialTeam.forEach((val, key, set) => {
+
+      });
+
       setPotentialMemberList(prev => new Set(potentialTeam));
       showAddMemberModal(true);
 
@@ -134,7 +138,6 @@ export default function Project() {
         <Col>
           <Card
             className="h-100"
-            style={{ maxHeight: '400px' }}
           >
             <Card.Header className="d-flex justify-content-between">Photos{(user?.roles === 'site' || user?.roles === 'cell') && <Button>Add Photos</Button>}</Card.Header>
             <Card.Body className="d-flex flex-column h-100">

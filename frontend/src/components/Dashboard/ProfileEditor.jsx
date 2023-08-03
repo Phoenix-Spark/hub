@@ -17,8 +17,8 @@ export default function ProfileEditor() {
     contactNumber1: '',
     contactNumber2: '',
     bio: '',
-    baseId: '',
-    cellId: '',
+    baseId: user?.baseId ?? '',
+    cellId: user?.cellId ?? '',
   });
 
   useEffect(() => {
@@ -36,10 +36,7 @@ export default function ProfileEditor() {
   useEffect(() => {
     if (user) {
       fetch(`${server}/userData/${user?.username}`)
-        .then(res => {
-          console.log(res);
-          return res.json();
-        })
+        .then(res => res.json())
         .then(data => setUserData(data[0]))
         .catch(err => console.log(`Fetch failed. Error: ${err}`));
     }

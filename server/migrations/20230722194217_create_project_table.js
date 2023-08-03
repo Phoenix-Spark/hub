@@ -18,6 +18,7 @@ export function up(knex) {
     table.string('description', 1024);
     table.string('budget', 64);
     table.string('asks_tasks', 512);
+    table.string('comments');
   });
 }
 

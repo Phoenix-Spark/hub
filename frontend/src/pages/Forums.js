@@ -63,13 +63,14 @@ const Forums = () => {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [postTitle, setPostTitle] = useState('');
   const [postBody, setPostBody] = useState('');
-  const [postsToShow, setPoststoShow] = useState(10);
+  const [poststoShow, setPoststoShow] = useState(5);
 
   //Comment's States:
   const [commentBody, setCommentBody] = useState('');
   const [showAddCommentModal, setShowAddCommentModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [selectedPostIndex, setSelectedPostIndex] = useState(null);
+  const [commentstoShow, setCommentstoShow] = useState(5);
 
   //Reply's States:
   const [replyBody, setReplyBody] = useState('');
@@ -346,7 +347,8 @@ const Forums = () => {
   };
 
   //Delete functionalities
-  const handleDeletePost = async (postId, postIndex, catIndex) => {
+  const handleDeletePost = async (event, postId, postIndex, catIndex) => {
+    event.stopPropagation()
     try {
       const response = await fetch(`${server}/forum/post/${postId}`, {
         method: 'DELETE',
@@ -367,7 +369,8 @@ const Forums = () => {
     }
   };
 
-  const handleDeleteComment = async (commentId, commentIndex, postIndex, catIndex) => {
+  const handleDeleteComment = async (event, commentId, commentIndex, postIndex, catIndex) => {
+    event.stopPropagation()
     try {
       const response = await fetch(`${server}/forum/comment/${commentId}`, {
         method: 'DELETE',
@@ -388,7 +391,8 @@ const Forums = () => {
     }
   };
 
-  const handleDeleteReply = async (replyId, replyIndex, commentIndex, postIndex, catIndex) => {
+  const handleDeleteReply = async (event, replyId, replyIndex, commentIndex, postIndex, catIndex) => {
+    event.stopPropagation()
     try {
       const response = await fetch(`${server}/forum/reply/${replyId}`, {
         method: 'DELETE',
@@ -412,7 +416,7 @@ const Forums = () => {
   return (
     <>
       <br />
-      <h1>Forums</h1>
+      <h1>Forums</h1>  
       <Accordion className="mt-5">
         {forumData?.map((category, cat_index) => (
           <Accordion.Item
@@ -433,7 +437,7 @@ const Forums = () => {
                 </Button>
               </div>
               <Accordion className="mt-5">
-                {forumData[cat_index].posts.map((post, post_index) => (
+                {forumData[cat_index].posts.slice(0, poststoShow).map((post, post_index) => (
                   <Accordion.Item
                     key={post_index}
                     eventKey={post_index}
@@ -443,9 +447,9 @@ const Forums = () => {
                         <div className="d-flex">
                           {user?.roles === 'site' ? (
                             <Button
-                              style={{ height: '50px', flex: 'none' }}
+                              style={{ height: '50px', flex: 'none', marginRight: '10px' }}
                               variant="danger"
-                              onClick={() => handleDeletePost(post.id, post.index, cat_index)}
+                              onClick={(event) => handleDeletePost(event, post.id, post.index, cat_index)}
                             >
                               Delete
                             </Button>
@@ -471,25 +475,27 @@ const Forums = () => {
                         </Button>
                       </div>
                       <Accordion className="mt-5">
-                        {forumData[cat_index].posts[post_index].comments.map((comment, comment_index) => (
+                        {forumData[cat_index].posts[post_index].comments.slice(0, commentstoShow[post.id] || 5).map((comment, comment_index) => (
                           <Accordion.Item
                             key={comment_index}
                             eventKey={comment_index}
                           >
                             <Accordion.Header>
                               <div className="d-flex w-100 me-4 justify-content-between">
-                                {user?.roles === 'site' ? (
-                                  <Button
-                                    style={{ height: '50px', flex: 'none' }}
-                                    variant="danger"
-                                    onClick={() => handleDeleteComment(comment.id, comment_index, post_index, cat_index)}
-                                  >
-                                    Delete
-                                  </Button>
-                                ) : (
-                                  <></>
-                                )}
-                                <h6>{comment.body.substring(0, 63).concat('...')}</h6>
+                                <div className="d-flex">
+                                  {user?.roles === 'site' ? (
+                                    <Button
+                                      style={{ height: '50px', flex: 'none', marginRight: '10px' }}
+                                      variant="danger"
+                                      onClick={(event) => handleDeleteComment(event, comment.id, comment_index, post_index, cat_index)}
+                                    >
+                                      Delete
+                                    </Button>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  <h6>{comment.body.substring(0, 63).concat('...')}</h6>
+                                </div>  
                                 <CommentUserTag comment={comment} />
                               </div>
                             </Accordion.Header>
@@ -512,10 +518,10 @@ const Forums = () => {
                                           <div className="d-flex w-100 me-4 justify-content-between">
                                             {user?.roles === 'site' ? (
                                               <Button
-                                                style={{ height: '50px', flex: 'none' }}
+                                                style={{ height: '50px', flex: 'none', marginRight: '10px' }}
                                                 variant="danger"
-                                                onClick={() =>
-                                                  handleDeleteReply(reply.id, reply_index, comment_index, post_index, cat_index)
+                                                onClick={(event) =>
+                                                  handleDeleteReply(event, reply.id, reply_index, comment_index, post_index, cat_index)
                                                 }
                                               >
                                                 Delete
@@ -551,20 +557,23 @@ const Forums = () => {
                         ))}
                         <br />
                         <br />
-                        <Button disabled={true}>Load More Comments....</Button>
+                        <Button disabled={!user} 
+                        onClick={() => setCommentstoShow(prev => ({...prev, [post.id]: (prev[post.id] || 5) + 5}))}
+                        >
+                          Load More Comments...
+                        </Button>
                       </Accordion>
                     </Accordion.Body>
                   </Accordion.Item>
                 ))}
                 <br />
                 <br />
-                <Button disabled={true}>Load More Posts....</Button>
+                <Button disabled={!user} onClick={() => setPoststoShow(prev => prev +10)}>Load More Posts...</Button>
               </Accordion>
             </Accordion.Body>
           </Accordion.Item>
         ))}
       </Accordion>
-      {/* <TheForum/> */}
 
       {/*Post Modal*/}
       {showCreatePostModal && selectedCategory !== null && (
@@ -649,8 +658,6 @@ const Forums = () => {
               variant="primary"
               onClick={() => handleAddComment(selectedCategoryIndex, selectedPostIndex, selectedPost)}
             >
-              {' '}
-              {/*needs: (category_index, post_index, post_id) */}
               Add Comment
             </Button>
           </Modal.Footer>
@@ -701,7 +708,10 @@ const Forums = () => {
 
   function PostUserTag({ post }) {
     return (
-      <Row>
+      <Row
+        ml="5"
+        style={{ minWidth: '290px' }}
+      >
         <Col md="auto">
           <img
             style={{ height: '50px', width: '50px' }}
@@ -722,7 +732,10 @@ const Forums = () => {
 
   function CommentUserTag({ comment }) {
     return (
-      <Row>
+      <Row
+        ml="5"
+        style={{ minWidth: '250px' }}
+      >
         <Col md="auto">
           <img
             style={{ height: '40px', width: '40px' }}
@@ -766,98 +779,3 @@ const Forums = () => {
   }
 };
 export default Forums;
-
-// function TheForum() {
-//   return(
-//     <><br/><br/><br/><br/><br/>
-//       <h1>Forums</h1>
-//       <Accordion className="mt-5">
-//         {forumData?.map((category,cat_index)=>
-//           <Accordion.Item key={cat_index} eventKey={cat_index}>
-//             <Accordion.Header><h2>{category.name}</h2></Accordion.Header>
-//             <Accordion.Body onEnter={()=>handleCategoryEnter(cat_index, category.id)}>
-//               <div className="d-flex justify-content-between"><h4>{category.detail}</h4><Button>Create A Post....</Button></div>
-//               <Posts cat_index={cat_index}/>
-//               </Accordion.Body>
-//           </Accordion.Item>
-//         )}
-//       </Accordion>
-//     </>
-//   )
-// }
-
-// function Posts({cat_index}) {
-//   return(
-//     <Accordion className="mt-5">
-//       {forumData[cat_index].posts.map((post,post_index)=>
-//         <Accordion.Item key={post_index} eventKey={post_index}>
-//           <Accordion.Header>
-//             <div className="d-flex w-100 me-4 justify-content-between">
-//               <h5>{post.title}</h5>
-//               <PostUserTag post={post}/>
-//             </div>
-//           </Accordion.Header>
-//           <Accordion.Body onEntered={()=>handlePostEnter(cat_index, post_index, post.id)}>
-//             {post.body}
-//             <br/><br/>
-//             <div className="d-flex justify-content-between"><h4>Comments:</h4><Button>Add Comment....</Button></div>
-//             <Comments cat_index={cat_index} post_index={post_index}/>
-//           </Accordion.Body>
-//         </Accordion.Item>
-//       )}
-//       <br/><br/>
-//       <Button>Load More Posts....</Button>
-//     </Accordion>
-//   )
-// }
-
-// function Comments({cat_index, post_index}) {
-//   return(
-//     <Accordion className="mt-5">
-//       {forumData[cat_index].posts[post_index].comments.map((comment,comment_index)=>
-//         <Accordion.Item key={comment_index} eventKey={comment_index}>
-//           <Accordion.Header>
-//             <div className="d-flex w-100 me-4 justify-content-between">
-//               <h6>{comment.body.substring(0,63).concat("...")}</h6>
-//               <CommentUserTag comment={comment} />
-//             </div>
-//           </Accordion.Header>
-//           <Accordion.Body onEnter={()=>handleCommentEnter(cat_index, post_index, comment_index, comment.id)}>
-//             {comment.body}
-//             <br/><br/>
-//             <Replies comment={comment}/>
-//           </Accordion.Body>
-//         </Accordion.Item>
-//       )}
-//       <br/><br/>
-//       <Button>Load More Comments....</Button>
-//     </Accordion>
-//   )
-// }
-
-// function Replies({comment}) {
-//   return(
-//     <Accordion>
-//       <Accordion.Item eventKey="0">
-//         <Accordion.Header>
-//           <div className="d-flex w-100 me-4 justify-content-between">
-//               <h6>Replies</h6>
-//               <h6>{comment.replies.length}</h6>
-//           </div>
-//         </Accordion.Header>
-//         <Accordion.Body>
-//           <ListGroup>
-//               {comment.replies.map(reply=>
-//               <ListGroup.Item>
-//                   <div className="d-flex w-100 me-4 justify-content-between">
-//                   <h6 className="me-5">{reply.body}</h6>
-//                   <h6><ReplyUserTag reply={reply}/></h6>
-//                   </div>
-//               </ListGroup.Item>
-//               )}
-//           </ListGroup>
-//         </Accordion.Body>
-//       </Accordion.Item>
-//     </Accordion>
-//   )
-// }

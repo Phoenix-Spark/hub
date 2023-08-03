@@ -3,13 +3,14 @@ import * as jose from 'jose';
 import { Outlet } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
-import { Header } from './components/index.js';
+import { Header, Footer } from './components/index.js';
 import ViewProfileModal from './components/Modals/ViewProfile/ViewProfileModal.jsx';
 import AppContext from './AppContext.js';
 
 import './App.scss';
 
-const server = process.env.REACT_APP_SERVER_ADDRESS ?? 'http://localhost:8080';
+const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
+const frontendUrl = 'http://localhost:3000';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -29,6 +30,7 @@ export default function App() {
     setIsDarkMode,
     profileModal,
     setProfileModal,
+    frontendUrl
   };
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export default function App() {
         </Container>
       </div>
       <ViewProfileModal />
+      <Footer />
     </AppContext.Provider>
   );
 }

@@ -5,18 +5,19 @@ import AppContext from '../../AppContext.js';
 import './HorizontalTeamList.scss';
 
 function HorizontalTeamList({ teamList }) {
-  const { setProfileModal } = useContext(AppContext);
+  const { setProfileModal, frontendUrl } = useContext(AppContext);
 
   return (
     <Row
       className="justify-content-around"
       id="horizontal-team-list"
     >
+      {teamList?.length === 0 && (<Col><p>No team members yet.</p></Col>)}
       {teamList?.map((member, index) => {
         const imgUrl = member.photo_url
           ? member.photo_url.startsWith('https')
             ? member.photo_url
-            : `http://localhost:3000/uploads/${member.photo_url}`
+            : `${frontendUrl}/uploads/${member.photo_url}`
           : `../images/placeholder_logo.svg`;
 
         return (

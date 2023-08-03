@@ -1,12 +1,10 @@
 import { Modal } from 'react-bootstrap';
 import ProposalForm from './ProposalForm.jsx';
-import './EditProposalModal.scss';
 
 export default function EditProposalModal(props) {
   const { setModalShow, projectData, onHide, refreshList, onSuccess, ...rest } = props;
   return (
     <Modal
-      className="proposal-modal"
       {...rest}
       onHide={onHide}
       size="lg"
