@@ -134,7 +134,7 @@ export default function MapChart() {
         >
           <circle
             r={8 / position.zoom}
-            fill="#F53"
+            fill="#fd7e14"
           />
         </OverlayTrigger>
       </Marker>

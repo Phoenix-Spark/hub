@@ -6,7 +6,7 @@ import AppContext from '../AppContext.js';
 
 const SubmitNewIdea = () => {  
   const { user } = useContext(AppContext);
-  
+  // showAlert
   return (
     <>
       {user && (

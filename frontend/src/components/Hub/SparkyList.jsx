@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 function SparkyList({ sparkList }) {
   return (
-    <ListGroup style={{ maxHeight: '25vh', overflowY: 'auto' }}>
+    <ListGroup style={{ height: '100%', overflowY: 'auto' }}>
       {sparkList.map((spark, index) => (
         <ListGroup.Item
           as={Link}
@@ -20,8 +20,8 @@ function SparkyList({ sparkList }) {
                 alt=""
               />
             </Col>
-            <Col className="pl-5">
-              {spark.cell_name} at {spark.base_name}
+            <Col className="ms-1 d-flex align-items-center">
+              <h3 style={{ display: 'inline' }}>{spark.cell_name}</h3> &nbsp;&nbsp; <strong>@ {spark.base_name}</strong>
             </Col>
           </Row>
         </ListGroup.Item>

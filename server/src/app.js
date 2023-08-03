@@ -12,7 +12,10 @@ import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 
 const app = express();
 
-const redisClient = createClient();
+const redisClient = createClient({
+  url: process.env.REDIS_CONN,
+});
+
 try {
   await redisClient.connect();
 } catch (e) {
@@ -34,7 +37,7 @@ const sessionOptions = {
 };
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [/localhost/, /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/],
   credentials: true,
 };
 
@@ -199,8 +202,11 @@ app.delete('/cell_list/:id', async (req, res, next) => {
 app.patch('/cell_list/:id', async (req, res, next) => {
   try {
     const cellId = req.params.id;
+    const updates = req.body;
 
-    const updatedCount = await db('cell').where({ id: cellId, is_approved: 'no' }).update({ is_approved: 'yes' });
+    const updatedCount = await db('cell')
+      .where({ id: cellId, is_approved: 'no' })
+      .update({ ...updates, is_approved: 'yes' });
 
     if (updatedCount === 1) {
       res.status(200).json({ message: 'Cell approved successfully!' });
@@ -212,4 +218,6 @@ app.patch('/cell_list/:id', async (req, res, next) => {
     next(e);
   }
 });
+
+
 export default app;

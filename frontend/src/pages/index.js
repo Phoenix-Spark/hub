@@ -10,7 +10,6 @@ import ProposalGuidelines from './ProposalGuidelines.js';
 import SubmissionFAQ from './SubmissionFAQ.js';
 import SubmitNewIdea from './SubmitNewIdea.js';
 import CellRegistration from './CellRegistration.js';
-import KylesCorner from './KylesCorner.js'; // I hate you Alex
 
 export {
   Hub,
@@ -24,6 +23,5 @@ export {
   ProposalGuidelines,
   SubmissionFAQ,
   SubmitNewIdea,
-  KylesCorner,
   CellRegistration,
 };

@@ -4,8 +4,9 @@ import AppContext from '../../../AppContext.js';
 
 const ViewProfileModal = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { server, profileModal, setProfileModal } = useContext(AppContext);
+  const { frontendUrl, server, profileModal, setProfileModal } = useContext(AppContext);
   const [profileData, setProfileData] = useState({});
+  const [profileImage, setProfileImage] = useState('');
 
   useEffect(() => {
     if (profileModal.userId !== 0) {
@@ -17,9 +18,21 @@ const ViewProfileModal = () => {
         })
         .then(data => setProfileData(data[0]))
         .catch(err => console.log(`Fetch failed. Error: ${err}`))
-        .finally(() => setIsLoading(false));
+        .finally(() => setIsLoading(false));    
+    } else {
+      setProfileImage('');
     }
   }, [server, profileModal]);
+
+  useEffect(() => {
+      setProfileImage(
+        profileData.photo_url
+          ? profileData.photo_url.startsWith('https')
+            ? profileData.photo_url
+            : `${frontendUrl}/uploads/${profileData.photo_url}`
+          : `../images/placeholder_logo.svg`
+      );
+  }, [profileData])
 
   return (
     <Modal
@@ -47,7 +60,7 @@ const ViewProfileModal = () => {
                 className="mx-4"
               >
                 <Image
-                  src={profileData.photo_url}
+                  src={profileImage}
                   rounded
                   style={{ height: '300px', width: '300px' }}
                 />
@@ -74,7 +87,7 @@ const ViewProfileModal = () => {
                 </Row>
                 <Row>
                   <Col className="text-center">
-                    <a href={`mailto:${profileData.email}`}>{profileData.email}</a>
+                    <a href={`mailto:${profileData.email}`}>{decodeURIComponent(profileData.email)}</a>
                     <br />
                     <a href={`tel:${profileData.contact_number1}`}>{profileData.contact_number1}</a>
                     <br />
@@ -84,7 +97,7 @@ const ViewProfileModal = () => {
                 </Row>
               </Col>
             </Row>
-            <Row className="m-4">{profileData.bio}</Row>
+            <Row className="m-4"><Col><p className="text-break">{profileData.bio}</p></Col></Row>
           </>
         )}
       </Modal.Body>

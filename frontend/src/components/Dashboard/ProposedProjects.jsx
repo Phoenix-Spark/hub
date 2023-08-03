@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Container, Modal } from 'react-bootstrap';
+import { Button, Card, Container, Modal, Form } from 'react-bootstrap';
 
 import AppContext from '../../AppContext.js';
 import { formatDate } from '../../utils/index.js';
 
 const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) => {
-  const { server, user, setProfileModal } = useContext(AppContext);
+  const { frontendUrl, server, user, setProfileModal } = useContext(AppContext);
   const [projectList, setProjectList] = useState([]);
-  const [feedbackComment, setFeedbackComment] = useState();
+  const [feedbackComment, setFeedbackComment] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
 
   /** TODO: Provide feedback that elements have been removed, an alert or something **/
@@ -49,7 +49,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            feedbackComment: feedbackComment,
+            comment: feedbackComment,
           }),
         });
 
@@ -60,6 +60,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
 
           // Close the comment modal after successful denial
           setShowCommentModal(false);
+          setFeedbackComment('');
         } else {
           console.error('Error denying project:', response);
         }
@@ -105,7 +106,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
         const userImgUrl = project.user_photo
           ? project.user_photo.startsWith('https')
             ? project.user_photo
-            : `http://localhost:3000/uploads/${project.user_photo}`
+            : `${frontendUrl}/uploads/${project.user_photo}`
           : `${process.env.PUBLIC_URL}/images/placeholder_logo.svg`;
         return (
           <Card
@@ -132,6 +133,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
                       src={userImgUrl}
                       width={24}
                       className="mx-2 rounded-circle"
+                      alt="User Profile"
                     />
                     {`${project.user_first_name} ${project.user_last_name}`}
                   </button>
@@ -170,7 +172,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
           <Modal.Title>Deny Project</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <textarea
+          <Form.Control as="textarea"
             rows={5} // You can adjust the number of rows to increase or decrease the height
             value={feedbackComment}
             onChange={e => setFeedbackComment(e.target.value)}

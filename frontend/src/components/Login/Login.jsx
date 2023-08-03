@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Container, Form } from 'react-bootstrap';
+import { Alert, Button, Container, Form } from 'react-bootstrap';
 import * as jose from 'jose';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import AppContext from '../../AppContext.js';
 export default function Login({ setModalShow }) {
   const { server, setUser, user } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Login({ setModalShow }) {
         setUser(payload.user);
       } else {
         console.error(data);
+        setError(true);
       }
     } catch (e) {
       console.error(e);
@@ -57,7 +59,7 @@ export default function Login({ setModalShow }) {
     setIsLoading(false);
   }
   return (
-    <Container className="text-light vh-100 my-4">
+    <Container className="text-light my-4" style={{height: '500px'}}>
       <Form
         onSubmit={handleFormSubmit}
         className="mb-3"
@@ -115,6 +117,7 @@ export default function Login({ setModalShow }) {
           </Button>
         </Form.Group>
       </Form>
+      <Alert show={isError} variant="danger">Wrong Username or Password.</Alert>
       {/* <Button
         variant='success'
         as={Link}
