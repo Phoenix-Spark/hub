@@ -162,7 +162,7 @@ deploy-staging:
     - tag="latest"
     - docker pull $CI_REGISTRY_IMAGE/server:${tag}
     - docker pull $CI_REGISTRY_IMAGE/server:${tag}
-    - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_staging -f staging.yml up -d --build
+    - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_staging -f staging.yml up -d --build --force-recreate
   environment:
     name: staging
     url: http://capstone.staging.apps.techpulse.us
