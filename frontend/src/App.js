@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import * as jose from 'jose';
 import { Outlet } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
+// eslint-disable-next-line import/extensions
+import 'dotenv/config';
 
 import { Header } from './components/index.js';
 import ViewProfileModal from './components/Modals/ViewProfile/ViewProfileModal.jsx';
