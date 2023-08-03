@@ -43,7 +43,7 @@ services:
     depends_on:
       - server
     environment:
-      - SERVER_STRING=http://capstoneapi.staging.apps.techpulse.us
+      - SERVER_ADDRESS=http://capstoneapi.staging.apps.techpulse.us
     labels:
       - "traefik.http.routers.capstonestaging.rule=Host(`capstone.staging.apps.techpulse.us`)"
     networks:

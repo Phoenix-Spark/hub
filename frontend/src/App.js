@@ -9,7 +9,7 @@ import AppContext from './AppContext.js';
 
 import './App.scss';
 
-const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
+const server = process.env.SERVER_ADDRESS ?? 'http://localhost:8080';
 
 export default function App() {
   const [user, setUser] = useState(null);
