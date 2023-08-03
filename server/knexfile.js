@@ -3,7 +3,7 @@
  */
 export const development = {
   client: 'postgresql',
-  connection: process.env.DB_CONNECTION_STRING || 'postgresql://postgres:password@localhost:5432/spark_hub',
+  connection: process.env.DB_CONNECTION_STRING ?? 'postgresql://postgres:password@localhost:5432/spark_hub',
   // Uses the connection specified in the docker-compose file or defaults to the string.
 };
 export const staging = {
