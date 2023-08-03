@@ -140,10 +140,10 @@ export async function seed(knex) {
       first_name: 'Rick',
       last_name: 'Sanchez',
       email: 'some@email.com',
-      photo_url: 'https://pm1.narvii.com/6450/2f24804e66bd3d4449a2619f2d422ade180ce78c_00.jpg',
+      photo_url: faker.image.avatarGitHub(),
       contact_number1: '210-555-3456',
       contact_number2: '432-555-9876',
-      bio: 'With an infinite number of adventures across the multiverse, Rick is a multidimensional genius scientist and a self-proclaimed "Smartest Man in the Universe." He occasionally visits Spark Cells in various realities to share groundbreaking ideas and technologies from his intergalactic escapades. Though often engaged in eccentric scientific pursuits, Rick\'s interests in Spark Cells lie in developing portal technology to access new dimensions of knowledge and innovation. When he\'s not traversing the cosmos, Rick enjoys brewing homemade concoctions in his garage-laboratory and bonding with his grandson, Morty, over interdimensional escapades. Wubba lubba dub dub!',
+      bio: 'With an infinite number of adventures across the multiverse, Rick is a multidimensional genius scientist and a self-proclaimed "Smartest Man in the Universe." He occasionally visits Spark Cells in various realities to share groundbreaking ideas and technologies from his intergalactic escapades. Though often engaged in eccentric scientific pursuits, Rick\'s interests in Spark Cells lie in developing portal technology to access new dimensions of knowledge and innovation. When he\'s not traversing the cosmos, Rick enjoys brewing homemade concoctions in his garage-laboratory and bonding with his grandson, Morty, over interdimensional escapades.',
     },
   ]);
 }
