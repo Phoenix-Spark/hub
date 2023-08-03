@@ -23,16 +23,5 @@ export const staging = {
 };
 export const production = {
   client: 'postgresql',
-  connection: {
-    database: 'spark_hub',
-    user: 'postgres',
-    password: 'password',
-  },
-  pool: {
-    min: 2,
-    max: 10,
-  },
-  migrations: {
-    tableName: 'knex_migrations',
-  },
+  connection: process.env.DB_CONN_STRING ?? 'postgresql://postgres:password@localhost:5432/spark_hub',
 };
