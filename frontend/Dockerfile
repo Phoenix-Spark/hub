@@ -4,7 +4,7 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . /app
 EXPOSE 3000
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 FROM docker.io/nginx:1.25.1-alpine
