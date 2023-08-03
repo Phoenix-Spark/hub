@@ -31,6 +31,7 @@ services:
       - UPLOAD_PATH=/server/public/uploads
     labels:
       - "traefik.http.routers.capstoneapistaging.rule=Host(`api.capstone.staging.apps.techpulse.us`)"
+      - "traefik.docker.network=traefik-network"
     networks:
       backend:
         priority: 100
