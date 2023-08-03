@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'production') {
   sessionOptions.cookie.secure = true;
 }
 
-app.set('trust proxy', true);
+app.set('trust proxy', 'uniquelocal');
 
 app.use(logger('dev'));
 app.use(cors(corsOptions));
