@@ -1,14 +1,40 @@
-import express from 'express';
+import express, { Request } from 'express';
 import multer from 'multer';
 import db from '../db';
 import { findUserById, getUserRoles } from '../Services/LoginService';
-import { User } from '../types';
+import { Base, Cell, User } from '../types';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
   res.send('Ahoy!');
 });
+
+router.get(
+  '/list',
+  async (req: Request<never, Cell[] & Base[], never, { include: string }>, res, next) => {
+    try {
+      console.log(req.query.include);
+      let data: (Cell[] & Base[]) | undefined;
+      if (req.query.include) {
+        const includeQueries = req.query.include.split('+');
+        if (includeQueries.includes('base')) {
+          data = await db
+            .select()
+            .from('cells')
+            .join('bases', 'cells.base_id', 'bases.id')
+            .whereNot('is_approved', 'no');
+        }
+      } else {
+        data = await db('cells').select();
+      }
+      res.status(200).json(data);
+    } catch (e) {
+      console.error(`GET /cell/list ERROR: ${e}`);
+      next(e);
+    }
+  }
+);
 
 // eslint-disable-next-line consistent-return
 router.get('/:cellId/all', async (req, res, next) => {

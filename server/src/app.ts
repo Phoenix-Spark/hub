@@ -166,7 +166,7 @@ app.get('/base_list', async (req, res, next) => {
 
 app.get('/cell_list', async (req, res, next) => {
   try {
-    const registeredCells = await db('cell').select('*');
+    const registeredCells = await db('cell').select();
 
     res.status(200).json(registeredCells);
   } catch (e) {
