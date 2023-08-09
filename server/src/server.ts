@@ -1,13 +1,14 @@
-import http from 'node:http';
+import { createServer } from 'node:http';
 // eslint-disable-next-line import/extensions
 import 'dotenv/config';
-import app from './app.js';
+import { AddressInfo } from 'net';
+import app from './app';
 
 /**
  * Get port from environment and store in Express.
  */
 
-function normalizePort(val) {
+function normalizePort(val: string) {
   const port = parseInt(val, 10);
 
   if (Number.isNaN(port)) {
@@ -30,14 +31,14 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
 server.listen(port, () => {
-  const { address } = server.address();
+  const { address } = server.address() as AddressInfo;
   const host = address === '::' || address === '127.0.0.1' ? 'localhost' : address;
 
   console.log(`Server listening at http://${host}:${port}`);

@@ -1,5 +1,5 @@
 import express from 'express';
-import db from '../db.js';
+import db from '../db';
 
 const router = express.Router();
 // routes:
@@ -54,7 +54,7 @@ router.get('/new', async (req, res, next) => {
 });
 
 router.delete('/:faqId', async (req, res, next) => {
-  try {   
+  try {
     const data = await db.select('*').from('faq').where('id', req.params.faqId).del();
     res.status(200).json(data);
   } catch (e) {

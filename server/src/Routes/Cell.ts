@@ -1,7 +1,8 @@
 import express from 'express';
 import multer from 'multer';
-import db from '../db.js';
-import { findUserById, getUserRoles } from '../Services/LoginService.js';
+import db from '../db';
+import { findUserById, getUserRoles } from '../Services/LoginService';
+import { User } from '../types';
 
 const router = express.Router();
 
@@ -34,7 +35,13 @@ router.get('/:cellId/all', async (req, res, next) => {
       .andWhere('project.is_complete', true);
     const baseData = await db('base').select().where('id', cellData[0].id).first();
 
-    const data = { ...cellData[0], team: teamData, current_projects: currentProjectData, previous_projects: previousProjectData, baseData };
+    const data = {
+      ...cellData[0],
+      team: teamData,
+      current_projects: currentProjectData,
+      previous_projects: previousProjectData,
+      baseData,
+    };
 
     if (data.length === 0) {
       return res.status(404).json({ message: 'Cell not found' });
@@ -49,15 +56,18 @@ router.get('/:cellId/all', async (req, res, next) => {
 
 router.get('/:cellId', async (req, res, next) => {
   try {
-    const data = await db('cell').first().where('cell_endpoint', req.params.cellId).orWhere('id', req.params.cellId);
+    const data = await db('cell')
+      .first()
+      .where('cell_endpoint', req.params.cellId)
+      .orWhere('id', req.params.cellId);
 
     if (!data) {
       return res.status(404).json({ message: 'Cell not found' });
     }
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (e) {
     console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
-    next(e);
+    return next(e);
   }
 });
 
@@ -70,7 +80,7 @@ router.patch(
       return res.sendStatus(401);
     }
 
-    const user = await findUserById(req.session.user);
+    const user = await findUserById(req.session.user.id!);
     if (!user) {
       return res.sendStatus(401);
     }
@@ -81,7 +91,17 @@ router.patch(
   // eslint-disable-next-line consistent-return
   async (req, res, next) => {
     try {
-      const { id, baseId, cellName, cellEndpoint, externalWebsite, cellMission, contactNumber1, contactNumber2, email } = req.body;
+      const {
+        id,
+        baseId,
+        cellName,
+        cellEndpoint,
+        externalWebsite,
+        cellMission,
+        contactNumber1,
+        contactNumber2,
+        email,
+      } = req.body;
       if (req.params.cellId !== id) {
         return res.status(400).send({ msg: 'Wrong cell id found' });
       }
@@ -110,7 +130,17 @@ router.patch(
 router.get('/:cellId/team', async (req, res, next) => {
   try {
     const data = await db
-      .select('users.id', 'users.username','users.first_name as firstName','users.last_name as lastName','users.email','users.photo_url as photo','users.contact_number1 as contactNumber1','users.contact_number2 as contactNumber2','users.bio')
+      .select(
+        'users.id',
+        'users.username',
+        'users.first_name as firstName',
+        'users.last_name as lastName',
+        'users.email',
+        'users.photo_url as photo',
+        'users.contact_number1 as contactNumber1',
+        'users.contact_number2 as contactNumber2',
+        'users.bio'
+      )
       .from('users')
       .join('cell', 'users.cell_id', '=', 'cell.base_id')
       .where('cell.cell_endpoint', req.params.cellId)
@@ -130,7 +160,7 @@ router.get(
       return res.sendStatus(401);
     }
 
-    const user = await findUserById(req.session.user);
+    const user = await findUserById(req.session.user.id!);
     if (!user) {
       return res.sendStatus(401);
     }
@@ -139,11 +169,12 @@ router.get(
   },
   async (req, res, next) => {
     try {
-      const userRoles = await getUserRoles(req.session.user);
-      const whereCondition = { 'cell.id': req.params.cellId };
+      const userRoles = await getUserRoles(req.session.user!.id!);
+      const whereCondition: { 'cell.id': string; 'project.proposed_by'?: User | undefined | null } =
+        { 'cell.id': req.params.cellId };
 
       if (userRoles === req.session.roles) {
-        if (userRoles !== 'cell' && userRoles !== 'site') {
+        if (userRoles[0].roles !== 'cell' && userRoles[0].roles !== 'site') {
           whereCondition['project.proposed_by'] = req.session.user;
         }
       }
@@ -209,12 +240,15 @@ router.get('/:cellId/previous_projects', async (req, res, next) => {
 
 router.get('/:cellEndpoint/news', async (req, res, next) => {
   try {
-    const cell = await db('cell').select('id').where('cell_endpoint', req.params.cellEndpoint).first();
+    const cell = await db('cell')
+      .select('id')
+      .where('cell_endpoint', req.params.cellEndpoint)
+      .first();
     const data = await db('news_feed').select().where('cell_id', cell.id);
 
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /cell/${req.params.cellId}/previous_projects ERROR: ${e}`);
+    console.error(`GET /cell/${req.params.cellEndpoint}/previous_projects ERROR: ${e}`);
     next(e);
   }
 });

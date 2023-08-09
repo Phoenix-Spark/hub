@@ -1,7 +1,7 @@
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import session from 'express-session';
+import session, { SessionOptions } from 'express-session';
 import multer from 'multer';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
@@ -16,20 +16,18 @@ const redisClient = createClient({
   url: process.env.REDIS_CONN,
 });
 
-try {
-  await redisClient.connect();
-} catch (e) {
-  console.error(e);
-}
+redisClient.connect().catch(console.error);
 
-const redisStore = new RedisStore({
+const redisStoreOptions = {
   client: redisClient,
   prefix: 'capstone:',
-});
+};
 
-const sessionOptions = {
+const redisStore: RedisStore = new RedisStore(redisStoreOptions);
+
+const sessionOptions: SessionOptions = {
   secret: 'changethis',
-  cookie: { /** domain: '', */ httpOnly: true, sameSite: 'lax', maxAge: 3600000 },
+  cookie: { /** domain: '', */ httpOnly: true, sameSite: 'lax', maxAge: 3600000, secure: false },
   resave: false,
   rolling: true,
   saveUninitialized: false,
@@ -43,7 +41,7 @@ const corsOptions = {
 
 // Set secure cookie only in production
 // Hopefully it's a fully setup HTTPS connection
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && sessionOptions.cookie) {
   sessionOptions.cookie.secure = true;
 }
 
@@ -86,7 +84,11 @@ app.get('/', (req, res) => {
 
 app.get('/spark_list', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('cell').join('base', 'cell.base_id', 'base.id').whereNot('is_approved', 'no');
+    const data = await db
+      .select('*')
+      .from('cell')
+      .join('base', 'cell.base_id', 'base.id')
+      .whereNot('is_approved', 'no');
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /spark_list ERROR: ${e}`);
