@@ -3,8 +3,12 @@ import multer from 'multer';
 import db from '../db';
 import { findUserById, getUserRoles } from '../Services/LoginService';
 import { Base, Cell, User } from '../types';
+import { CellRepository } from '../Repository/CellRepository';
+import { UserRepository } from '../Repository/UserRepository';
 
 const router = express.Router();
+const cellRepository = new CellRepository(db('cells'));
+const userRepository = new UserRepository(db('users'));
 
 router.get('/', (req, res) => {
   res.send('Ahoy!');
@@ -12,21 +16,21 @@ router.get('/', (req, res) => {
 
 router.get(
   '/list',
-  async (req: Request<never, Cell[] & Base[], never, { include: string }>, res, next) => {
+  async (
+    req: Request<never, (Cell[] & Base[]) | Cell[] | undefined, never, { include: string }>,
+    res,
+    next
+  ) => {
     try {
       console.log(req.query.include);
-      let data: (Cell[] & Base[]) | undefined;
+      let data: (Cell[] & Base[]) | Cell[] | undefined;
       if (req.query.include) {
         const includeQueries = req.query.include.split('+');
         if (includeQueries.includes('base')) {
-          data = await db
-            .select()
-            .from('cells')
-            .join('bases', 'cells.base_id', 'bases.id')
-            .whereNot('is_approved', 'no');
+          data = await cellRepository.getAllWithBases();
         }
       } else {
-        data = await db('cells').select();
+        data = await cellRepository.getAll();
       }
       res.status(200).json(data);
     } catch (e) {
@@ -37,45 +41,52 @@ router.get(
 );
 
 // eslint-disable-next-line consistent-return
-router.get('/:cellId/all', async (req, res, next) => {
+router.get('/:cellEndpoint/all', async (req, res, next) => {
   try {
-    const cellData = await db.select('*').from('cell').where('cell_endpoint', req.params.cellId);
+    if (req.params.cellEndpoint) {
+      const endpoint = req.params.cellEndpoint;
 
-    const teamData = await db('users')
-      .select('users.*')
-      .join('cell', 'users.cell_id', '=', 'cell.base_id')
-      .where('cell.cell_endpoint', req.params.cellId);
+      const cellData = await cellRepository.findByEndpoint(endpoint);
 
-    const currentProjectData = await db('project')
-      .select('project.*')
-      .join('cell', 'cell.id', 'project.cell_id')
-      .where('cell.cell_endpoint', req.params.cellId)
-      .andWhere('project.is_approved', true)
-      .andWhere('project.is_complete', false);
-    const previousProjectData = await db
-      .select('project.*')
-      .from('project')
-      .join('cell', 'cell.id', 'project.cell_id')
-      .where('cell.cell_endpoint', req.params.cellId)
-      .andWhere('project.is_approved', true)
-      .andWhere('project.is_complete', true);
-    const baseData = await db('base').select().where('id', cellData[0].id).first();
+      if (!cellData) {
+        throw new Error('Cell not found');
+      }
 
-    const data = {
-      ...cellData[0],
-      team: teamData,
-      current_projects: currentProjectData,
-      previous_projects: previousProjectData,
-      baseData,
-    };
+      const teamData = await userRepository.getByCellEndpoint(endpoint);
+      // const teamData = await db('users')
+      //   .select('users.*')
+      //   .join('cells', 'users.cell_id', '=', 'cells.id')
+      //   .where('cells.endpoint', endpoint);
 
-    if (data.length === 0) {
-      return res.status(404).json({ message: 'Cell not found' });
+      const currentProjectData = await db('projects')
+        .select('projects.*')
+        .join('cells', 'cells.id', 'projects.cell_id')
+        .where('cells.endpoint', endpoint)
+        .andWhere('projects.is_approved', true)
+        .andWhere('projects.is_complete', false);
+
+      const previousProjectData = await db
+        .select('projects.*')
+        .from('projects')
+        .join('cells', 'cells.id', 'projects.cell_id')
+        .where('cells.endpoint', endpoint)
+        .andWhere('projects.is_approved', true)
+        .andWhere('projects.is_complete', true);
+
+      const baseData = await db('bases').select().where('id', cellData.id).first();
+
+      const data = {
+        ...cellData,
+        team: teamData,
+        current_projects: currentProjectData,
+        previous_projects: previousProjectData,
+        baseData,
+      };
+
+      res.status(200).json(data);
     }
-
-    res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /cell/${req.params.cellId}/all ERROR: ${e}`);
+    console.error(`GET /cell/${req.params.cellEndpoint}/all ERROR: ${e}`);
     next(e);
   }
 });

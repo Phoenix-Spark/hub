@@ -40,6 +40,74 @@ export type User = {
   photo: string;
 };
 
+export type Faq = {
+  id: number;
+  question: string;
+  answer: string;
+  askedBy: number;
+  answeredBy: number;
+};
+
+export type Project = {
+  id: number;
+  cellId: number;
+  proposedBy: number;
+  dateProposed: Date;
+  isApproved: boolean;
+  dateApproved: Date;
+  isComplete: boolean;
+  dateComplete: Date;
+  name: string;
+  description: string;
+  budget: string;
+  asksTasks: string;
+  comments: string;
+};
+
+export type Tag = {
+  id: number;
+  name: string;
+};
+
+export type NewsStory = {
+  id: number;
+  title: string;
+  date: Date;
+  cellId: number;
+};
+
+export type Post = {
+  id: number;
+  userId: number;
+  categoryId: number;
+  title: string;
+  body: string;
+  createTime: Date;
+  isEdited: boolean;
+  editTime: Date;
+  views: number;
+};
+
+export type Comment = {
+  id: number;
+  postId: number;
+  userId: number;
+  body: string;
+  createTime: Date;
+  isEdited: boolean;
+  editTime: Date;
+};
+
+export type Reply = {
+  id: number;
+  commentId: number;
+  userId: number;
+  body: string;
+  createTime: Date;
+  isEdited: boolean;
+  editTime: Date;
+};
+
 declare module 'express-session' {
   interface SessionData {
     user: User | null;
