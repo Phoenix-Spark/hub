@@ -108,6 +108,8 @@ export type Reply = {
   editTime: Date;
 };
 
+export type CellAndBase = Cell & Base;
+
 declare module 'express-session' {
   interface SessionData {
     user: User | null;

@@ -5,10 +5,14 @@ import { findUserById, getUserRoles } from '../Services/LoginService';
 import { Base, Cell, User } from '../types';
 import { CellRepository } from '../Repository/CellRepository';
 import { UserRepository } from '../Repository/UserRepository';
+import { ProjectRepository } from '../Repository/ProjectRepository';
+import { LocationRepository } from '../Repository/LocationRepository';
 
 const router = express.Router();
-const cellRepository = new CellRepository(db('cells'));
-const userRepository = new UserRepository(db('users'));
+const cellRepository = new CellRepository(db, 'cells');
+const userRepository = new UserRepository(db, 'users');
+const projectRepository = new ProjectRepository(db, 'projects');
+const baseRepository = new LocationRepository(db, 'bases');
 
 router.get('/', (req, res) => {
   res.send('Ahoy!');
@@ -53,33 +57,18 @@ router.get('/:cellEndpoint/all', async (req, res, next) => {
       }
 
       const teamData = await userRepository.getByCellEndpoint(endpoint);
-      // const teamData = await db('users')
-      //   .select('users.*')
-      //   .join('cells', 'users.cell_id', '=', 'cells.id')
-      //   .where('cells.endpoint', endpoint);
 
-      const currentProjectData = await db('projects')
-        .select('projects.*')
-        .join('cells', 'cells.id', 'projects.cell_id')
-        .where('cells.endpoint', endpoint)
-        .andWhere('projects.is_approved', true)
-        .andWhere('projects.is_complete', false);
+      const currentProjectData = await projectRepository.getAllByCellEndpoint(endpoint);
 
-      const previousProjectData = await db
-        .select('projects.*')
-        .from('projects')
-        .join('cells', 'cells.id', 'projects.cell_id')
-        .where('cells.endpoint', endpoint)
-        .andWhere('projects.is_approved', true)
-        .andWhere('projects.is_complete', true);
+      const previousProjectData = await projectRepository.getAllByCellEndpoint(endpoint, true);
 
-      const baseData = await db('bases').select().where('id', cellData.id).first();
+      const baseData = await baseRepository.getByCellId(cellData.baseId);
 
       const data = {
         ...cellData,
         team: teamData,
-        current_projects: currentProjectData,
-        previous_projects: previousProjectData,
+        currentProjects: currentProjectData,
+        previousProjects: previousProjectData,
         baseData,
       };
 
@@ -91,19 +80,16 @@ router.get('/:cellEndpoint/all', async (req, res, next) => {
   }
 });
 
-router.get('/:cellId', async (req, res, next) => {
+router.get('/:cellEndpoint', async (req, res, next) => {
   try {
-    const data = await db('cell')
-      .first()
-      .where('cell_endpoint', req.params.cellId)
-      .orWhere('id', req.params.cellId);
+    const data = await cellRepository.findByEndpoint(req.params.cellEndpoint);
 
     if (!data) {
       return res.status(404).json({ message: 'Cell not found' });
     }
     return res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
+    console.error(`GET /cell/${req.params.cellEndpoint} ERROR: ${e}`);
     return next(e);
   }
 });
@@ -164,28 +150,13 @@ router.patch(
   }
 );
 
-router.get('/:cellId/team', async (req, res, next) => {
+router.get('/:cellEndpoint/team', async (req, res, next) => {
   try {
-    const data = await db
-      .select(
-        'users.id',
-        'users.username',
-        'users.first_name as firstName',
-        'users.last_name as lastName',
-        'users.email',
-        'users.photo_url as photo',
-        'users.contact_number1 as contactNumber1',
-        'users.contact_number2 as contactNumber2',
-        'users.bio'
-      )
-      .from('users')
-      .join('cell', 'users.cell_id', '=', 'cell.base_id')
-      .where('cell.cell_endpoint', req.params.cellId)
-      .orWhere('cell.id', req.params.cellId);
+    const data = await cellRepository.getTeamByEndpoint(req.params.cellEndpoint);
 
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /cell/${req.params.cellId}/team ERROR: ${e}`);
+    console.error(`GET /cell/${req.params.cellEndpoint}/team ERROR: ${e}`);
     next(e);
   }
 });
