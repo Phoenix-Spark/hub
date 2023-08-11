@@ -36,4 +36,26 @@ export class Repository {
   }
 
   withUserInfo = this.addUserInfoSelect();
+
+  // eslint-disable-next-line class-methods-use-this
+  addProjectInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
+    return query =>
+      query.select(
+        'projects.id as id',
+        'projects.cell_id as cellId',
+        'projects.proposed_by as proposedBy',
+        'projects.date_proposed as dateProposed',
+        'projects.is_approved as isApproved',
+        'projects.date_approved as dateApproved',
+        'projects.is_complete as isComplete',
+        'projects.date_complete as dateComplete',
+        'projects.name as name',
+        'projects.description as description',
+        'projects.budget as budget',
+        'projects.asks_tasks as asksAndTasks',
+        'projects.comments as comments'
+      );
+  }
+
+  withProjectInfo = this.addProjectInfoSelect();
 }

@@ -2,6 +2,13 @@ import { Knex } from 'knex';
 import { Project, ProjectPhoto, ProjectTag, User } from '../types';
 import { Repository } from './Repository';
 
+export enum ProjectStatus {
+  Pending = 'Pending',
+  Current = 'Current',
+  Completed = 'Completed',
+  Denied = 'Denied',
+}
+
 export class ProjectRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this
   addProjectUserInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
@@ -17,42 +24,6 @@ export class ProjectRepository extends Repository {
   }
 
   withProjectUserInfo = this.addProjectUserInfoSelect();
-
-  // eslint-disable-next-line class-methods-use-this
-  addProjectInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
-    return query =>
-      query.select(
-        'projects.id as id',
-        'projects.cell_id as cellId',
-        'projects.proposed_by as proposedBy',
-        'projects.date_proposed as dateProposed',
-        'projects.is_approved as isApproved',
-        'projects.date_approved as dateApproved',
-        'projects.is_complete as isComplete',
-        'projects.date_complete as dateComplete',
-        'projects.name as name',
-        'projects.description as description',
-        'projects.budget as budget',
-        'projects.asks_tasks as asksAndTasks',
-        'projects.comments as comments'
-      );
-  }
-
-  withProjectInfo = this.addProjectInfoSelect();
-
-  // eslint-disable-next-line class-methods-use-this
-  addUserInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
-    return query =>
-      query.select(
-        'users.id as id',
-        'users.username as username',
-        'users.first_name as firstName',
-        'users.last_name as lastName',
-        'users.photo_url as photo'
-      );
-  }
-
-  withUserInfo = this.addUserInfoSelect();
 
   // eslint-disable-next-line class-methods-use-this
   addTagInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {

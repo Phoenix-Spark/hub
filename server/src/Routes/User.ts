@@ -129,6 +129,55 @@ export async function logoutHandler(req: Request, res: Response) {
   });
 }
 
+router.get('/:userId/profile', async (req, res, next) => {
+  try {
+    const idIsNumber = Number.isNaN(parseInt(req.params.userId, 10));
+    const userId = idIsNumber ? parseInt(req.params.userId, 10) : req.params.userId;
+    let data;
+    if (idIsNumber && typeof userId === 'number') {
+      data = await db
+        .select(
+          'users.username',
+          'users.first_name',
+          'users.last_name',
+          'users.email',
+          'users.photo_url',
+          'users.contact_number1',
+          'users.contact_number2',
+          'users.bio',
+          'cell.cell_name',
+          'cell.logo_url'
+        )
+        .from('users')
+        .join('cell', 'users.cell_id', 'cell.id')
+        .where('users.id', userId);
+    } else if (typeof userId === 'string') {
+      data = await db
+        .select(
+          'users.username',
+          'users.first_name',
+          'users.last_name',
+          'users.email',
+          'users.photo_url',
+          'users.contact_number1',
+          'users.contact_number2',
+          'users.bio',
+          'cell.cell_name',
+          'cell.logo_url'
+        )
+        .from('users')
+        .join('cell', 'users.cell_id', 'cell.id')
+        .where('users.username', userId);
+    } else {
+      throw new Error('userId is incorrect type');
+    }
+    res.status(200).json(data);
+  } catch (e) {
+    console.error(`GET /user/${req.params.userId}/profile ERROR: ${e}`);
+    next(e);
+  }
+});
+
 router.get('/:userId/projects(/:filter)?', async (req, res) => {
   try {
     // const user = await db('users').select('id').where('id', req.params.userId).first();

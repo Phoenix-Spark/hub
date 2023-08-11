@@ -34,7 +34,7 @@
     "import/no-unresolved": "off",
     "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "warn",
-    "indent": ["error", 2],
+    "indent": ["error", 2, {"SwitchCase":  1}],
     "linebreak-style": ["error", "unix"],
     "arrow-parens": "off",
     "operator-linebreak": "off",
@@ -51,6 +51,9 @@
       }
     ],
     "object-curly-newline": ["off"],
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    // Note: you must disable the base rule as it can report incorrect errors
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "warn"
   }
 }

@@ -3,13 +3,8 @@ import multer from 'multer';
 import db from '../db';
 import { findUserById } from '../Services/LoginService';
 import { Base, Cell } from '../types';
-import {
-  baseRepository,
-  cellRepository,
-  newsRepository,
-  projectRepository,
-  userRepository,
-} from '../app';
+import { cellRepository } from '../app';
+import { ProjectStatus } from '../Repository/CellRepository';
 
 const router = express.Router();
 
@@ -44,52 +39,32 @@ router.get(
 );
 
 // eslint-disable-next-line consistent-return
-router.get('/:cellEndpoint/all', async (req, res, next) => {
+router.get('/:cellEndpoint', async (req, res, next) => {
   try {
     if (req.params.cellEndpoint) {
       const endpoint = req.params.cellEndpoint;
 
-      const cellData = await cellRepository.findByEndpoint(endpoint);
-
-      if (!cellData) {
-        throw new Error('Cell not found');
-      }
-
-      const teamData = await userRepository.getByCellEndpoint(endpoint);
-
-      const currentProjectData = await projectRepository.getApprovedByCellEndpoint(endpoint);
-
-      const previousProjectData = await projectRepository.getApprovedByCellEndpoint(endpoint, true);
-
-      const baseData = await baseRepository.getByCellId(cellData.baseId);
+      const {
+        cell,
+        team,
+        currentProjects,
+        previousProjects,
+        base: baseData,
+      } = await cellRepository.getDetailsByEndpoint(endpoint);
 
       const data = {
-        ...cellData,
-        team: teamData,
-        currentProjects: currentProjectData,
-        previousProjects: previousProjectData,
+        cell,
+        team,
+        currentProjects,
+        previousProjects,
         baseData,
       };
 
       res.status(200).json(data);
     }
   } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint}/all ERROR: ${e}`);
-    next(e);
-  }
-});
-
-router.get('/:cellEndpoint', async (req, res, next) => {
-  try {
-    const data = await cellRepository.findByEndpoint(req.params.cellEndpoint);
-
-    if (!data) {
-      return res.status(404).json({ message: 'Cell not found' });
-    }
-    return res.status(200).json(data);
-  } catch (e) {
     console.error(`GET /cell/${req.params.cellEndpoint} ERROR: ${e}`);
-    return next(e);
+    next(e);
   }
 });
 
@@ -180,8 +155,11 @@ router.get(
     next(),
   async (req, res, next) => {
     try {
-      const data = await projectRepository.getProposedByCellEndpoint(req.params.cellEndpoint);
-
+      // const data = await projectRepository.getProposedByCellEndpoint(req.params.cellEndpoint);
+      const data = await cellRepository.getProjectsByStatus(
+        req.params.cellEndpoint,
+        ProjectStatus.Pending
+      );
       res.status(200).json(data ?? {});
     } catch (e) {
       console.error(`GET /cell/${req.params.cellEndpoint}/proposed_projects ERROR: ${e}`);
@@ -192,7 +170,11 @@ router.get(
 
 router.get('/:cellEndpoint/current-projects', async (req, res, next) => {
   try {
-    const data = await projectRepository.getCurrentByCellEndpoint(req.params.cellEndpoint);
+    // const data = await projectRepository.getCurrentByCellEndpoint(req.params.cellEndpoint);
+    const data = await cellRepository.getProjectsByStatus(
+      req.params.cellEndpoint,
+      ProjectStatus.Current
+    );
 
     res.status(200).json(data);
   } catch (e) {
@@ -203,7 +185,11 @@ router.get('/:cellEndpoint/current-projects', async (req, res, next) => {
 
 router.get('/:cellEndpoint/complete-projects', async (req, res, next) => {
   try {
-    const data = await projectRepository.getCompleteByCellEndpoint(req.params.cellEndpoint);
+    // const data = await projectRepository.getCompleteByCellEndpoint(req.params.cellEndpoint);
+    const data = await cellRepository.getProjectsByStatus(
+      req.params.cellEndpoint,
+      ProjectStatus.Completed
+    );
 
     res.status(200).json(data);
   } catch (e) {
@@ -214,7 +200,7 @@ router.get('/:cellEndpoint/complete-projects', async (req, res, next) => {
 
 router.get('/:cellEndpoint/news', async (req, res, next) => {
   try {
-    const data = await newsRepository.getAllByCellEndpoint(req.params.cellEndpoint);
+    const data = await cellRepository.getNews(req.params.cellEndpoint);
 
     res.status(200).json(data);
   } catch (e) {

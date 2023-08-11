@@ -1,5 +1,6 @@
 import { Cell, CellAndBase, User } from '../types';
 import { Repository } from './Repository';
+import { ProjectStatus } from './ProjectRepository';
 
 export class CellRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this
@@ -60,6 +61,13 @@ export class CellRepository extends Repository {
     return this.cleanData(data);
   }
 
+  async getBaseByEndpoint(endpoint: string) {
+    return this.qb
+      .select()
+      .join('bases', 'bases.id', 'cells.base_id')
+      .where('cells.endpoint', endpoint);
+  }
+
   async getTeamByEndpoint(endpoint: string) {
     const selectWithUserInfo = this.withUserInfo(this.qb);
 
@@ -98,5 +106,56 @@ export class CellRepository extends Repository {
     );
 
     return data;
+  }
+
+  async getDetailsByEndpoint(endpoint: string) {
+    const cell = await this.findByEndpoint(endpoint);
+
+    const team = await this.getTeamByEndpoint(endpoint);
+
+    const currentProjects = await this.getProjectsByStatus(endpoint, ProjectStatus.Current);
+
+    const previousProjects = await this.getProjectsByStatus(endpoint, ProjectStatus.Completed);
+
+    const base = await this.getBaseByEndpoint(endpoint);
+
+    return { cell, team, currentProjects, previousProjects, base };
+  }
+
+  async getProjectsByStatus(endpoint: string, status: ProjectStatus) {
+    let data = {};
+    switch (status) {
+      case ProjectStatus.Current:
+        data = await this.withProjectInfo(this.qb)
+          .join('projects', 'projects.cell_id', 'cells.id')
+          .where('cells.endpoint', endpoint)
+          .andWhere('projects.is_approved', true)
+          .andWhere('projects.is_complete', false);
+        break;
+      case ProjectStatus.Completed:
+        data = await this.withProjectInfo(this.qb)
+          .join('projects', 'projects.cell_id', 'cells.id')
+          .where('cells.endpoint', endpoint)
+          .andWhere('projects.is_approved', true)
+          .andWhere('projects.is_complete', true);
+        break;
+      case ProjectStatus.Pending:
+        data = await this.withProjectInfo(this.qb)
+          .join('projects', 'projects.cell_id', 'cells.id')
+          .where('cells.endpoint', endpoint)
+          .andWhere('projects.is_approved', null);
+        break;
+      default:
+        break;
+    }
+
+    return data;
+  }
+
+  async getNews(endpoint: string) {
+    return this.qb
+      .select('news.id', 'news.cell_id as cellId', 'news.title', 'news.date')
+      .join('news', 'news.cell_id', 'cells.id')
+      .where('cells.endpoint', endpoint);
   }
 }
