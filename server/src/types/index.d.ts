@@ -108,6 +108,18 @@ export type Reply = {
   editTime: Date;
 };
 
+export type ProjectPhoto = {
+  url: string;
+  index: number;
+  name: string;
+  description: string;
+};
+
+export type ProjectTag = {
+  id: number;
+  name: string;
+};
+
 export type CellAndBase = Cell & Base;
 
 declare module 'express-session' {

@@ -3,6 +3,7 @@ import multer from 'multer';
 import db from '../db';
 import { findUser, findUserById } from '../Services/LoginService';
 import { User } from '../types';
+import { projectRepository } from '../app';
 
 const router = express.Router();
 
@@ -10,39 +11,16 @@ router.get('/', (req, res) => {
   res.send('Hello!');
 });
 
-router.get('/:projectId/all', async (req, res, next) => {
+router.get('/:projectId', async (req, res, next) => {
   try {
-    const projectData = await db.select('*').from('project').where('id', req.params.projectId);
-    const teamData = await db
-      .select(
-        'users.id',
-        'users.username',
-        'users.first_name as firstName',
-        'users.last_name as lastName',
-        'users.email',
-        'users.photo_url as photo',
-        'users.contact_number1 as contactNumber1',
-        'users.contact_number2 as contactNumber2',
-        'users.bio'
-      )
-      .from('project')
-      .join('project_users', 'project.id', 'project_users.project_id')
-      .join('users', 'users.id', 'project_users.users_id')
-      .where('project.id', req.params.projectId);
-    const tagsData = await db
-      .select('tag.*')
-      .from('project')
-      .join('project_tag', 'project.id', 'project_tag.project_id')
-      .join('tag', 'tag.id', 'project_tag.tag_id')
-      .where('project.id', req.params.projectId);
-    const photoData = await db
-      .select('*')
-      .from('project_photo')
-      .where('project_id', req.params.projectId);
+    const {
+      project,
+      users: team,
+      tags,
+      photos,
+    } = await projectRepository.getAllProjectDetailsById(req.params.projectId);
 
-    const data = { ...projectData[0], team: teamData, tags: tagsData, photos: photoData };
-
-    res.status(200).json(data);
+    res.status(200).json({ project, team, tags, photos });
   } catch (e) {
     console.error(`GET /projects/${req.params.projectId}/all ERROR: ${e}`);
     next(e);
@@ -63,6 +41,7 @@ router.get('/:projectId/all', async (req, res, next) => {
 //
 const projectUpload = multer();
 
+/* TODO: Move POST, DELETE, PATCH request DB calls to the Repository */
 router.post(
   '/add',
   async (req, res, next) => {
@@ -120,17 +99,6 @@ router.post(
   }
 );
 
-router.get('/:projectId', async (req, res, next) => {
-  try {
-    const data = await db.select('*').from('project').where('id', req.params.projectId);
-
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`POST /projects/${req.params.projectId} ERROR: ${e}`);
-    next(e);
-  }
-});
-
 router.patch(
   '/:projectId',
   async (req, res, next) => {
@@ -170,30 +138,7 @@ router.patch(
 
 router.get('/:projectId/team', async (req, res, next) => {
   try {
-    /*
-    const teamData = await db
-      .select('users.*')
-      .from('project')
-      .join('project_users', 'project.id', 'project_users.project_id')
-      .join('users', 'users.id', 'project_users.users_id')
-      .where('project.id', req.params.projectId);
-      */
-    const data = await db
-      .select(
-        'users.id',
-        'users.username',
-        'users.first_name as firstName',
-        'users.last_name as lastName',
-        'users.email',
-        'users.photo_url as photo',
-        'users.contact_number1 as contactNumber1',
-        'users.contact_number2 as contactNumber2',
-        'users.bio'
-      )
-      .from('project')
-      .join('project_users', 'project.id', 'project_users.project_id')
-      .join('users', 'users.id', 'project_users.users_id')
-      .where('project.id', req.params.projectId);
+    const data = await projectRepository.getProjectUsersById(req.params.projectId);
 
     res.status(200).json(data);
   } catch (e) {
@@ -290,13 +235,7 @@ router.delete('/:projectId/team/remove', teamUpload.none(), async (req, res, nex
 
 router.get('/:projectId/tags', async (req, res, next) => {
   try {
-    const data = await db
-      .select('tag.*')
-      .from('project')
-      .join('project_tag', 'project.id', 'project_tag.project_id')
-      .join('tag', 'tag.id', 'project_tag.tag_id')
-      .where('project.id', req.params.projectId);
-
+    const data = await projectRepository.getProjectTagsById(req.params.projectId);
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /projects/${req.params.projectId}/tags ERROR: ${e}`);
@@ -306,10 +245,7 @@ router.get('/:projectId/tags', async (req, res, next) => {
 
 router.get('/:projectId/photos', async (req, res, next) => {
   try {
-    const data = await db
-      .select('*')
-      .from('project_photo')
-      .where('project_id', req.params.projectId);
+    const data = await projectRepository.getProjectPhotosById(req.params.projectId);
 
     res.status(200).json(data);
   } catch (e) {

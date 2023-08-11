@@ -7,8 +7,15 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, ProjectRouter, UserRouter, ForumRouter, FaqRouter } from './Routes/index.js';
-import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
+import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes';
+import { loginHandler, logoutHandler, signUpHandler } from './Routes/User';
+import {
+  CellRepository,
+  LocationRepository,
+  NewsRepository,
+  ProjectRepository,
+  UserRepository,
+} from './Repository';
 
 const app = express();
 
@@ -52,6 +59,12 @@ app.use(cors(corsOptions));
 app.use(session(sessionOptions));
 app.use(cookieParser());
 app.use(json());
+
+export const cellRepository = new CellRepository(db, 'cells');
+export const userRepository = new UserRepository(db, 'users');
+export const projectRepository = new ProjectRepository(db, 'projects');
+export const baseRepository = new LocationRepository(db, 'bases');
+export const newsRepository = new NewsRepository(db, 'news');
 
 app.post('/login', loginHandler);
 app.get('/logout', logoutHandler);
