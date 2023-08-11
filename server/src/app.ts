@@ -107,7 +107,7 @@ app.get('/news', async (req, res, next) => {
 
 app.get('/base/list', async (req, res, next) => {
   try {
-    const data = await db.select('base.id', 'base_name').from('base');
+    const data = await db.select('base.id', 'base_name as baseName').from('bases');
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /base/list ERROR: ${e}`);

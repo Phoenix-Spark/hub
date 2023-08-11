@@ -39,10 +39,11 @@ export class CellRepository extends Repository {
   }
 
   async getAllWithBases(): Promise<CellAndBase[]> {
-    const data: CellAndBase[] = await this.getAllWithJoin('bases', 'bases.id', 'cells.id').whereNot(
-      'is_approved',
-      'no'
-    );
+    const data: CellAndBase[] = await this.qb
+      .select('cells.*', 'bases.name as baseName', 'bases.id as baseId', 'bases.lat', 'bases.lng')
+      .from('cells')
+      .join('bases', 'bases.id', 'cells.id')
+      .where('cells.is_approved', 'yes');
 
     data.forEach(item => this.cleanData(item));
 
@@ -63,7 +64,7 @@ export class CellRepository extends Repository {
 
   async getBaseByEndpoint(endpoint: string) {
     return this.qb
-      .select()
+      .first('bases.id', 'bases.name')
       .join('bases', 'bases.id', 'cells.base_id')
       .where('cells.endpoint', endpoint);
   }

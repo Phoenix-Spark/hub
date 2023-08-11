@@ -30,7 +30,7 @@ export default function App() {
     setIsDarkMode,
     profileModal,
     setProfileModal,
-    frontendUrl
+    frontendUrl,
   };
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function App() {
 
     const fetchSparkList = async () => {
       try {
-        const response = await fetch(`${server}/spark_list`);
+        const response = await fetch(`${server}/cell/list?include=bases`);
         const data = await response.json();
         if (!ignore) {
           setSparkList(data);

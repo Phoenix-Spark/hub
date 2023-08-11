@@ -5,14 +5,12 @@ import { formatDate } from '../../utils/index.js';
 
 function NewsList({ newsList }) {
   return (
-    <ListGroup
-      className="h-100 overflow-y-auto"
-    >
+    <ListGroup className="h-100 overflow-y-auto">
       {newsList?.length === 0 && 'No recent news.'}
       {newsList.map((item, index) => (
         <ListGroup.Item
           action
-          style={{cursor: 'initial'}}
+          style={{ cursor: 'initial' }}
           key={index}
         >
           <Row>
@@ -26,7 +24,7 @@ function NewsList({ newsList }) {
             <Col>
               <div>
                 <div style={{ fontSize: '10px', fontWeight: 'bold' }}>{formatDate(new Date(item.date).toString())}</div>
-                {item.news}
+                {item.title}
               </div>
             </Col>
           </Row>

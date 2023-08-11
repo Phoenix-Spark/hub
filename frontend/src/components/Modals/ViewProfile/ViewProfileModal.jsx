@@ -11,28 +11,28 @@ const ViewProfileModal = () => {
   useEffect(() => {
     if (profileModal.userId !== 0) {
       setIsLoading(true);
-      fetch(`${server}/profile/${profileModal.userId}`)
+      fetch(`${server}/user/${profileModal.userId}/profile`)
         .then(res => {
           console.log(res);
           return res.json();
         })
-        .then(data => setProfileData(data[0]))
+        .then(data => setProfileData(data))
         .catch(err => console.log(`Fetch failed. Error: ${err}`))
-        .finally(() => setIsLoading(false));    
+        .finally(() => setIsLoading(false));
     } else {
       setProfileImage('');
     }
   }, [server, profileModal]);
 
   useEffect(() => {
-      setProfileImage(
-        profileData.photo_url
-          ? profileData.photo_url.startsWith('https')
-            ? profileData.photo_url
-            : `${frontendUrl}/uploads/${profileData.photo_url}`
-          : `../images/placeholder_logo.svg`
-      );
-  }, [profileData])
+    setProfileImage(
+      profileData.photo
+        ? profileData.photo.startsWith('https')
+          ? profileData.photo
+          : `${frontendUrl}/uploads/${profileData.photo}`
+        : `../images/placeholder_logo.svg`
+    );
+  }, [profileData]);
 
   return (
     <Modal
@@ -69,17 +69,17 @@ const ViewProfileModal = () => {
                 <Row className="d-flex align-items-center">
                   <Col md="auto">
                     <Image
-                      src={profileData.logo_url}
+                      src={profileData.cellLogoUrl}
                       style={{ height: '75px', width: '75px' }}
                     />
                   </Col>
                   <Col>
-                    <h4>{profileData.cell_name}</h4>
+                    <h4>{profileData.cellName}</h4>
                   </Col>
                 </Row>
                 <Row>
                   <h1>
-                    {profileData.first_name} {profileData.last_name}
+                    {profileData.firstName} {profileData.lastName}
                   </h1>
                 </Row>
                 <Row>
@@ -89,15 +89,19 @@ const ViewProfileModal = () => {
                   <Col className="text-center">
                     <a href={`mailto:${profileData.email}`}>{decodeURIComponent(profileData.email)}</a>
                     <br />
-                    <a href={`tel:${profileData.contact_number1}`}>{profileData.contact_number1}</a>
+                    <a href={`tel:${profileData.contactNumbers[0]}`}>{profileData?.contactNumbers[0]}</a>
                     <br />
-                    <a href={`tel:${profileData.contact_number2}`}>{profileData.contact_number2}</a>
+                    <a href={`tel:${profileData.contactNumbers[1]}`}>{profileData?.contactNumbers[1]}</a>
                     <br />
                   </Col>
                 </Row>
               </Col>
             </Row>
-            <Row className="m-4"><Col><p className="text-break">{profileData.bio}</p></Col></Row>
+            <Row className="m-4">
+              <Col>
+                <p className="text-break">{profileData.bio}</p>
+              </Col>
+            </Row>
           </>
         )}
       </Modal.Body>

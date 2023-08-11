@@ -11,7 +11,7 @@ import RemoveMemberModal from '../components/Modals/RemoveTeamMember/RemoveMembe
 export default function Project() {
   const { server, user } = useContext(AppContext);
   const { projectId } = useParams();
-  const [projectData, setProjectData] = useState([]);
+  const [pageData, setPageData] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [potentialMemberList, setPotentialMemberList] = useState([]);
   const [addMemberModalShowing, setAddMemberModalShowing] = useState(false);
@@ -23,12 +23,12 @@ export default function Project() {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(`${server}/project/${projectId}/all`);
+        const response = await fetch(`${server}/project/${projectId}`);
         if (response.ok) {
           const data = await response.json();
           if (!ignore) {
-            setProjectData(data)
-            setTeamList(data.team)
+            setPageData(data);
+            setTeamList(data.team);
           }
         }
       } catch (e) {
@@ -63,58 +63,63 @@ export default function Project() {
     return () => {
       ignore = true;
     };
-  }, [refreshTeamList])
+  }, [refreshTeamList]);
 
   const handleAddMember = async () => {
     try {
-    const response = await fetch(`${server}/cell/${projectData.cell_id}/team`);
-    if (response.ok) {
-      const data = await response.json();
-      let potentialTeam = new Set();
-      
-      // This is a convoluted way to compare the two lists and only add members not already a part of team
-      let found = false;
-      for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < projectData.team.length; j++) {
-          if (data[i].id === projectData.team[j].id) {
-            found = true;
-            break;
-          } else {
-            found = false
+      const response = await fetch(`${server}/cell/${projectId}/team`);
+      if (response.ok) {
+        const data = await response.json();
+        let potentialTeam = new Set();
+
+        // This is a convoluted way to compare the two lists and only add members not already a part of team
+        let found = false;
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data.team.length; j++) {
+            if (data[i].id === data.team[j].id) {
+              found = true;
+              break;
+            } else {
+              found = false;
+            }
           }
+          if (!found) potentialTeam.add(data[i]);
         }
-        if(!found) potentialTeam.add(data[i]);
+
+        potentialTeam.forEach((val, key, set) => {});
+
+        setPotentialMemberList(prev => new Set(potentialTeam));
+        showAddMemberModal(true);
       }
-
-      potentialTeam.forEach((val, key, set) => {
-
-      });
-
-      setPotentialMemberList(prev => new Set(potentialTeam));
-      showAddMemberModal(true);
-
+    } catch (e) {
+      console.error(`There was an error. ${e}`);
     }
-   } catch (e) {
-    console.error(`There was an error. ${e}`);
-   }
-  }
+  };
 
   const handleRemoveMember = () => {
     showRemMemberModal(true);
-  }
+  };
 
-  const showAddMemberModal = () => {setAddMemberModalShowing(true)}
-  const hideAddMemberModal = () => {setAddMemberModalShowing(false)}
-  const showRemMemberModal = () => {setRemMemberModalShowing(true)}
-  const hideRemMemberModal = () => {setRemMemberModalShowing(false)}
+  const showAddMemberModal = () => {
+    setAddMemberModalShowing(true);
+  };
+  const hideAddMemberModal = () => {
+    setAddMemberModalShowing(false);
+  };
+  const showRemMemberModal = () => {
+    setRemMemberModalShowing(true);
+  };
+  const hideRemMemberModal = () => {
+    setRemMemberModalShowing(false);
+  };
 
   return (
     <>
       <Row className="my-3">
         <Col>
           <Card>
-            <Card.Header as="h5">{projectData?.name} Overview</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">{projectData?.description}</Card.Body>
+            <Card.Header as="h5">{pageData.project?.name} Overview</Card.Header>
+            <Card.Body className="d-flex flex-column h-100">{pageData.project?.description}</Card.Body>
           </Card>
         </Col>
       </Row>
@@ -131,17 +136,17 @@ export default function Project() {
               )}
             </Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              {projectData.team?.length > 0 ? <VerticalTeamList team={teamList}></VerticalTeamList> : <p>No team yet.</p>}
+              {pageData.team?.length > 0 ? <VerticalTeamList team={teamList}></VerticalTeamList> : <p>No team yet.</p>}
             </Card.Body>
           </Card>
         </Col>
         <Col>
-          <Card
-            className="h-100"
-          >
-            <Card.Header className="d-flex justify-content-between">Photos{(user?.roles === 'site' || user?.roles === 'cell') && <Button>Add Photos</Button>}</Card.Header>
+          <Card className="h-100">
+            <Card.Header className="d-flex justify-content-between">
+              Photos{(user?.roles === 'site' || user?.roles === 'cell') && <Button>Add Photos</Button>}
+            </Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              {projectData.photos?.length > 0 ? <PhotoCarousel photos={projectData?.photos}></PhotoCarousel> : <p>No Photos to show</p>}
+              {pageData.photos?.length > 0 ? <PhotoCarousel photos={pageData?.photos}></PhotoCarousel> : <p>No Photos to show</p>}
             </Card.Body>
           </Card>
         </Col>
@@ -151,13 +156,27 @@ export default function Project() {
           <Card>
             <Card.Header>Budget</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <p>${projectData?.budget}</p>
+              <p>${pageData.project?.budget}</p>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      <AddMemberModal isModalShowing={addMemberModalShowing} hideModal={hideAddMemberModal} memberList={potentialMemberList} server={server} projectId={projectData.id} refreshMemberList={setRefreshTeamList} />
-      <RemoveMemberModal isModalShowing={remMemberModalShowing} hideModal={hideRemMemberModal} memberList={teamList} server={server} projectId={projectData.id} refreshMemberList={setRefreshTeamList} />
+      <AddMemberModal
+        isModalShowing={addMemberModalShowing}
+        hideModal={hideAddMemberModal}
+        memberList={potentialMemberList}
+        server={server}
+        projectId={pageData.project?.id}
+        refreshMemberList={setRefreshTeamList}
+      />
+      <RemoveMemberModal
+        isModalShowing={remMemberModalShowing}
+        hideModal={hideRemMemberModal}
+        memberList={teamList}
+        server={server}
+        projectId={pageData.project?.id}
+        refreshMemberList={setRefreshTeamList}
+      />
     </>
   );
 }

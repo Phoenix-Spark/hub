@@ -11,7 +11,7 @@ import { NewsList } from '../components/index.js';
 export default function Cell() {
   const { cell_endpoint } = useParams();
   const { server, user } = useContext(AppContext);
-  const [cellAllData, setCellAllData] = useState({});
+  const [data, setData] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [newsList, setNewsList] = useState([]);
   const navigate = useNavigate();
@@ -21,10 +21,10 @@ export default function Cell() {
 
     const fetchCellData = async () => {
       try {
-        const response = await fetch(`${server}/cell/${cell_endpoint}/all`);
+        const response = await fetch(`${server}/cell/${cell_endpoint}`);
         if (response.ok) {
           const data = await response.json();
-          if (!ignore) setCellAllData(data);
+          if (!ignore) setData(data);
         } else if (response.status === 404) {
           navigate('/');
         }
@@ -60,8 +60,8 @@ export default function Cell() {
     <>
       <Row>
         <Col>
-          <h1 className="my-3">Welcome to {cellAllData.cell_name}!</h1>
-          <h4>Located at {cellAllData.baseData?.base_name}</h4>
+          <h1 className="my-3">Welcome to {data.cell?.name}!</h1>
+          <h4>Located at {data.baseData?.name}</h4>
         </Col>
       </Row>
       <Row className="my-3">
@@ -72,7 +72,7 @@ export default function Cell() {
               className="justify-content-between"
             >
               Cell Mission
-              {((user?.roles === 'cell' || user?.roles === 'site') && (parseInt(user?.cellId, 10) === cellAllData.id)) && (
+              {(user?.roles === 'cell' || user?.roles === 'site') && parseInt(user?.cellId, 10) === data.cell?.id && (
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -92,7 +92,7 @@ export default function Cell() {
                     alt=""
                   />
                 </Col>
-                <Col>{cellAllData.cell_mission || 'No mission yet.'}</Col>
+                <Col>{data.cell?.mission || 'No mission yet.'}</Col>
               </Row>
             </Card.Body>
           </Card>
@@ -103,7 +103,7 @@ export default function Cell() {
             <Card.Body className="d-flex flex-column justify-content-center h-100">
               {user && (
                 <>
-                  {parseInt(user.cellId, 10) === cellAllData.id && (
+                  {parseInt(user.cellId, 10) === data.cell?.id && (
                     <Button
                       variant="primary"
                       className="mb-3"
@@ -122,7 +122,7 @@ export default function Cell() {
                   <AddProposalModal
                     show={showModal}
                     onHide={hideProposalModal}
-                    cellId={cellAllData?.id}
+                    cellId={data.cell?.id}
                   />
                 </>
               )}
@@ -136,7 +136,7 @@ export default function Cell() {
           <Card>
             <Card.Header as="h5">Meet the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              <HorizontalTeamList teamList={cellAllData?.team}></HorizontalTeamList>
+              <HorizontalTeamList teamList={data?.team}></HorizontalTeamList>
             </Card.Body>
           </Card>
         </Col>
@@ -144,11 +144,11 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Contact the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              {cellAllData.email}
+              {data.cell?.email}
               <br />
-              {cellAllData.contact_number1}
+              {data.cell?.contactNumbers[0]}
               <br />
-              {cellAllData.contact_number2}
+              {data.cell?.contactNumbers[1]}
             </Card.Body>
           </Card>
         </Col>
@@ -158,7 +158,7 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Current Projects</Card.Header>
             <Card.Body className="d-flex flex-column h-100 overflow-y-auto">
-              <ProjectList projects={cellAllData.current_projects} />
+              <ProjectList projects={data.currentProjects} />
             </Card.Body>
           </Card>
         </Col>
@@ -166,7 +166,7 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Previous Projects</Card.Header>
             <Card.Body className="d-flex flex-column h-100 overflow-y-auto">
-              <ProjectList projects={cellAllData.previous_projects} />
+              <ProjectList projects={data.previousProjects} />
             </Card.Body>
           </Card>
         </Col>

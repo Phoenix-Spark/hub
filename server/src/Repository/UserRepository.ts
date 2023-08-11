@@ -3,30 +3,6 @@ import { User } from '../types';
 import { Repository } from './Repository';
 
 export class UserRepository extends Repository {
-  // selectUsersInfo() {
-  //   return this.qb.select<User[]>(
-  //     'users.id, ' +
-  //       'users.username, ' +
-  //       'users.first_name as firstName, ' +
-  //       'users.last_name as lastName, ' +
-  //       'users.email, ' +
-  //       'users.photo_url as photo, ' +
-  //       'users.contact_number1 as contactNumber1, ' +
-  //       'users.contact_number2 as contactNumber2, ' +
-  //       'users.bio, ' +
-  //       'users.base_id as baseId, ' +
-  //       'users.cell_id as cellId'
-  //   );
-  // }
-
-  // getAllWithJoin(
-  //   joinTable: string,
-  //   joinColumn1: string,
-  //   joinColumn2: string
-  // ) {
-  //   return this.db.select().join(joinTable, joinColumn1, joinColumn2).whereNot('is_approved', 'no');
-  // }
-
   // eslint-disable-next-line class-methods-use-this
   addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>
@@ -59,7 +35,10 @@ export class UserRepository extends Repository {
   }
 
   async findById(id: number): Promise<User> {
-    let data = await this.withSingleUserInfo(this.qb).where('id', id);
+    let data = await this.withSingleUserInfo(this.qb)
+      .select('cells.name as cellName', 'cells.logo_url as cellLogoUrl')
+      .join('cells', 'cells.id', 'users.cell_id')
+      .where('users.id', id);
 
     data = this.createContactNumberArray(data);
 

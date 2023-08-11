@@ -8,7 +8,7 @@ function SparkyList({ sparkList }) {
       {sparkList.map((spark, index) => (
         <ListGroup.Item
           as={Link}
-          to={`/cell/${spark.cell_endpoint}`}
+          to={`/cell/${spark.endpoint}`}
           key={index}
           className="list-group-item list-group-item-action"
         >
@@ -21,7 +21,7 @@ function SparkyList({ sparkList }) {
               />
             </Col>
             <Col className="ms-1 d-flex align-items-center">
-              <h3 style={{ display: 'inline' }}>{spark.cell_name}</h3> &nbsp;&nbsp; <strong>@ {spark.base_name}</strong>
+              <h3 style={{ display: 'inline' }}>{spark.name}</h3> &nbsp;&nbsp; <strong>@ {spark.baseName}</strong>
             </Col>
           </Row>
         </ListGroup.Item>

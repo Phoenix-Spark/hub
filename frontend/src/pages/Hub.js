@@ -26,7 +26,7 @@ function Hub() {
   //   setSearchQuery(event.target.value);
   // };
 
-  const filteredSparkList = sparkList.filter(spark => spark.base_name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
+  const filteredSparkList = sparkList.filter(spark => spark.baseName.toLowerCase().includes(searchQuery.toLowerCase())) || [];
 
   return (
     <>
@@ -36,7 +36,7 @@ function Hub() {
         </Col>
       </Row>
       <Row>
-        <Col className='mb-3'>
+        <Col className="mb-3">
           <Card>
             <Card.Header as="h5">Mission</Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>
@@ -57,7 +57,7 @@ function Hub() {
         <Col
           sm={12}
           md={6}
-          className='mb-3'
+          className="mb-3"
           style={{ maxHeight: '400px', minHeight: '400px' }}
         >
           <Card className="h-100">
@@ -67,21 +67,28 @@ function Hub() {
             >
               Spark List
               {user && (
-              <Button
-                as={Link}
-                variant="secondary"
-                to="/cell-registration"
-                className=""
-              >
-                Register your cell
-              </Button>)}
+                <Button
+                  as={Link}
+                  variant="secondary"
+                  to="/cell-registration"
+                  className=""
+                >
+                  Register your cell
+                </Button>
+              )}
             </Card.Header>
             <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
-              <SparkyList className='h-100' sparkList={filteredSparkList} />
+              <SparkyList
+                className="h-100"
+                sparkList={filteredSparkList}
+              />
             </Card.Body>
           </Card>
         </Col>
-        <Col className='mb-3' style={{ maxHeight: '400px', minHeight: '400px' }}>
+        <Col
+          className="mb-3"
+          style={{ maxHeight: '400px', minHeight: '400px' }}
+        >
           <Card style={{ height: '100%' }}>
             <Card.Header as="h5">News</Card.Header>
             <Card.Body className="d-flex flex-column h-75">

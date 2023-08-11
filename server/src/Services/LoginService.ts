@@ -2,24 +2,27 @@ import bcrypt from 'bcrypt';
 import db from '../db';
 import generateAccessToken from './TokenService';
 import { Role, User } from '../types';
+import { userRepository } from '../app';
 
 async function getUserByField(
   value: number | string | null = null,
   field = 'username'
 ): Promise<User | null | undefined> {
   if (!value) throw new Error('Value required.');
-  return db('users').where(field, value).first();
+  return db('users').first('user.first_name as firstName').where(field, value);
 }
 
 export async function getBaseAndCell(
   baseId: number,
   cellId: number
 ): Promise<{ base: string | undefined; cell: string | undefined }> {
-  const base = await db('base').select('base_name').where('id', baseId).first();
+  console.log('base id ', baseId);
+  console.log('cell id ', cellId);
+  const base = await db('bases').select('name').where('id', baseId).first();
 
-  const cell = await db('cell').select('cell_name').where('id', cellId).first();
+  const cell = await db('cells').select('name').where('id', cellId).first();
 
-  return { base: base.base_name, cell: cell.cell_name };
+  return { base: base.name, cell: cell.name };
 }
 
 export async function findUser(
@@ -46,10 +49,10 @@ export async function findUser(
 
 export async function findUserById(id: number): Promise<User | undefined> {
   // const dbUser = await db('users').where('id', id).first();
-  const dbUser = await getUserByField(id, 'id');
+  const dbUser = await userRepository.findById(id);
 
   if (!dbUser) return undefined;
-
+  console.log(dbUser);
   const { base, cell } = await getBaseAndCell(dbUser.baseId, dbUser.cellId);
 
   dbUser.base = base;
@@ -59,7 +62,7 @@ export async function findUserById(id: number): Promise<User | undefined> {
 }
 
 export async function getUserRoles(userId: number): Promise<Role[]> {
-  const data = await db('permissions').select('roles').where('users_id', userId).first();
+  const data = await db('permissions').select('roles').where('user_id', userId).first();
   return data.roles;
 }
 
@@ -139,6 +142,8 @@ export async function generateUserToken(user: User) {
   if (user.id) {
     roles = await getUserRoles(user.id);
     ({ token } = generateAccessToken(user, roles));
+  } else {
+    throw new Error('User session does not exist');
   }
 
   return { token, roles };

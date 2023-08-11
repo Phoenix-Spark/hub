@@ -3,7 +3,7 @@ import multer from 'multer';
 import db from '../db';
 import { findUserById } from '../Services/LoginService';
 import { Base, Cell } from '../types';
-import app, { cellRepository } from '../app';
+import { cellRepository } from '../app';
 import { ProjectStatus } from '../Repository/ProjectRepository';
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
   res.send('Ahoy!');
 });
 
-app.post('/add', async (req, res, next) => {
+router.post('/add', async (req, res, next) => {
   try {
     const cellData = req.body;
     const insertedIds = await db('cell').insert(cellData);
@@ -23,7 +23,7 @@ app.post('/add', async (req, res, next) => {
   }
 });
 
-app.delete('/:cellId/delete', async (req, res, next) => {
+router.delete('/:cellId/delete', async (req, res, next) => {
   try {
     const { cellId } = req.params;
 
@@ -40,7 +40,7 @@ app.delete('/:cellId/delete', async (req, res, next) => {
   }
 });
 
-app.patch('/:cellId/approve', async (req, res, next) => {
+router.patch('/:cellId/approve', async (req, res, next) => {
   try {
     const { cellId } = req.params;
     const updates = req.body;
@@ -68,14 +68,15 @@ router.get(
     next
   ) => {
     try {
-      console.log(req.query.include);
       let data: (Cell[] & Base[]) | Cell[] | undefined;
       if (req.query.include) {
         const includeQueries = req.query.include.split('+');
-        if (includeQueries.includes('base')) {
+        if (includeQueries.includes('bases')) {
+          console.log('getting bases');
           data = await cellRepository.getAllWithBases();
         }
       } else {
+        console.log('no includes');
         data = await cellRepository.getAll();
       }
       res.status(200).json(data);
