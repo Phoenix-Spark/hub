@@ -3,13 +3,61 @@ import multer from 'multer';
 import db from '../db';
 import { findUserById } from '../Services/LoginService';
 import { Base, Cell } from '../types';
-import { cellRepository } from '../app';
-import { ProjectStatus } from '../Repository/CellRepository';
+import app, { cellRepository } from '../app';
+import { ProjectStatus } from '../Repository/ProjectRepository';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
   res.send('Ahoy!');
+});
+
+app.post('/add', async (req, res, next) => {
+  try {
+    const cellData = req.body;
+    const insertedIds = await db('cell').insert(cellData);
+    res.status(200).json({ message: 'Cell registered successfully!', insertedId: insertedIds[0] });
+  } catch (e) {
+    console.error(`POST /cell_list ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.delete('/:cellId/delete', async (req, res, next) => {
+  try {
+    const { cellId } = req.params;
+
+    const deletedCount = await db('cell').where('id', cellId).del();
+
+    if (deletedCount === 1) {
+      res.status(200).json({ message: 'Cell deleted successfully!' });
+    } else {
+      res.status(404).json({ message: 'Cell not found or already deleted.' });
+    }
+  } catch (e) {
+    console.error(`DELETE /cell_list/:id ERROR: ${e}`);
+    next(e);
+  }
+});
+
+app.patch('/:cellId/approve', async (req, res, next) => {
+  try {
+    const { cellId } = req.params;
+    const updates = req.body;
+
+    const updatedCount = await db('cell')
+      .where({ id: cellId, is_approved: 'no' })
+      .update({ ...updates, is_approved: 'yes' });
+
+    if (updatedCount === 1) {
+      res.status(200).json({ message: 'Cell approved successfully!' });
+    } else {
+      res.status(404).json({ message: 'Cell not found or already approved.' });
+    }
+  } catch (e) {
+    console.error(`PATCH /approve_cell/:id ERROR: ${e}`);
+    next(e);
+  }
 });
 
 router.get(

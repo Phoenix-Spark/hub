@@ -95,23 +95,9 @@ app.get('/', (req, res) => {
   console.log('GET /');
 });
 
-app.get('/spark_list', async (req, res, next) => {
-  try {
-    const data = await db
-      .select('*')
-      .from('cell')
-      .join('base', 'cell.base_id', 'base.id')
-      .whereNot('is_approved', 'no');
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /spark_list ERROR: ${e}`);
-    next(e);
-  }
-});
-
 app.get('/news', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('news_feed').orderBy('date', 'desc');
+    const data = await newsRepository.getAll();
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /news ERROR: ${e}`);
@@ -119,119 +105,12 @@ app.get('/news', async (req, res, next) => {
   }
 });
 
-app.get('/profile/:userId', async (req, res, next) => {
-  try {
-    const data = await db
-      .select(
-        'users.username',
-        'users.first_name',
-        'users.last_name',
-        'users.email',
-        'users.photo_url',
-        'users.contact_number1',
-        'users.contact_number2',
-        'users.bio',
-        'cell.cell_name',
-        'cell.logo_url'
-      )
-      .from('users')
-      .join('cell', 'users.cell_id', 'cell.id')
-      .where('users.id', req.params.userId);
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /profile/:userId ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.get('/userData/:username', async (req, res, next) => {
-  try {
-    const data = await db
-      .select(
-        'username',
-        'password',
-        'first_name as firstName',
-        'last_name as lastName',
-        'email',
-        'photo_url as photo',
-        'contact_number1 as contactNumber1',
-        'contact_number2 as contactNumber2',
-        'bio'
-      )
-      .from('users')
-      .where('users.username', req.params.username);
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /user/:username ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.get('/base_list', async (req, res, next) => {
+app.get('/base/list', async (req, res, next) => {
   try {
     const data = await db.select('base.id', 'base_name').from('base');
     res.status(200).json(data);
   } catch (e) {
-    console.error(`GET /base_list ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.get('/cell_list', async (req, res, next) => {
-  try {
-    const registeredCells = await db('cell').select();
-
-    res.status(200).json(registeredCells);
-  } catch (e) {
-    console.error(`GET /cell_list ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.post('/cell_list', async (req, res, next) => {
-  try {
-    const cellData = req.body;
-    const insertedIds = await db('cell').insert(cellData);
-    res.status(200).json({ message: 'Cell registered successfully!', insertedId: insertedIds[0] });
-  } catch (e) {
-    console.error(`POST /cell_list ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.delete('/cell_list/:id', async (req, res, next) => {
-  try {
-    const cellId = req.params.id;
-
-    const deletedCount = await db('cell').where('id', cellId).del();
-
-    if (deletedCount === 1) {
-      res.status(200).json({ message: 'Cell deleted successfully!' });
-    } else {
-      res.status(404).json({ message: 'Cell not found or already deleted.' });
-    }
-  } catch (e) {
-    console.error(`DELETE /cell_list/:id ERROR: ${e}`);
-    next(e);
-  }
-});
-
-app.patch('/cell_list/:id', async (req, res, next) => {
-  try {
-    const cellId = req.params.id;
-    const updates = req.body;
-
-    const updatedCount = await db('cell')
-      .where({ id: cellId, is_approved: 'no' })
-      .update({ ...updates, is_approved: 'yes' });
-
-    if (updatedCount === 1) {
-      res.status(200).json({ message: 'Cell approved successfully!' });
-    } else {
-      res.status(404).json({ message: 'Cell not found or already approved.' });
-    }
-  } catch (e) {
-    console.error(`PATCH /approve_cell/:id ERROR: ${e}`);
+    console.error(`GET /base/list ERROR: ${e}`);
     next(e);
   }
 });

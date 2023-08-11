@@ -3,7 +3,7 @@ import { Repository } from './Repository';
 
 export class NewsRepository extends Repository {
   async getAll(): Promise<NewsStory[]> {
-    return this.qb.select();
+    return this.qb.select().orderBy('date', 'desc');
   }
 
   async getAllByCellId(cellId: number | string) {

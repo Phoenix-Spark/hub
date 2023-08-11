@@ -11,6 +11,7 @@ import {
 } from '../Services/LoginService';
 import db from '../db';
 import { User } from '../types';
+import { userRepository } from '../app';
 
 const router = express.Router();
 
@@ -131,43 +132,14 @@ export async function logoutHandler(req: Request, res: Response) {
 
 router.get('/:userId/profile', async (req, res, next) => {
   try {
-    const idIsNumber = Number.isNaN(parseInt(req.params.userId, 10));
+    const idIsNumber = !Number.isNaN(parseInt(req.params.userId, 10));
     const userId = idIsNumber ? parseInt(req.params.userId, 10) : req.params.userId;
+
     let data;
     if (idIsNumber && typeof userId === 'number') {
-      data = await db
-        .select(
-          'users.username',
-          'users.first_name',
-          'users.last_name',
-          'users.email',
-          'users.photo_url',
-          'users.contact_number1',
-          'users.contact_number2',
-          'users.bio',
-          'cell.cell_name',
-          'cell.logo_url'
-        )
-        .from('users')
-        .join('cell', 'users.cell_id', 'cell.id')
-        .where('users.id', userId);
+      data = await userRepository.findById(userId);
     } else if (typeof userId === 'string') {
-      data = await db
-        .select(
-          'users.username',
-          'users.first_name',
-          'users.last_name',
-          'users.email',
-          'users.photo_url',
-          'users.contact_number1',
-          'users.contact_number2',
-          'users.bio',
-          'cell.cell_name',
-          'cell.logo_url'
-        )
-        .from('users')
-        .join('cell', 'users.cell_id', 'cell.id')
-        .where('users.username', userId);
+      data = await userRepository.findByUsername(userId);
     } else {
       throw new Error('userId is incorrect type');
     }
@@ -178,17 +150,22 @@ router.get('/:userId/profile', async (req, res, next) => {
   }
 });
 
-router.get('/:userId/projects(/:filter)?', async (req, res) => {
+router.get('/:userId/projects', async (req, res, next) => {
   try {
     // const user = await db('users').select('id').where('id', req.params.userId).first();
-    const projects = await db('project')
-      .select()
-      .where('proposed_by', req.params.userId)
-      .orderByRaw('is_approved NULLS FIRST');
+    // const projects = await db('project')
+    //   .select()
+    //   .where('proposed_by', req.params.userId)
+    //   .orderByRaw('is_approved NULLS FIRST');
+
+    const userId = parseInt(req.params.userId, 10);
+
+    const projects = await userRepository.getProjectsById(userId);
 
     res.status(200).json(projects);
   } catch (e) {
     console.error(`Error was caught ${e}`);
+    next(e);
   }
 });
 

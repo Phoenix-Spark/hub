@@ -1,11 +1,8 @@
-import { Base, Cell, User } from '../types';
+import { Knex } from 'knex';
+import { User } from '../types';
 import { Repository } from './Repository';
 
 export class UserRepository extends Repository {
-  async getAll(): Promise<Cell[]> {
-    return this.qb.select();
-  }
-
   // selectUsersInfo() {
   //   return this.qb.select<User[]>(
   //     'users.id, ' +
@@ -30,18 +27,51 @@ export class UserRepository extends Repository {
   //   return this.db.select().join(joinTable, joinColumn1, joinColumn2).whereNot('is_approved', 'no');
   // }
 
-  async getAllWithBases(): Promise<Cell[] & Base[]> {
-    return this.getAllWithJoin('bases', 'bases.id', 'cells.id').whereNot('is_approved', 'no');
+  // eslint-disable-next-line class-methods-use-this
+  addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
+    return query =>
+      query.first(
+        'users.id',
+        'users.username',
+        'users.first_name as firstName',
+        'users.last_name as lastName',
+        'users.email',
+        'users.photo_url as photo',
+        'users.contact_number1',
+        'users.contact_number2',
+        'users.bio',
+        'users.base_id as baseId',
+        'users.cell_id as cellId'
+      );
   }
 
-  async findById(id: number): Promise<Cell> {
-    return this.qb.first().where('id', id);
+  withSingleUserInfo = this.addSingleUserSelect();
+
+  // eslint-disable-next-line class-methods-use-this
+  createContactNumberArray(item: User & { contact_number1?: string; contact_number2?: string }) {
+    const newItem = { ...item };
+    newItem.contactNumbers = [newItem.contact_number1!, newItem.contact_number2!];
+
+    delete newItem.contact_number1;
+    delete newItem.contact_number2;
+
+    return newItem;
   }
 
-  async getByCellId(cellId: number) {
-    return this.withUserInfo(this.qb)
-      .join('cells', 'users.cell_id', 'cells.id')
-      .where('cells.endpoint', cellId);
+  async findById(id: number): Promise<User> {
+    let data = await this.withSingleUserInfo(this.qb).where('id', id);
+
+    data = this.createContactNumberArray(data);
+
+    return data;
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    let data = await this.withSingleUserInfo(this.qb).where('username', username);
+
+    data = this.createContactNumberArray(data);
+
+    return data;
   }
 
   async getByCellEndpoint(endpoint: string): Promise<User[]> {
@@ -54,30 +84,16 @@ export class UserRepository extends Repository {
         item: User & {
           contact_number1?: string;
           contact_number2?: string;
-          // first_name?: string;
-          // last_name?: string;
-          // base_id?: number;
-          // cell_id?: number;
-          // photo_url?: string;
         }
       ) => {
-        item.contactNumbers = [item.contact_number1!, item.contact_number2!];
-        // item.firstName = item.first_name!;
-        // item.lastName = item.last_name!;
-        // item.baseId = item.base_id!;
-        // item.cellId = item.cell_id!;
-        // item.photo = item.photo_url!;
-
-        delete item.contact_number1;
-        delete item.contact_number2;
-        // delete item.first_name;
-        // delete item.last_name;
-        // delete item.base_id;
-        // delete item.cell_id;
-        // delete item.photo_url;
+        this.createContactNumberArray(item);
       }
     );
 
     return data;
+  }
+
+  getProjectsById(userId: number) {
+    return this.withProjectInfo(this.qb).from('projects').where('proposed_by', userId);
   }
 }

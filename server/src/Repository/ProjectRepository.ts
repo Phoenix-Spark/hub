@@ -114,6 +114,10 @@ export class ProjectRepository extends Repository {
       .andWhere('projects.is_complete', true);
   }
 
+  async getByUserId(userId: number) {
+    return this.withProjectInfo(this.qb).where('proposed_by', userId);
+  }
+
   async getAllProjectDetailsById(projectId: number | string): Promise<{
     project: Partial<Project>;
     users: Partial<User[]>;
