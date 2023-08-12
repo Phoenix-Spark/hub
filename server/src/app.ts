@@ -7,15 +7,15 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
 import db from './db.js';
-import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes';
-import { loginHandler, logoutHandler, signUpHandler } from './Routes/User';
+import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
+import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 import {
   CellRepository,
   LocationRepository,
   NewsRepository,
   ProjectRepository,
   UserRepository,
-} from './Repository';
+} from './Repository/index.js';
 
 const app = express();
 

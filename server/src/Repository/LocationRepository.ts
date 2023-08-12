@@ -1,5 +1,5 @@
 import { Cell } from '../types';
-import { Repository } from './Repository';
+import { Repository } from './Repository.js';
 
 export class LocationRepository extends Repository {
   async getAll(): Promise<Cell[]> {

@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { User } from '../types';
-import { Repository } from './Repository';
+import { Repository } from './Repository.js';
 
 export class UserRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this

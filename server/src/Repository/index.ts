@@ -1,7 +1,7 @@
-import { CellRepository } from './CellRepository';
-import { LocationRepository } from './LocationRepository';
-import { NewsRepository } from './NewsRepository';
-import { ProjectRepository } from './ProjectRepository';
-import { UserRepository } from './UserRepository';
+import { CellRepository } from './CellRepository.js';
+import { LocationRepository } from './LocationRepository.js';
+import { NewsRepository } from './NewsRepository.js';
+import { ProjectRepository } from './ProjectRepository.js';
+import { UserRepository } from './UserRepository.js';
 
 export { CellRepository, LocationRepository, NewsRepository, ProjectRepository, UserRepository };

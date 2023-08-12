@@ -28,7 +28,8 @@
     "import/extensions": [
       "error",
       {
-        "js": "always"
+        "js": "always",
+        "ts": "always"
       }
     ],
     "import/no-unresolved": "off",

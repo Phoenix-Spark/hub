@@ -1,10 +1,10 @@
 import express, { Request } from 'express';
 import multer from 'multer';
-import db from '../db';
-import { findUserById } from '../Services/LoginService';
+import db from '../db.js';
+import { findUserById } from '../Services/LoginService.js';
 import { Base, Cell } from '../types';
-import { cellRepository } from '../app';
-import { ProjectStatus } from '../Repository/ProjectRepository';
+import { cellRepository } from '../app.js';
+import { ProjectStatus } from '../Repository/ProjectRepository.js';
 
 const router = express.Router();
 

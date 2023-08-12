@@ -8,10 +8,10 @@ import {
   getBaseAndCell,
   loginUser,
   validateLogin,
-} from '../Services/LoginService';
-import db from '../db';
+} from '../Services/LoginService.js';
+import db from '../db.js';
 import { User } from '../types';
-import { userRepository } from '../app';
+import { userRepository } from '../app.js';
 
 const router = express.Router();
 

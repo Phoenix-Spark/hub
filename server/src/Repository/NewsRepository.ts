@@ -1,5 +1,5 @@
 import type { NewsStory } from '../types';
-import { Repository } from './Repository';
+import { Repository } from './Repository.js';
 
 export class NewsRepository extends Repository {
   async getAll(): Promise<NewsStory[]> {

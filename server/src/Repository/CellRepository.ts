@@ -1,6 +1,6 @@
 import { Cell, CellAndBase, User } from '../types';
-import { Repository } from './Repository';
-import { ProjectStatus } from './ProjectRepository';
+import { Repository } from './Repository.js';
+import { ProjectStatus } from './ProjectRepository.js';
 
 export class CellRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this

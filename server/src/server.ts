@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 // eslint-disable-next-line import/extensions
 import 'dotenv/config';
 import { AddressInfo } from 'net';
-import app from './app';
+import app from './app.js';
 
 /**
  * Get port from environment and store in Express.

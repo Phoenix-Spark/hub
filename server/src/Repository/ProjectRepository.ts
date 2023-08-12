@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { Project, ProjectPhoto, ProjectTag, User } from '../types';
-import { Repository } from './Repository';
+import { Repository } from './Repository.js';
 
 export enum ProjectStatus {
   Pending = 'Pending',

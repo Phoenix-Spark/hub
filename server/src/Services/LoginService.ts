@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
-import db from '../db';
-import generateAccessToken from './TokenService';
-import { Role, User } from '../types';
-import { userRepository } from '../app';
+import db from '../db.js';
+import generateAccessToken from './TokenService.js';
+import type { Role, User } from '../types/index.d.ts';
+import { userRepository } from '../app.js';
 
 async function getUserByField(
   value: number | string | null = null,
