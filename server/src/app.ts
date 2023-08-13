@@ -6,7 +6,7 @@ import multer from 'multer';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import express, { json } from 'express';
-import db from './db.js';
+import db from './Database/index.js';
 import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
 import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
 import {

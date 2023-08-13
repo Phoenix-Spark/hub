@@ -9,7 +9,7 @@ import {
   loginUser,
   validateLogin,
 } from '../Services/LoginService.js';
-import db from '../db.js';
+import db from '../Database/index.js';
 import { User } from '../types';
 import { userRepository } from '../app.js';
 
@@ -152,8 +152,8 @@ router.get('/:userId/profile', async (req, res, next) => {
 
 router.get('/:userId/projects', async (req, res, next) => {
   try {
-    // const user = await db('users').select('id').where('id', req.params.userId).first();
-    // const projects = await db('project')
+    // const user = await index('users').select('id').where('id', req.params.userId).first();
+    // const projects = await index('project')
     //   .select()
     //   .where('proposed_by', req.params.userId)
     //   .orderByRaw('is_approved NULLS FIRST');

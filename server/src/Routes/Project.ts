@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import db from '../db.js';
+import db from '../Database/index.js';
 import { findUser, findUserById } from '../Services/LoginService.js';
 import { User } from '../types';
 import { projectRepository } from '../app.js';

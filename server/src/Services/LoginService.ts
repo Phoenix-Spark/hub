@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import db from '../db.js';
+import db from '../Database/index.js';
 import generateAccessToken from './TokenService.js';
 import type { Role, User } from '../types/index.d.ts';
 import { userRepository } from '../app.js';
@@ -48,7 +48,7 @@ export async function findUser(
 }
 
 export async function findUserById(id: number): Promise<User | undefined> {
-  // const dbUser = await db('users').where('id', id).first();
+  // const dbUser = await index('users').where('id', id).first();
   const dbUser = await userRepository.findById(id);
 
   if (!dbUser) return undefined;
