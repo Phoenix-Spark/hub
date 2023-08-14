@@ -3,9 +3,7 @@ import multer from 'multer';
 import {
   addUser,
   doesUserExist,
-  findUserById,
   generateUserToken,
-  getBaseAndCell,
   loginUser,
   validateLogin,
 } from '../Services/LoginService.js';
@@ -130,6 +128,11 @@ export async function logoutHandler(req: Request, res: Response) {
   });
 }
 
+router.get('/:userId/test', async (req, res) => {
+  const user = await userRepository.findByUsernameWithPass(req.params.userId);
+  res.status(200).json(user);
+});
+
 router.get('/:userId/profile', async (req, res, next) => {
   try {
     const idIsNumber = !Number.isNaN(parseInt(req.params.userId, 10));
@@ -179,7 +182,7 @@ const handleAuth: RequestHandler = async (req: Request, res: Response, next: Nex
 
   let user = null;
   if (req.session.user.id) {
-    user = await findUserById(req.session.user.id);
+    user = await userRepository.findById(req.session.user.id);
     if (!user) {
       return res.sendStatus(401);
     }
@@ -259,7 +262,7 @@ router.patch('/update', profileUpload.single('photo'), async (req, res, next) =>
 
     console.log('update', update);
 
-    const { base, cell } = await getBaseAndCell(update.base_id, update.cell_id);
+    const { base, cell } = await userRepository.getBaseAndCell(update.base_id, update.cell_id);
     const updatedUser: User = {
       username: update.username,
       firstName: update.first_name,

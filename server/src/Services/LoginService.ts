@@ -1,73 +1,11 @@
 import bcrypt from 'bcrypt';
 import db from '../Database/index.js';
 import generateAccessToken from './TokenService.js';
-import type { Role, User } from '../types/index.d.ts';
+import type { Role, User } from '../types';
 import { userRepository } from '../app.js';
 
-async function getUserByField(
-  value: number | string | null = null,
-  field = 'username'
-): Promise<User | null | undefined> {
-  if (!value) throw new Error('Value required.');
-  return db('users').first('user.first_name as firstName').where(field, value);
-}
-
-export async function getBaseAndCell(
-  baseId: number,
-  cellId: number
-): Promise<{ base: string | undefined; cell: string | undefined }> {
-  console.log('base id ', baseId);
-  console.log('cell id ', cellId);
-  const base = await db('bases').select('name').where('id', baseId).first();
-
-  const cell = await db('cells').select('name').where('id', cellId).first();
-
-  return { base: base.name, cell: cell.name };
-}
-
-export async function findUser(
-  username: string
-): Promise<{ user: User | undefined; password: string | undefined }> {
-  const dbUser = await getUserByField(username);
-  if (!dbUser) return { user: undefined, password: undefined };
-
-  let base;
-  let cell;
-
-  if (dbUser.baseId && dbUser.cellId) {
-    ({ base, cell } = await getBaseAndCell(dbUser.baseId, dbUser.cellId));
-  }
-
-  dbUser.base = base;
-  dbUser.cell = cell;
-
-  return {
-    user: dbUser,
-    password: dbUser.password,
-  };
-}
-
-export async function findUserById(id: number): Promise<User | undefined> {
-  // const dbUser = await index('users').where('id', id).first();
-  const dbUser = await userRepository.findById(id);
-
-  if (!dbUser) return undefined;
-  console.log(dbUser);
-  const { base, cell } = await getBaseAndCell(dbUser.baseId, dbUser.cellId);
-
-  dbUser.base = base;
-  dbUser.cell = cell;
-
-  return dbUser;
-}
-
-export async function getUserRoles(userId: number): Promise<Role[]> {
-  const data = await db('permissions').select('roles').where('user_id', userId).first();
-  return data.roles;
-}
-
 export async function doesUserExist(username: string) {
-  const dbUser = await getUserByField(username);
+  const dbUser = await userRepository.getUserId(username);
   return !!dbUser;
 }
 
@@ -92,7 +30,7 @@ export async function addUser(
   if (password) {
     hash = await hashPassword(password);
   }
-  const { base, cell } = await getBaseAndCell(baseId, cellId);
+  const { base, cell } = await userRepository.getBaseAndCell(baseId, cellId);
   const user: User = {
     username,
     firstName,
@@ -140,7 +78,7 @@ export async function generateUserToken(user: User) {
   let token;
 
   if (user.id) {
-    roles = await getUserRoles(user.id);
+    roles = await userRepository.getUserRoles(user.id);
     ({ token } = generateAccessToken(user, roles));
   } else {
     throw new Error('User session does not exist');
@@ -159,11 +97,12 @@ export async function loginUser(user: User) {
 }
 
 export async function validateLogin(username: string, plaintext: string) {
-  const { user, password } = await findUser(username);
+  const user = await userRepository.findByUsernameWithPass(username);
 
-  if (user && password) {
-    const validPass = await comparePassword(plaintext, password);
+  if (user && user.password) {
+    const validPass = await comparePassword(plaintext, user.password);
     if (validPass) {
+      delete user.password;
       return user;
     }
   }

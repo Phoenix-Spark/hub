@@ -1,9 +1,8 @@
 import express, { Request } from 'express';
 import multer from 'multer';
 import db from '../Database/index.js';
-import { findUserById } from '../Services/LoginService.js';
 import { Base, Cell } from '../types';
-import { cellRepository } from '../app.js';
+import { cellRepository, userRepository } from '../app.js';
 import { ProjectStatus } from '../Repository/ProjectRepository.js';
 
 const router = express.Router();
@@ -126,7 +125,7 @@ router.patch(
       return res.sendStatus(401);
     }
 
-    const user = await findUserById(req.session.user.id!);
+    const user = await userRepository.findById(req.session.user.id!);
     if (!user) {
       return res.sendStatus(401);
     }

@@ -1,9 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 import db from '../Database/index.js';
-import { findUser, findUserById } from '../Services/LoginService.js';
 import { User } from '../types';
-import { projectRepository } from '../app.js';
+import { projectRepository, userRepository } from '../app.js';
 
 const router = express.Router();
 
@@ -49,7 +48,9 @@ router.post(
       return res.sendStatus(401);
     }
 
-    const user = await findUserById(req.session.user.id ?? 0);
+    // const user = await findUserById(req.session.user.id ?? 0);
+    const user = await userRepository.findById(req.session.user.id!);
+
     if (!user) {
       return res.sendStatus(401);
     }
@@ -62,7 +63,9 @@ router.post(
       console.log(req.body);
       const { cellId, name, description, budget, proposedByUsername } = req.body;
 
-      const result = await findUser(proposedByUsername);
+      // const result = await findUser(proposedByUsername);
+
+      const result = await userRepository.getUserId(proposedByUsername);
 
       if (result.user) {
         console.log(result.user.id);
@@ -72,7 +75,7 @@ router.post(
             name,
             description,
             budget,
-            proposed_by: result.user.id,
+            proposed_by: result.id,
             date_proposed: db.fn.now(),
             is_complete: false,
           },
@@ -82,7 +85,7 @@ router.post(
         const newTeam = await db('project_users').insert(
           {
             project_id: inserted[0].id,
-            users_id: result.user.id,
+            users_id: result.id,
           },
           ['*']
         );
@@ -106,7 +109,7 @@ router.patch(
       return res.sendStatus(401);
     }
 
-    const user = await findUserById(req.session.user!.id!); // The bangs tell typescript that we know this is not null
+    const user = await userRepository.findById(req.session.user!.id!); // The bangs tell typescript that we know this is not null
     if (!user) {
       return res.sendStatus(401);
     }
@@ -158,13 +161,13 @@ router.post('/:projectId/team/add', teamUpload.none(), async (req, res, next) =>
       const promises: Promise<User | undefined>[] = [];
 
       newMemberIds.forEach(async id => {
-        promises.push(findUserById(parseInt(id, 10)));
+        promises.push(userRepository.findById(parseInt(id, 10)));
       });
       const result = await Promise.all(promises);
 
       newMembers = [...result];
     } else {
-      newMembers.push(await findUserById(parseInt(newMemberIds, 10)));
+      newMembers.push(await userRepository.findById(parseInt(newMemberIds, 10)));
     }
 
     const dbPromises: Promise<Array<object>>[] = [];
@@ -200,13 +203,13 @@ router.delete('/:projectId/team/remove', teamUpload.none(), async (req, res, nex
       const promises: Promise<User | undefined>[] = [];
 
       memberIds.forEach(async id => {
-        promises.push(findUserById(parseInt(id, 10)));
+        promises.push(userRepository.findById(parseInt(id, 10)));
       });
       const result = await Promise.all(promises);
 
       membersToRemove = [...result];
     } else {
-      membersToRemove.push(await findUserById(parseInt(memberIds, 10)));
+      membersToRemove.push(await userRepository.findById(parseInt(memberIds, 10)));
     }
 
     const dbPromises: Promise<Array<object>>[] = [];
