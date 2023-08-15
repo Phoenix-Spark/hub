@@ -1,9 +1,17 @@
 import { Knex } from 'knex';
-import { Role, User } from '../types';
+import {
+  Base,
+  Cell,
+  CellAndBase,
+  DbUser,
+  Project,
+  Role,
+  User,
+  UserWithBaseAndCellName,
+} from '../types';
 import { Repository } from './Repository.js';
 
 export class UserRepository extends Repository {
-  public result: object = {};
   // eslint-disable-next-line class-methods-use-this
   addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>
@@ -25,7 +33,7 @@ export class UserRepository extends Repository {
   withSingleUserInfo = this.addSingleUserSelect();
 
   // eslint-disable-next-line class-methods-use-this
-  createContactNumberArray(item: User & { contact_number1?: string; contact_number2?: string }) {
+  createContactNumberArray(item: User & DbUser): User {
     const newItem = { ...item };
     newItem.contactNumbers = [newItem.contact_number1!, newItem.contact_number2!];
 
@@ -54,7 +62,7 @@ export class UserRepository extends Repository {
     return data;
   }
 
-  async findByIdWithBase(id: number) {
+  async findByIdWithBase(id: number): Promise<UserWithBaseAndCellName> {
     let data = await this.withSingleUserInfo(this.qb)
       .select('cells.name as cellName', 'bases.name as baseName')
       .join('cells', 'cells.id', 'users.cell_id')
@@ -66,7 +74,7 @@ export class UserRepository extends Repository {
     return data;
   }
 
-  async findByUsernameWithBase(username: string) {
+  async findByUsernameWithBase(username: string): Promise<UserWithBaseAndCellName> {
     let data = await this.withSingleUserInfo(this.qb)
       .select('cells.name as cellName', 'bases.name as baseName')
       .join('cells', 'cells.id', 'users.cell_id')
@@ -78,7 +86,7 @@ export class UserRepository extends Repository {
     return data;
   }
 
-  async getUserId(username: string) {
+  async getUserId(username: string): Promise<Pick<User, 'id'>> {
     if (!username) {
       throw new Error('username is required');
     }
@@ -90,25 +98,18 @@ export class UserRepository extends Repository {
       .join('cells', 'cells.id', '=', 'users.cell_id')
       .where('cells.endpoint', endpoint);
 
-    data.forEach(
-      (
-        item: User & {
-          contact_number1?: string;
-          contact_number2?: string;
-        }
-      ) => {
-        this.createContactNumberArray(item);
-      }
-    );
+    data.forEach((item: User & DbUser) => {
+      this.createContactNumberArray(item);
+    });
 
     return data;
   }
 
-  async getProjectsById(userId: number) {
+  async getProjectsById(userId: number): Promise<Project[]> {
     return this.withProjectInfo(this.qb).from('projects').where('proposed_by', userId);
   }
 
-  async findByUsernameWithPass(username: string) {
+  async findByUsernameWithPass(username: string): Promise<User> {
     if (!username) {
       throw new Error('Username is required');
     }
@@ -120,21 +121,21 @@ export class UserRepository extends Repository {
     return data.roles;
   }
 
-  async getBase(baseId: number) {
+  async getBase(baseId: number): Promise<Base> {
     if (!baseId) {
       throw new Error('base id is required');
     }
     return this.qb.select().from('bases').where('id', baseId);
   }
 
-  async getCell(cellId: number) {
+  async getCell(cellId: number): Promise<Cell> {
     if (!cellId) {
       throw new Error('base id is required');
     }
     return this.qb.select().from('bases').where('id', cellId);
   }
 
-  async getBaseAndCell(baseId: number, cellId: number) {
+  async getBaseAndCell(baseId: number, cellId: number): Promise<CellAndBase> {
     const base = await this.getBase(baseId);
     const cell = await this.getCell(cellId);
 

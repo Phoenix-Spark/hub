@@ -1,19 +1,10 @@
-import { Cell, CellAndBase, User } from '../types';
+import { Cell, CellWithBase, DbUser, User } from '../types';
 import { Repository } from './Repository.js';
 import { ProjectStatus } from './ProjectRepository.js';
 
 export class CellRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this
-  private cleanData(
-    data: Cell & {
-      base_id?: number;
-      external_website?: string;
-      contact_number1?: string;
-      contact_number2?: string;
-      logo_url?: string;
-      is_approved?: boolean;
-    }
-  ) {
+  private cleanData(data: CellWithBase | Cell) {
     data.baseId = data.base_id!;
     data.externalWebsite = data.external_website!;
     data.contactNumbers = [data.contact_number1!, data.contact_number2!];
@@ -38,8 +29,8 @@ export class CellRepository extends Repository {
     return data;
   }
 
-  async getAllWithBases(): Promise<CellAndBase[]> {
-    const data: CellAndBase[] = await this.qb
+  async getAllWithBases(): Promise<CellWithBase[]> {
+    const data: CellWithBase[] = await this.qb
       .select('cells.*', 'bases.name as baseName', 'bases.id as baseId', 'bases.lat', 'bases.lng')
       .from('cells')
       .join('bases', 'bases.id', 'cells.id')
@@ -69,42 +60,20 @@ export class CellRepository extends Repository {
       .where('cells.endpoint', endpoint);
   }
 
-  async getTeamByEndpoint(endpoint: string) {
+  async getTeamByEndpoint(endpoint: string): Promise<User[]> {
     const selectWithUserInfo = this.withUserInfo(this.qb);
 
-    const data: User[] = await selectWithUserInfo
+    const data: (User & DbUser)[] = await selectWithUserInfo
       .from('cells')
       .join('users', 'users.cell_id', '=', 'cells.id')
       .where('cells.endpoint', endpoint);
 
-    data.forEach(
-      (
-        item: User & {
-          contact_number1?: string;
-          contact_number2?: string;
-          // first_name?: string;
-          // last_name?: string;
-          // base_id?: number;
-          // cell_id?: number;
-          // photo_url?: string;
-        }
-      ) => {
-        item.contactNumbers = [item.contact_number1!, item.contact_number2!];
-        // item.firstName = item.first_name!;
-        // item.lastName = item.last_name!;
-        // item.baseId = item.base_id!;
-        // item.cellId = item.cell_id!;
-        // item.photo = item.photo_url!;
+    data.forEach((item: User & DbUser) => {
+      item.contactNumbers = [item.contact_number1!, item.contact_number2!];
 
-        delete item.contact_number1;
-        delete item.contact_number2;
-        // delete item.first_name;
-        // delete item.last_name;
-        // delete item.base_id;
-        // delete item.cell_id;
-        // delete item.photo_url;
-      }
-    );
+      delete item.contact_number1;
+      delete item.contact_number2;
+    });
 
     return data;
   }

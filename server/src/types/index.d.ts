@@ -7,14 +7,20 @@ export type Role = {
 export type Cell = {
   id: number;
   baseId: number;
+  base_id?: number;
   name: string;
   endpoint: string;
   externalWebsite: string;
+  external_website?: string;
   mission: string;
+  contact_number1?: string;
+  contact_number2?: string;
   contactNumbers: string[];
   email: string;
   logoUrl: string;
+  logo_url?: string;
   isApproved: boolean;
+  is_approved?: boolean;
 };
 
 export type Base = {
@@ -24,20 +30,44 @@ export type Base = {
   lng: string;
 };
 
+export type CellWithBase = Cell & Base;
+
 export type User = {
   id?: number;
   username: string;
   password?: string;
   firstName: string;
+  // first_name?: string;
   lastName: string;
+  // last_name?: string;
   email: string;
   baseId: number;
+  // base_id?: number;
   cellId: number;
+  // cell_id?: number;
+  // contact_number1?: string;
+  // contact_number2?: string;
   contactNumbers: string[];
   bio: string;
-  base: string | undefined;
-  cell: string | undefined;
+  base?: string;
+  cell?: string;
   photo: string;
+  // photo_url: string;
+};
+
+export type DbUser = {
+  first_name: string;
+  last_name?: string;
+  base_id?: number;
+  cell_id?: number;
+  contact_number1?: string;
+  contact_number2?: string;
+  photo_url: string;
+};
+
+export type UserWithBaseAndCellName = User & {
+  cellName: string;
+  baseName: string;
 };
 
 export type Faq = {
@@ -51,16 +81,24 @@ export type Faq = {
 export type Project = {
   id: number;
   cellId: number;
+  cell_id?: number;
   proposedBy: number;
+  proposed_by?: number;
   dateProposed: Date;
+  date_proposed?: Date;
   isApproved: boolean;
+  is_approved?: boolean;
   dateApproved: Date;
+  date_approved?: Date;
   isComplete: boolean;
+  is_complete?: boolean;
   dateComplete: Date;
+  date_complete?: Date;
   name: string;
   description: string;
   budget: string;
   asksTasks: string;
+  asks_tasks?: string;
   comments: string;
 };
 
@@ -74,17 +112,23 @@ export type NewsStory = {
   title: string;
   date: Date;
   cellId: number;
+  cell_id?: number;
 };
 
 export type Post = {
   id: number;
   userId: number;
+  user_id?: number;
   categoryId: number;
+  category_id?: number;
   title: string;
   body: string;
   createTime: Date;
+  create_time?: Date;
   isEdited: boolean;
+  is_edited?: boolean;
   editTime: Date;
+  edit_time?: Date;
   views: number;
 };
 
@@ -120,7 +164,10 @@ export type ProjectTag = {
   name: string;
 };
 
-export type CellAndBase = Cell & Base;
+export type CellAndBase = {
+  cell: Cell;
+  base: Base;
+};
 
 declare module 'express-session' {
   interface SessionData {

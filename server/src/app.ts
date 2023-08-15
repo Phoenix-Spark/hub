@@ -33,7 +33,7 @@ const redisStoreOptions = {
 const redisStore: RedisStore = new RedisStore(redisStoreOptions);
 
 const sessionOptions: SessionOptions = {
-  secret: 'changethis',
+  secret: process.env.APP_SESSION || 'changethis',
   cookie: { /** domain: '', */ httpOnly: true, sameSite: 'lax', maxAge: 3600000, secure: false },
   resave: false,
   rolling: true,
