@@ -16,7 +16,7 @@ function SparkyList({ sparkList }) {
             <Col md="auto">
               <img
                 style={{ height: '64px', width: '64px' }}
-                src={spark.logo_url}
+                src={spark.logoUrl}
                 alt=""
               />
             </Col>

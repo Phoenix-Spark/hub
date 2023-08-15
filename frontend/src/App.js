@@ -10,7 +10,7 @@ import AppContext from './AppContext.js';
 import './App.scss';
 
 const server = process.env.REACT_APP_SERVER_ADDRESS || 'http://localhost:8080';
-const frontendUrl = 'https://capstone.apps.jmidd.dev';
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL || 'https://capstone.apps.jmidd.dev';
 
 export default function App() {
   const [user, setUser] = useState(null);
