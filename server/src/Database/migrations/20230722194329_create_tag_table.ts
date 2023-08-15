@@ -8,5 +8,5 @@ export function up(knex: Knex): Promise<void> {
 }
 
 export function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists('tag');
+  return knex.schema.dropTableIfExists('tags');
 }

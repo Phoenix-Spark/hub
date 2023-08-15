@@ -6,7 +6,7 @@ export function up(knex: Knex): Promise<void> {
     table.string('title', 512);
     table.date('date');
     table.integer('cell_id');
-    table.foreign('cell_id').references('cells.id');
+    table.foreign('cell_id').references('cells.id').onDelete('CASCADE');
   });
 }
 

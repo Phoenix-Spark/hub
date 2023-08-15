@@ -4,9 +4,9 @@ export function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('projects', table => {
     table.increments('id');
     table.integer('cell_id');
-    table.foreign('cell_id').references('cells.id');
+    table.foreign('cell_id').references('cells.id').onDelete('SET NULL');
     table.integer('proposed_by');
-    table.foreign('proposed_by').references('users.id');
+    table.foreign('proposed_by').references('users.id').onDelete('SET NULL');
     table.date('date_proposed');
     table.boolean('is_approved');
     table.date('date_approved');
@@ -25,5 +25,5 @@ export function up(knex: Knex): Promise<void> {
  * @returns { Promise<void> }
  */
 export function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists('project');
+  return knex.schema.dropTableIfExists('projects');
 }

@@ -14,5 +14,5 @@ export function up(knex: Knex): Promise<void> {
  * @returns { Promise<void> }
  */
 export function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists('base');
+  return knex.schema.dropTableIfExists('bases');
 }

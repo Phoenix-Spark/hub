@@ -4,9 +4,9 @@ export function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('posts', table => {
     table.increments('id');
     table.integer('user_id');
-    table.foreign('user_id').references('users.id');
+    table.foreign('user_id').references('users.id').onDelete('SET NULL');
     table.integer('category_id');
-    table.foreign('category_id').references('categories.id');
+    table.foreign('category_id').references('categories.id').onDelete('SET NULL');
     table.string('title', 128);
     table.string('body', 1024);
     table.datetime('create_time');

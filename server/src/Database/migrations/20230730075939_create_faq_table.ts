@@ -6,9 +6,9 @@ export function up(knex: Knex): Promise<void> {
     table.string('question', 128);
     table.string('answer', 1024);
     table.integer('asked_by');
-    table.foreign('asked_by').references('users.id');
+    table.foreign('asked_by').references('users.id').onDelete('SET NULL');
     table.integer('answered_by');
-    table.foreign('answered_by').references('users.id');
+    table.foreign('answered_by').references('users.id').onDelete('SET NULL');
   });
 }
 export function down(knex: Knex): Promise<void> {

@@ -4,7 +4,7 @@ export function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('project_photo', table => {
     table.increments('id');
     table.integer('project_id');
-    table.foreign('project_id').references('projects.id');
+    table.foreign('project_id').references('projects.id').onDelete('SET NULL');
     table.string('url', 128);
     table.integer('index');
     table.string('name', 64);

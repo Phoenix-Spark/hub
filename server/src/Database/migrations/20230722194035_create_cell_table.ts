@@ -4,7 +4,7 @@ export function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('cells', table => {
     table.increments('id');
     table.integer('base_id');
-    table.foreign('base_id').references('bases.id');
+    table.foreign('base_id').references('bases.id').onDelete('SET NULL');
     table.string('name', 64);
     table.string('endpoint', 64);
     table.string('external_website', 128);
@@ -18,5 +18,5 @@ export function up(knex: Knex): Promise<void> {
 }
 
 export function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists('cell');
+  return knex.schema.dropTableIfExists('cells');
 }

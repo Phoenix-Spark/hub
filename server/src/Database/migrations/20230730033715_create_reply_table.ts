@@ -6,7 +6,7 @@ export function up(knex: Knex): Promise<void> {
     table.integer('comment_id');
     table.foreign('comment_id').references('comments.id').onDelete('CASCADE');
     table.integer('user_id');
-    table.foreign('user_id').references('users.id');
+    table.foreign('user_id').references('users.id').onDelete('SET NULL');
     table.string('body', 1024);
     table.datetime('create_time');
     table.boolean('is_edited');

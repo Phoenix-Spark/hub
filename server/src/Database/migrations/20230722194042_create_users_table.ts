@@ -4,9 +4,9 @@ export function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('users', table => {
     table.increments('id');
     table.integer('base_id');
-    table.foreign('base_id').references('bases.id');
+    table.foreign('base_id').references('bases.id').onDelete('SET NULL');
     table.integer('cell_id');
-    table.foreign('cell_id').references('cells.id');
+    table.foreign('cell_id').references('cells.id').onDelete('SET NULL');
     table.string('username', 32);
     table.string('password', 64);
     table.string('first_name', 32);
@@ -20,5 +20,6 @@ export function up(knex: Knex): Promise<void> {
 }
 
 export function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists('users');
+  // return knex.schema.dropTableIfExists('users');
+  return knex.raw('DROP TABLE IF EXISTS users CASCADE');
 }
