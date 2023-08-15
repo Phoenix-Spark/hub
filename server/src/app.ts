@@ -42,7 +42,7 @@ const sessionOptions: SessionOptions = {
 };
 
 const corsOptions = {
-  origin: ['127.0.0.1:3000', 'localhost:3000', /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/, 'localhost:8000'],
+  origin: ['127.0.0.1:3000', /localhost/, /\.staging\.apps\.techpulse\.us$/, /\.apps\.jmidd\.dev$/],
   credentials: true,
 };
 
@@ -114,6 +114,5 @@ app.get('/base/list', async (req, res, next) => {
     next(e);
   }
 });
-
 
 export default app;
