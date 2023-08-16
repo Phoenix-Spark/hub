@@ -1,7 +1,9 @@
 import type { NewsStory } from '../types';
+// import { Repository } from './Repository.js';
+import { INewsRepository } from '../types/IRepository.js';
 import { Repository } from './Repository.js';
 
-export class NewsRepository extends Repository {
+export class NewsRepository extends Repository<NewsStory> implements INewsRepository {
   async getAll(): Promise<NewsStory[]> {
     return this.qb.select().orderBy('date', 'desc');
   }

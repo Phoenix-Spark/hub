@@ -157,6 +157,14 @@ export type CellAndBase = {
   base: Base;
 };
 
+export type CellDetails = {
+  cell: Cell;
+  team: User[];
+  currentProjects: Project[];
+  previousProjects: Project[];
+  base: Pick<Base, 'id' | 'name'>;
+};
+
 export interface ContactNumberArray {
   contactNumber1?: string;
   contactNumber2?: string;

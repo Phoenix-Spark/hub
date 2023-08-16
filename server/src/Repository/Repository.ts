@@ -1,7 +1,8 @@
 import type { Knex } from 'knex';
 import { ContactNumberArray } from '../types';
+import IRepository from '../types/IRepository.js';
 
-export class Repository {
+export class Repository<T> implements IRepository<T> {
   constructor(
     public readonly knex: Knex,
     public readonly tableName: string
@@ -61,7 +62,7 @@ export class Repository {
   withProjectInfo = this.addProjectInfoSelect();
 
   // eslint-disable-next-line class-methods-use-this
-  createContactNumberArray<T extends ContactNumberArray>(item: T): T {
+  createContactNumberArray<TItem extends ContactNumberArray>(item: TItem): TItem {
     const newItem = { ...item };
     console.log('before', newItem);
     newItem.contactNumbers = [newItem.contactNumber1!, newItem.contactNumber2!];
@@ -71,5 +72,9 @@ export class Repository {
 
     console.log('after', newItem);
     return newItem;
+  }
+
+  async getAll(): Promise<T[]> {
+    return this.qb.select();
   }
 }

@@ -1,8 +1,9 @@
-import { Cell } from '../types';
+import { Base } from '../types';
 import { Repository } from './Repository.js';
+import { IBaseRepository } from '../types/IRepository.js';
 
-export class LocationRepository extends Repository {
-  async getAll(): Promise<Cell[]> {
+export class LocationRepository extends Repository<Base> implements IBaseRepository {
+  async getAll(): Promise<Base[]> {
     return this.qb.select();
   }
 

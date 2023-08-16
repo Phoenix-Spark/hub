@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { Project, ProjectPhoto, ProjectTag, User } from '../types';
 import { Repository } from './Repository.js';
+import { IProjectRepository } from '../types/IRepository.js';
 
 export enum ProjectStatus {
   Pending = 'Pending',
@@ -9,7 +10,7 @@ export enum ProjectStatus {
   Denied = 'Denied',
 }
 
-export class ProjectRepository extends Repository {
+export class ProjectRepository extends Repository<Project> implements IProjectRepository {
   // eslint-disable-next-line class-methods-use-this
   addProjectUserInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>

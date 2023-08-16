@@ -2,7 +2,15 @@ import { createServer } from 'node:http';
 // eslint-disable-next-line import/extensions
 import 'dotenv/config';
 import { AddressInfo } from 'net';
-import app from './app.js';
+import createApplication from './app.js';
+import {
+  CellRepository,
+  LocationRepository,
+  NewsRepository,
+  ProjectRepository,
+  UserRepository,
+} from './Repository/index.js';
+import db from './Database/index.js';
 
 /**
  * Get port from environment and store in Express.
@@ -25,12 +33,32 @@ function normalizePort(val: string) {
 }
 
 const port = normalizePort(process.env.PORT || '3001');
-app.set('port', port);
+// app.set('port', port);
+
+/**
+ * Bootstrap Application
+ */
+
+// Define Repositories
+const cellRepository = new CellRepository(db, 'cells');
+const userRepository = new UserRepository(db, 'users');
+const projectRepository = new ProjectRepository(db, 'projects');
+const baseRepository = new LocationRepository(db, 'bases');
+const newsRepository = new NewsRepository(db, 'news');
+
+// App Redis Store
+
+// App Options like cors and session
+const appOptions = {};
+
+const app = createApplication(
+  { cellRepository, userRepository, projectRepository, baseRepository, newsRepository },
+  appOptions
+);
 
 /**
  * Create HTTP server.
  */
-
 const server = createServer(app);
 
 /**

@@ -1,8 +1,9 @@
 import { Knex } from 'knex';
 import { Base, Cell, CellAndBase, Project, Role, User, UserWithBaseAndCellName } from '../types';
 import { Repository } from './Repository.js';
+import { IUserRepository } from '../types/IRepository';
 
-export class UserRepository extends Repository {
+export class UserRepository extends Repository<User> implements IUserRepository {
   // eslint-disable-next-line class-methods-use-this
   private addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>

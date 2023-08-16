@@ -1,9 +1,19 @@
 import { Knex } from 'knex';
-import { Base, Cell, CellFromDbWithBase, CellWithBase, Project, User, UserFromDb } from '../types';
+import {
+  Base,
+  Cell,
+  CellDetails,
+  CellFromDbWithBase,
+  CellWithBase,
+  Project,
+  User,
+  UserFromDb,
+} from '../types';
 import { Repository } from './Repository.js';
 import { ProjectStatus } from './ProjectRepository.js';
+import { ICellRepository } from '../types/IRepository.js';
 
-export class CellRepository extends Repository {
+export class CellRepository extends Repository<Cell> implements ICellRepository {
   // eslint-disable-next-line class-methods-use-this
   private addCellInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>
@@ -88,7 +98,7 @@ export class CellRepository extends Repository {
     return data.map(item => this.createContactNumberArray<User>(item));
   }
 
-  async getDetailsByEndpoint(endpoint: string) {
+  async getDetailsByEndpoint(endpoint: string): Promise<CellDetails> {
     const cell = await this.findByEndpoint(endpoint);
 
     const team = await this.getTeamByEndpoint(endpoint);
@@ -102,7 +112,7 @@ export class CellRepository extends Repository {
     return { cell, team, currentProjects, previousProjects, base };
   }
 
-  async getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project | undefined> {
+  async getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project[]> {
     let data;
     switch (status as string) {
       case ProjectStatus.Current:
