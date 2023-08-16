@@ -13,11 +13,13 @@ import {
   UserRepository,
 } from './Repository/index.js';
 import db from './Database/index.js';
+import { AppOptions } from './types';
 
 /**
  * Get port from environment and store in Express.
  */
 
+// eslint-disable-next-line consistent-return
 function normalizePort(val: string) {
   const port = parseInt(val, 10);
 
@@ -35,6 +37,9 @@ function normalizePort(val: string) {
 }
 
 const port = normalizePort(process.env.PORT || '3001');
+if (!port) {
+  throw new Error('Could not set port');
+}
 // app.set('port', port);
 
 /**
@@ -63,10 +68,35 @@ const redisStoreOptions = {
 const redisStore: RedisStore = new RedisStore(redisStoreOptions);
 
 // App Options like cors and session
-const appOptions = {};
+const appOptions: AppOptions = {
+  corsOptions: {
+    origin: [
+      '127.0.0.1:3000',
+      /localhost/,
+      /\.staging\.apps\.techpulse\.us$/,
+      /\.apps\.jmidd\.dev$/,
+    ],
+    credentials: true,
+  },
+  sessionOptions: {
+    secret: process.env.APP_SESSION || 'changethis',
+    cookie: { /** domain: '', */ httpOnly: true, sameSite: 'lax', maxAge: 3600000, secure: false },
+    resave: false,
+    rolling: true,
+    saveUninitialized: false,
+    store: redisStore,
+  },
+  port,
+};
+
+// Set secure cookie only in production
+// Hopefully it's a fully setup HTTPS connection
+if (process.env.NODE_ENV === 'production' && appOptions.sessionOptions!.cookie) {
+  appOptions.sessionOptions!.cookie.secure = true;
+}
 
 const app = createApplication(
-  { cellRepository, userRepository, projectRepository, baseRepository, newsRepository, redisStore },
+  { cellRepository, userRepository, projectRepository, baseRepository, newsRepository },
   appOptions
 );
 

@@ -1,4 +1,5 @@
-import RedisStore from 'connect-redis';
+import { SessionOptions } from 'express-session';
+import { CorsOptions } from 'cors';
 import {
   IBaseRepository,
   ICellRepository,
@@ -197,7 +198,12 @@ export declare type Components = {
   userRepository: IUserRepository;
   projectRepository: IProjectRepository;
   baseRepository: IBaseRepository;
-  redisStore: RedisStore;
+};
+
+export declare type AppOptions = {
+  corsOptions?: CorsOptions;
+  sessionOptions?: SessionOptions;
+  port?: number | string;
 };
 
 declare module 'express-session' {
