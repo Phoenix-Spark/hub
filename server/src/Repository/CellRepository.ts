@@ -4,6 +4,7 @@ import {
   Cell,
   CellDetails,
   CellFromDbWithBase,
+  CellWithBadKeys,
   CellWithBase,
   Project,
   User,
@@ -113,35 +114,31 @@ export class CellRepository extends Repository<Cell> implements ICellRepository 
   }
 
   async getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project[]> {
-    let data;
     switch (status as string) {
       case ProjectStatus.Current:
-        data = await this.withProjectInfo(this.qb)
+        return this.withProjectInfo(this.qb)
           .join('projects', 'projects.cell_id', 'cells.id')
           .where('cells.endpoint', endpoint)
           .andWhere('projects.is_approved', true)
           .andWhere('projects.is_complete', false);
-        break;
       case ProjectStatus.Completed:
-        data = await this.withProjectInfo(this.qb)
+        return this.withProjectInfo(this.qb)
           .join('projects', 'projects.cell_id', 'cells.id')
           .where('cells.endpoint', endpoint)
           .andWhere('projects.is_approved', true)
           .andWhere('projects.is_complete', true);
-        break;
       case ProjectStatus.Pending:
-        data = await this.withProjectInfo(this.qb)
+        return this.withProjectInfo(this.qb)
           .join('projects', 'projects.cell_id', 'cells.id')
           .where('cells.endpoint', endpoint)
           .andWhere('projects.is_approved', null);
-        break;
       case ProjectStatus.Denied:
         break;
       default:
         break;
     }
 
-    return data;
+    return [];
   }
 
   async getNews(endpoint: string) {
@@ -149,5 +146,70 @@ export class CellRepository extends Repository<Cell> implements ICellRepository 
       .select('news.id', 'news.cell_id as cellId', 'news.title', 'news.date')
       .join('news', 'news.cell_id', 'cells.id')
       .where('cells.endpoint', endpoint);
+  }
+
+  async deleteById(cellId: number) {
+    if (!cellId) throw new Error('id is required');
+    return this.qb.where('id', cellId).del();
+  }
+
+  async addCell(data: Cell): Promise<Cell[]> {
+    return this.qb.insert(
+      {
+        id: data.id,
+        base_id: data.baseId,
+        name: data.name,
+        endpoint: data.endpoint,
+        external_website: data.externalWebsite,
+        mission: data.mission,
+        contact_number1: data.contactNumbers[0],
+        contact_number2: data.contactNumbers[1],
+        email: data.email,
+      },
+      ['*']
+    );
+  }
+
+  fixObjectKeys(item: Cell): Cell {
+    let copy: CellWithBadKeys = { ...item };
+
+    copy = this.createContactNumberArray(copy);
+
+    copy.baseId = copy.base_id!;
+    delete copy.base_id;
+
+    copy.externalWebsite = copy.external_website!;
+    delete copy.external_website;
+
+    copy.logoUrl = copy.logo_url!;
+    delete copy.logo_url;
+
+    copy.isApproved = copy.is_approved!;
+    delete copy.is_approved;
+
+    return copy;
+  }
+
+  async updateCell(data: Partial<Cell>): Promise<Cell[]> {
+    const update: CellWithBadKeys[] = await this.qb.where('id', data.id).update(
+      {
+        id: data.id,
+        base_id: data.baseId,
+        name: data.name,
+        endpoint: data.endpoint,
+        external_website: data.externalWebsite,
+        mission: data.mission,
+        contact_number1: data.contactNumbers![0],
+        contact_number2: data.contactNumbers![1],
+        email: data.email,
+      },
+      ['*']
+    );
+
+    return update.map(item => this.fixObjectKeys(item));
+  }
+
+  async approveCell(cellId: number): Promise<number> {
+    return this.qb.where('id', cellId).update('is_approved', true);
   }
 }

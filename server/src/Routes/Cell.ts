@@ -1,260 +1,176 @@
-import express, { Request } from 'express';
-import multer from 'multer';
-import db from '../Database/index.js';
-import { Base, Cell } from '../types';
-import { cellRepository, userRepository } from '../app.js';
+import { NextFunction, Request, Response } from 'express';
+import { Base, Cell, Components } from '../types';
 import { ProjectStatus } from '../Repository/ProjectRepository.js';
 
-const router = express.Router();
+// eslint-disable-next-line func-names
+export default function (components: Components) {
+  const { cellRepository } = components;
 
-router.get('/', (req, res) => {
-  res.send('Ahoy!');
-});
+  return {
+    async addCell(req: Request, res: Response, next: NextFunction) {
+      try {
+        const cellData = req.body;
+        // const insertedIds = await db('cell').insert(cellData, ['*']);
+        const newCells = await cellRepository.addCell(cellData);
 
-router.post('/add', async (req, res, next) => {
-  try {
-    const cellData = req.body;
-    const insertedIds = await db('cell').insert(cellData);
-    res.status(200).json({ message: 'Cell registered successfully!', insertedId: insertedIds[0] });
-  } catch (e) {
-    console.error(`POST /cell_list ERROR: ${e}`);
-    next(e);
-  }
-});
+        res.status(200).json({ message: 'Cell registered successfully!', newCells: newCells[0] });
+      } catch (e) {
+        console.error(`POST /cell_list ERROR: ${e}`);
+        next(e);
+      }
+    },
+    async deleteCell(req: Request, res: Response, next: NextFunction) {
+      try {
+        const cellId = parseInt(req.params.cellId, 10);
 
-router.delete('/:cellId/delete', async (req, res, next) => {
-  try {
-    const { cellId } = req.params;
+        const deletedCount = await cellRepository.deleteById(cellId);
 
-    const deletedCount = await db('cell').where('id', cellId).del();
-
-    if (deletedCount === 1) {
-      res.status(200).json({ message: 'Cell deleted successfully!' });
-    } else {
-      res.status(404).json({ message: 'Cell not found or already deleted.' });
-    }
-  } catch (e) {
-    console.error(`DELETE /cell_list/:id ERROR: ${e}`);
-    next(e);
-  }
-});
-
-router.patch('/:cellId/approve', async (req, res, next) => {
-  try {
-    const { cellId } = req.params;
-    const updates = req.body;
-
-    const updatedCount = await db('cell')
-      .where({ id: cellId, is_approved: 'no' })
-      .update({ ...updates, is_approved: 'yes' });
-
-    if (updatedCount === 1) {
-      res.status(200).json({ message: 'Cell approved successfully!' });
-    } else {
-      res.status(404).json({ message: 'Cell not found or already approved.' });
-    }
-  } catch (e) {
-    console.error(`PATCH /approve_cell/:id ERROR: ${e}`);
-    next(e);
-  }
-});
-
-router.get(
-  '/list',
-  async (
-    req: Request<never, (Cell[] & Base[]) | Cell[] | undefined, never, { include: string }>,
-    res,
-    next
-  ) => {
-    try {
-      let data: (Cell[] & Base[]) | Cell[] | undefined;
-      if (req.query.include) {
-        const includeQueries = req.query.include.split('+');
-        if (includeQueries.includes('bases')) {
-          console.log('getting bases');
-          data = await cellRepository.getAllWithBases();
+        if (deletedCount > 0) {
+          res.status(200).json({ message: 'Cell deleted successfully!' });
+        } else {
+          res.status(404).json({ message: 'Cell not found.' });
         }
-      } else {
-        console.log('no includes');
-        data = await cellRepository.getAll();
+      } catch (e) {
+        console.error(`DELETE /cell_list/:id ERROR: ${e}`);
+        next(e);
       }
-      res.status(200).json(data);
-    } catch (e) {
-      console.error(`GET /cell/list ERROR: ${e}`);
-      next(e);
-    }
-  }
-);
+    },
+    async patchCell(req: Request, res: Response, next: NextFunction) {
+      try {
+        if (req.params.cellId !== req.body.id) {
+          return res.status(400).send({ msg: 'Wrong cell id found' });
+        }
 
-// eslint-disable-next-line consistent-return
-router.get('/:cellEndpoint', async (req, res, next) => {
-  try {
-    if (req.params.cellEndpoint) {
-      const endpoint = req.params.cellEndpoint;
+        const updated = await cellRepository.updateCell(req.body);
 
-      const {
-        cell,
-        team,
-        currentProjects,
-        previousProjects,
-        base: baseData,
-      } = await cellRepository.getDetailsByEndpoint(endpoint);
-
-      const data = {
-        cell,
-        team,
-        currentProjects,
-        previousProjects,
-        baseData,
-      };
-
-      res.status(200).json(data);
-    }
-  } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint} ERROR: ${e}`);
-    next(e);
-  }
-});
-
-const cellUpload = multer();
-
-router.patch(
-  '/:cellId',
-  async (req, res, next) => {
-    if (!req.session.user) {
-      return res.sendStatus(401);
-    }
-
-    const user = await userRepository.findById(req.session.user.id!);
-    if (!user) {
-      return res.sendStatus(401);
-    }
-    req.user = user;
-    return next();
-  },
-  cellUpload.none(),
-  // eslint-disable-next-line consistent-return
-  async (req, res, next) => {
-    try {
-      /* TODO: Move DB Update to Repository */
-      const {
-        id,
-        baseId,
-        cellName,
-        cellEndpoint,
-        externalWebsite,
-        cellMission,
-        contactNumber1,
-        contactNumber2,
-        email,
-      } = req.body;
-      if (req.params.cellId !== id) {
-        return res.status(400).send({ msg: 'Wrong cell id found' });
+        return res.status(200).json(updated);
+      } catch (e) {
+        console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
+        return next(e);
       }
-      const updated = await db('cell').first().where('id', id).update(
-        {
-          base_id: baseId,
-          cell_name: cellName,
-          cell_endpoint: cellEndpoint,
-          external_website: externalWebsite,
-          cell_mission: cellMission,
-          contact_number1: contactNumber1,
-          contact_number2: contactNumber2,
-          email,
-        },
-        ['*']
-      );
+    },
+    async approveCell(req: Request, res: Response, next: NextFunction) {
+      try {
+        const cellId = parseInt(req.params.cellId, 10);
+        // const updates = req.body;
 
-      res.status(200).json(updated[0]);
-    } catch (e) {
-      console.error(`GET /cell/${req.params.cellId} ERROR: ${e}`);
-      next(e);
-    }
-  }
-);
+        // const updatedCount = await db('cell')
+        //   .where({ id: cellId, is_approved: 'no' })
+        //   .update({ ...updates, is_approved: 'yes' });
 
-router.get('/:cellEndpoint/team', async (req, res, next) => {
-  try {
-    const data = await cellRepository.getTeamByEndpoint(req.params.cellEndpoint);
+        const updated = await cellRepository.approveCell(cellId);
 
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint}/team ERROR: ${e}`);
-    next(e);
-  }
-});
+        if (updated > 0) {
+          res.status(200).json({ message: 'Cell approved successfully!' });
+        } else {
+          res.status(404).json({ message: 'Cell not found or already approved.' });
+        }
+      } catch (e) {
+        console.error(`PATCH /approve_cell/:id ERROR: ${e}`);
+        next(e);
+      }
+    },
+    async getCells(req: Request, res: Response, next: NextFunction) {
+      try {
+        let data: (Cell[] & Base[]) | Cell[] | undefined;
+        if (req.query.include && typeof req.query.include === 'string') {
+          const includeQueries = req.query.include.split('+');
+          if (includeQueries.includes('bases')) {
+            console.log('getting bases');
+            data = await cellRepository.getAllWithBases();
+          }
+        } else {
+          console.log('no includes');
+          data = await cellRepository.getAll();
+        }
+        res.status(200).json(data);
+      } catch (e) {
+        console.error(`GET /cell/list ERROR: ${e}`);
+        next(e);
+      }
+    },
+    async getCell(req: Request, res: Response, next: NextFunction) {
+      try {
+        if (req.params.cellEndpoint) {
+          const endpoint = req.params.cellEndpoint;
 
-/*
- * GET route to show all proposed projects for the cell
- * For user proposed projects look in the User router
- */
-router.get(
-  '/:cellEndpoint/proposed-projects',
-  async (req, res, next) =>
-    // if (!req.session.user) {
-    //   return res.sendStatus(401);
-    // }
-    //
-    // const user = await findUserById(req.session.user.id!);
-    // if (!user) {
-    //   return res.sendStatus(401);
-    // }
-    // req.user = user;
-    next(),
-  async (req, res, next) => {
-    try {
-      // const data = await projectRepository.getProposedByCellEndpoint(req.params.cellEndpoint);
-      const data = await cellRepository.getProjectsByStatus(
-        req.params.cellEndpoint,
-        ProjectStatus.Pending
-      );
-      res.status(200).json(data ?? {});
-    } catch (e) {
-      console.error(`GET /cell/${req.params.cellEndpoint}/proposed_projects ERROR: ${e}`);
-      next(e);
-    }
-  }
-);
+          const {
+            cell,
+            team,
+            currentProjects,
+            previousProjects,
+            base: baseData,
+          } = await cellRepository.getDetailsByEndpoint(endpoint);
 
-router.get('/:cellEndpoint/current-projects', async (req, res, next) => {
-  try {
-    // const data = await projectRepository.getCurrentByCellEndpoint(req.params.cellEndpoint);
-    const data = await cellRepository.getProjectsByStatus(
-      req.params.cellEndpoint,
-      ProjectStatus.Current
-    );
+          const data = {
+            cell,
+            team,
+            currentProjects,
+            previousProjects,
+            baseData,
+          };
 
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint}/current_projects ERROR: ${e}`);
-    next(e);
-  }
-});
+          res.status(200).json(data);
+        }
+      } catch (e) {
+        console.error(`GET /cell/${req.params.cellEndpoint} ERROR: ${e}`);
+        next(e);
+      }
+    },
 
-router.get('/:cellEndpoint/complete-projects', async (req, res, next) => {
-  try {
-    // const data = await projectRepository.getCompleteByCellEndpoint(req.params.cellEndpoint);
-    const data = await cellRepository.getProjectsByStatus(
-      req.params.cellEndpoint,
-      ProjectStatus.Completed
-    );
+    async getCellTeam(req: Request, res: Response, next: NextFunction) {
+      try {
+        const data = await cellRepository.getTeamByEndpoint(req.params.cellEndpoint);
 
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint}/previous_projects ERROR: ${e}`);
-    next(e);
-  }
-});
+        res.status(200).json(data);
+      } catch (e) {
+        console.error(`GET /cell/${req.params.cellEndpoint}/team ERROR: ${e}`);
+        next(e);
+      }
+    },
 
-router.get('/:cellEndpoint/news', async (req, res, next) => {
-  try {
-    const data = await cellRepository.getNews(req.params.cellEndpoint);
+    async getCellProjects(req: Request, res: Response, next: NextFunction) {
+      try {
+        if (typeof req.query.type !== 'string') {
+          throw new Error('type is not a string');
+        }
+        let status;
+        switch (req.query.type) {
+          case 'complete':
+            status = ProjectStatus.Completed;
+            break;
+          case 'current':
+            status = ProjectStatus.Current;
+            break;
+          case 'proposed':
+            status = ProjectStatus.Pending;
+            break;
+          default:
+            break;
+        }
 
-    res.status(200).json(data);
-  } catch (e) {
-    console.error(`GET /cell/${req.params.cellEndpoint}/previous_projects ERROR: ${e}`);
-    next(e);
-  }
-});
+        if (!status) {
+          throw new Error('type is not valid');
+        }
+        // const data = await projectRepository.getCompleteByCellEndpoint(req.params.cellEndpoint);
+        const data = await cellRepository.getProjectsByStatus(req.params.cellEndpoint, status);
 
-export default router;
+        res.status(200).json(data);
+      } catch (e) {
+        console.error(`GET /cell/${req.params.cellEndpoint}/previous_projects ERROR: ${e}`);
+        next(e);
+      }
+    },
+
+    async getCellNews(req: Request, res: Response, next: NextFunction) {
+      try {
+        const data = await cellRepository.getNews(req.params.cellEndpoint);
+
+        res.status(200).json(data);
+      } catch (e) {
+        console.error(`GET /cell/${req.params.cellEndpoint}/previous_projects ERROR: ${e}`);
+        next(e);
+      }
+    },
+  };
+}

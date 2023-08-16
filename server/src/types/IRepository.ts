@@ -3,15 +3,13 @@ import {
   Base,
   Cell,
   CellDetails,
-  CellFromDbWithBase,
   CellWithBase,
   ContactNumberArray,
   NewsStory,
   Project,
   User,
-  UserFromDb,
 } from './index';
-import { ProjectStatus } from '../Repository/ProjectRepository';
+import { ProjectStatus } from '../Repository/ProjectRepository.js';
 
 interface IRepository<T> {
   get qb(): Knex.QueryBuilder;
@@ -56,6 +54,11 @@ export interface ICellRepository extends IRepository<Cell> {
   getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project[]>;
 
   getNews(endpoint: string): Promise<NewsStory[]>;
+
+  deleteById(cell: number): Promise<number>;
+  addCell(data: Cell): Promise<Cell[]>;
+  updateCell(data: Partial<Cell>): Promise<Cell[]>;
+  approveCell(cellId: number): Promise<number>;
 }
 
 export interface IUserRepository extends IRepository<User> {}

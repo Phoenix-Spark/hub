@@ -1,3 +1,12 @@
+import RedisStore from 'connect-redis';
+import {
+  IBaseRepository,
+  ICellRepository,
+  INewsRepository,
+  IProjectRepository,
+  IUserRepository,
+} from './IRepository.js';
+
 export type Role = {
   id: number;
   users_id: number;
@@ -20,6 +29,15 @@ export type Cell = {
 export type CellFromDb = Cell & {
   contactNumber1?: string;
   contactNumber2?: string;
+};
+
+export type CellWithBadKeys = Cell & {
+  base_id?: number;
+  contact_number1?: string;
+  contact_number2?: string;
+  external_website?: string;
+  logo_url?: string;
+  is_approved?: boolean;
 };
 
 export type Base = {
@@ -169,7 +187,18 @@ export interface ContactNumberArray {
   contactNumber1?: string;
   contactNumber2?: string;
   contactNumbers?: string[];
+  contact_number1?: string;
+  contact_number2?: string;
 }
+
+export declare type Components = {
+  newsRepository: INewsRepository;
+  cellRepository: ICellRepository;
+  userRepository: IUserRepository;
+  projectRepository: IProjectRepository;
+  baseRepository: IBaseRepository;
+  redisStore: RedisStore;
+};
 
 declare module 'express-session' {
   interface SessionData {

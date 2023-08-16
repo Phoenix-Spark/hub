@@ -3,27 +3,13 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import session, { SessionOptions } from 'express-session';
 // import multer from 'multer';
-import { createClient } from 'redis';
-import RedisStore from 'connect-redis';
 import express, { json, NextFunction, Request, Response } from 'express';
-import {
-  IBaseRepository,
-  ICellRepository,
-  INewsRepository,
-  IProjectRepository,
-  IUserRepository,
-} from './types/IRepository.js';
+import multer from 'multer';
+import { Components } from './types';
 // import db from './Database/index.js';
 // import { CellRouter, FaqRouter, ForumRouter, ProjectRouter, UserRouter } from './Routes/index.js';
 // import { loginHandler, logoutHandler, signUpHandler } from './Routes/User.js';
-
-declare type Components = {
-  newsRepository: INewsRepository;
-  cellRepository: ICellRepository;
-  userRepository: IUserRepository;
-  projectRepository: IProjectRepository;
-  baseRepository: IBaseRepository;
-};
+import createCellRouteHandlers from './Routes/Cell.js';
 
 const createNewsRouteHandler = (components: Components) => {
   const { newsRepository } = components;
@@ -43,21 +29,12 @@ const createNewsRouteHandler = (components: Components) => {
 
 const createApplication = (components: Components, options: object) => {
   console.log('creating app with', options);
+  const { redisStore } = components;
+
+  // Create Route Handlers for News
   const { getAllNews } = createNewsRouteHandler(components);
+
   const app = express();
-
-  const redisClient = createClient({
-    url: process.env.REDIS_CONN,
-  });
-
-  redisClient.connect().catch(console.error);
-
-  const redisStoreOptions = {
-    client: redisClient,
-    prefix: 'capstone:',
-  };
-
-  const redisStore: RedisStore = new RedisStore(redisStoreOptions);
 
   const sessionOptions: SessionOptions = {
     secret: process.env.APP_SESSION || 'changethis',
@@ -122,6 +99,30 @@ const createApplication = (components: Components, options: object) => {
   });
 
   app.get('/news', getAllNews);
+
+  /* CELL Routes */
+  const {
+    getCells,
+    getCell,
+    getCellTeam,
+    getCellProjects,
+    getCellNews,
+    addCell,
+    approveCell,
+    deleteCell,
+    patchCell,
+  } = createCellRouteHandlers(components);
+
+  const cellUpload = multer();
+
+  app.post('/cell/add', addCell);
+  app.patch('/cell/:cellId/approve', approveCell);
+  app.route('/cell/:cellId').delete(deleteCell).patch(cellUpload.none(), patchCell);
+  app.get('/cell/list', getCells);
+  app.get('/cell/:cellEndpoint', getCell);
+  app.get('/cell/:cellEndpoint/team', getCellTeam);
+  app.get('/cell/:cellEndpoint/projects', getCellProjects);
+  app.get('/cell/:cellEndpoint/news', getCellNews);
 
   // app.get('/base/list', async (req, res, next) => {
   //   try {

@@ -65,10 +65,19 @@ export class Repository<T> implements IRepository<T> {
   createContactNumberArray<TItem extends ContactNumberArray>(item: TItem): TItem {
     const newItem = { ...item };
     console.log('before', newItem);
-    newItem.contactNumbers = [newItem.contactNumber1!, newItem.contactNumber2!];
+    if (newItem.contactNumber1 && newItem.contactNumber2) {
+      newItem.contactNumbers = [newItem.contactNumber1!, newItem.contactNumber2!];
 
-    delete newItem.contactNumber1;
-    delete newItem.contactNumber2;
+      delete newItem.contactNumber1;
+      delete newItem.contactNumber2;
+    }
+
+    if (newItem.contact_number1 && newItem.contact_number2) {
+      newItem.contactNumbers = [newItem.contact_number1!, newItem.contact_number2!];
+
+      delete newItem.contact_number1;
+      delete newItem.contact_number2;
+    }
 
     console.log('after', newItem);
     return newItem;
