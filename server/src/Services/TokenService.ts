@@ -15,7 +15,7 @@ const generateAccessToken = (user: User, roles: Role[]) => {
     cellId,
     base,
     baseId,
-    photo,
+    photoUrl,
     id,
   } = user;
   const secret = process.env.TOKEN_SECRET || 'secret';
@@ -32,7 +32,7 @@ const generateAccessToken = (user: User, roles: Role[]) => {
           cell,
           baseId,
           base,
-          photo,
+          photoUrl,
           roles,
           id,
         },

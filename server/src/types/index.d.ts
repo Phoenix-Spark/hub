@@ -7,20 +7,19 @@ export type Role = {
 export type Cell = {
   id: number;
   baseId: number;
-  base_id?: number;
   name: string;
   endpoint: string;
   externalWebsite: string;
-  external_website?: string;
   mission: string;
-  contact_number1?: string;
-  contact_number2?: string;
   contactNumbers: string[];
   email: string;
   logoUrl: string;
-  logo_url?: string;
   isApproved: boolean;
-  is_approved?: boolean;
+};
+
+export type CellFromDb = Cell & {
+  contactNumber1?: string;
+  contactNumber2?: string;
 };
 
 export type Base = {
@@ -31,38 +30,27 @@ export type Base = {
 };
 
 export type CellWithBase = Cell & Base;
+export type CellFromDbWithBase = CellFromDb & Base;
 
 export type User = {
   id?: number;
   username: string;
   password?: string;
   firstName: string;
-  // first_name?: string;
   lastName: string;
-  // last_name?: string;
   email: string;
   baseId: number;
-  // base_id?: number;
   cellId: number;
-  // cell_id?: number;
-  // contact_number1?: string;
-  // contact_number2?: string;
   contactNumbers: string[];
   bio: string;
-  base?: string;
-  cell?: string;
-  photo: string;
-  // photo_url: string;
+  base?: Base;
+  cell?: Cell;
+  photoUrl: string;
 };
 
-export type DbUser = {
-  first_name: string;
-  last_name?: string;
-  base_id?: number;
-  cell_id?: number;
-  contact_number1?: string;
-  contact_number2?: string;
-  photo_url: string;
+export type UserFromDb = User & {
+  contactNumber1?: string;
+  contactNumber2?: string;
 };
 
 export type UserWithBaseAndCellName = User & {
@@ -168,6 +156,12 @@ export type CellAndBase = {
   cell: Cell;
   base: Base;
 };
+
+export interface ContactNumberArray {
+  contactNumber1?: string;
+  contactNumber2?: string;
+  contactNumbers?: string[];
+}
 
 declare module 'express-session' {
   interface SessionData {

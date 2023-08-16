@@ -115,4 +115,10 @@ app.get('/base/list', async (req, res, next) => {
   }
 });
 
+app.get('/test', async (req, res) => {
+  const result = await userRepository.getUserId('jon');
+  console.log(result);
+  res.status(200).json(result);
+});
+
 export default app;

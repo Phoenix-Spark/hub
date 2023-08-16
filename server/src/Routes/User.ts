@@ -270,7 +270,7 @@ router.patch('/update', profileUpload.single('photo'), async (req, res, next) =>
       email: update.email,
       baseId: update.base_id,
       cellId: update.cell_id,
-      photo: update.photo_url,
+      photoUrl: update.photo_url,
       contactNumbers: [update.contact_number1, update.contact_number2],
       bio: update.bio,
       base,

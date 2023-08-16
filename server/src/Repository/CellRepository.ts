@@ -1,59 +1,78 @@
-import { Cell, CellWithBase, DbUser, User } from '../types';
+import { Knex } from 'knex';
+import { Base, Cell, CellFromDbWithBase, CellWithBase, Project, User, UserFromDb } from '../types';
 import { Repository } from './Repository.js';
 import { ProjectStatus } from './ProjectRepository.js';
 
 export class CellRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this
-  private cleanData(data: CellWithBase | Cell) {
-    data.baseId = data.base_id!;
-    data.externalWebsite = data.external_website!;
-    data.contactNumbers = [data.contact_number1!, data.contact_number2!];
-    data.logoUrl = data.logo_url!;
-    data.isApproved = data.is_approved!;
-
-    delete data.base_id;
-    delete data.external_website;
-    delete data.contact_number1;
-    delete data.contact_number2;
-    delete data.logo_url;
-    delete data.is_approved;
-
-    return data;
+  private addCellInfoSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
+    return query =>
+      query.select(
+        'cells.id',
+        'cells.base_id as baseId',
+        'cells.name',
+        'cells.endpoint',
+        'cells.external_website as externalWebsite',
+        'cells.mission',
+        'cells.contact_number1 as contactNumber1',
+        'cells.contact_number2 as contactNumber2',
+        'cells.email',
+        'cells.logo_url as logoUrl',
+        'cells.is_approved as isApproved'
+      );
   }
 
+  private withCellInfoSelect = this.addCellInfoSelect();
+
+  // eslint-disable-next-line class-methods-use-this
+  private addSingleCellInfo(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
+    return query =>
+      query.first(
+        'cells.id',
+        'cells.base_id as baseId',
+        'cells.name',
+        'cells.endpoint',
+        'cells.external_website as externalWebsite',
+        'cells.mission',
+        'cells.contact_number1 as contactNumber1',
+        'cells.contact_number2 as contactNumber2',
+        'cells.email',
+        'cells.logo_url as logoUrl',
+        'cells.is_approved as isApproved'
+      );
+  }
+
+  withSingleCellInfo = this.addSingleCellInfo();
+
   async getAll(): Promise<Cell[]> {
-    const data: Cell[] = await this.qb.select();
+    const data: Cell[] = await this.withCellInfoSelect(this.qb);
 
-    data.forEach(item => this.cleanData(item));
-
-    return data;
+    return data.map(item => this.createContactNumberArray<Cell>(item));
   }
 
   async getAllWithBases(): Promise<CellWithBase[]> {
-    const data: CellWithBase[] = await this.qb
-      .select('cells.*', 'bases.name as baseName', 'bases.id as baseId', 'bases.lat', 'bases.lng')
+    const data: CellFromDbWithBase[] = await this.withCellInfoSelect(this.qb)
+      .select('bases.name as baseName', 'bases.id as baseId', 'bases.lat', 'bases.lng')
       .from('cells')
       .join('bases', 'bases.id', 'cells.id')
       .where('cells.is_approved', 'yes');
 
-    data.forEach(item => this.cleanData(item));
-
-    return data;
+    return data.map(item => this.createContactNumberArray<CellFromDbWithBase>(item));
   }
 
   async findById(id: number): Promise<Cell> {
-    const data = await this.qb.first().where('id', id);
+    const data = await this.withSingleCellInfo(this.qb).where('id', id);
 
-    return this.cleanData(data);
+    return this.createContactNumberArray(data);
   }
 
   async findByEndpoint(endpoint: string): Promise<Cell> {
-    const data = await this.qb.first().where('endpoint', endpoint);
+    const data = await this.withSingleCellInfo(this.qb).where('endpoint', endpoint);
 
-    return this.cleanData(data);
+    return this.createContactNumberArray<Cell>(data);
   }
 
-  async getBaseByEndpoint(endpoint: string) {
+  async getBaseByEndpoint(endpoint: string): Promise<Pick<Base, 'id' | 'name'>> {
     return this.qb
       .first('bases.id', 'bases.name')
       .join('bases', 'bases.id', 'cells.base_id')
@@ -61,21 +80,12 @@ export class CellRepository extends Repository {
   }
 
   async getTeamByEndpoint(endpoint: string): Promise<User[]> {
-    const selectWithUserInfo = this.withUserInfo(this.qb);
-
-    const data: (User & DbUser)[] = await selectWithUserInfo
+    const data: UserFromDb[] = await this.withUserInfo(this.qb)
       .from('cells')
       .join('users', 'users.cell_id', '=', 'cells.id')
       .where('cells.endpoint', endpoint);
 
-    data.forEach((item: User & DbUser) => {
-      item.contactNumbers = [item.contact_number1!, item.contact_number2!];
-
-      delete item.contact_number1;
-      delete item.contact_number2;
-    });
-
-    return data;
+    return data.map(item => this.createContactNumberArray<User>(item));
   }
 
   async getDetailsByEndpoint(endpoint: string) {
@@ -92,9 +102,9 @@ export class CellRepository extends Repository {
     return { cell, team, currentProjects, previousProjects, base };
   }
 
-  async getProjectsByStatus(endpoint: string, status: ProjectStatus) {
-    let data = {};
-    switch (status) {
+  async getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project | undefined> {
+    let data;
+    switch (status as string) {
       case ProjectStatus.Current:
         data = await this.withProjectInfo(this.qb)
           .join('projects', 'projects.cell_id', 'cells.id')
@@ -114,6 +124,8 @@ export class CellRepository extends Repository {
           .join('projects', 'projects.cell_id', 'cells.id')
           .where('cells.endpoint', endpoint)
           .andWhere('projects.is_approved', null);
+        break;
+      case ProjectStatus.Denied:
         break;
       default:
         break;

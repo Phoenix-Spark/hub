@@ -67,8 +67,7 @@ router.post(
 
       const result = await userRepository.getUserId(proposedByUsername);
 
-      if (result.user) {
-        console.log(result.user.id);
+      if (result.id) {
         const inserted = await db('project').insert(
           {
             cell_id: cellId,

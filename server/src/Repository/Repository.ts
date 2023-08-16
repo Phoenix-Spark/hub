@@ -1,4 +1,5 @@
 import type { Knex } from 'knex';
+import { ContactNumberArray } from '../types';
 
 export class Repository {
   constructor(
@@ -27,8 +28,8 @@ export class Repository {
         'users.last_name as lastName',
         'users.email',
         'users.photo_url as photo',
-        'users.contact_number1',
-        'users.contact_number2',
+        'users.contact_number1 as contactNumber1',
+        'users.contact_number2 as contactNumber2',
         'users.bio',
         'users.base_id as baseId',
         'users.cell_id as cellId'
@@ -58,4 +59,17 @@ export class Repository {
   }
 
   withProjectInfo = this.addProjectInfoSelect();
+
+  // eslint-disable-next-line class-methods-use-this
+  createContactNumberArray<T extends ContactNumberArray>(item: T): T {
+    const newItem = { ...item };
+    console.log('before', newItem);
+    newItem.contactNumbers = [newItem.contactNumber1!, newItem.contactNumber2!];
+
+    delete newItem.contactNumber1;
+    delete newItem.contactNumber2;
+
+    console.log('after', newItem);
+    return newItem;
+  }
 }

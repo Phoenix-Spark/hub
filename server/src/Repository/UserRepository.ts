@@ -1,19 +1,10 @@
 import { Knex } from 'knex';
-import {
-  Base,
-  Cell,
-  CellAndBase,
-  DbUser,
-  Project,
-  Role,
-  User,
-  UserWithBaseAndCellName,
-} from '../types';
+import { Base, Cell, CellAndBase, Project, Role, User, UserWithBaseAndCellName } from '../types';
 import { Repository } from './Repository.js';
 
 export class UserRepository extends Repository {
   // eslint-disable-next-line class-methods-use-this
-  addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
+  private addSingleUserSelect(): (query: Knex.QueryBuilder) => Knex.QueryBuilder {
     return query =>
       query.first(
         'users.id',
@@ -21,27 +12,16 @@ export class UserRepository extends Repository {
         'users.first_name as firstName',
         'users.last_name as lastName',
         'users.email',
-        'users.photo_url as photo',
-        'users.contact_number1',
-        'users.contact_number2',
+        'users.photo_url as photoUrl',
+        'users.contact_number1 as contactNumber1',
+        'users.contact_number2 as contactNumber2',
         'users.bio',
         'users.base_id as baseId',
         'users.cell_id as cellId'
       );
   }
 
-  withSingleUserInfo = this.addSingleUserSelect();
-
-  // eslint-disable-next-line class-methods-use-this
-  createContactNumberArray(item: User & DbUser): User {
-    const newItem = { ...item };
-    newItem.contactNumbers = [newItem.contact_number1!, newItem.contact_number2!];
-
-    delete newItem.contact_number1;
-    delete newItem.contact_number2;
-
-    return newItem;
-  }
+  private withSingleUserInfo = this.addSingleUserSelect();
 
   async findById(id: number): Promise<User> {
     let data = await this.withSingleUserInfo(this.qb)
@@ -49,7 +29,7 @@ export class UserRepository extends Repository {
       .join('cells', 'cells.id', 'users.cell_id')
       .where('users.id', id);
 
-    data = this.createContactNumberArray(data);
+    data = this.createContactNumberArray<User>(data);
 
     return data;
   }
@@ -57,7 +37,7 @@ export class UserRepository extends Repository {
   async findByUsername(username: string): Promise<User> {
     let data = await this.withSingleUserInfo(this.qb).where('username', username);
 
-    data = this.createContactNumberArray(data);
+    data = this.createContactNumberArray<User>(data);
 
     return data;
   }
@@ -69,7 +49,7 @@ export class UserRepository extends Repository {
       .join('bases', 'bases.id', 'users.base_id')
       .where('users.id', id);
 
-    data = this.createContactNumberArray(data);
+    data = this.createContactNumberArray<User>(data);
 
     return data;
   }
@@ -81,12 +61,12 @@ export class UserRepository extends Repository {
       .join('bases', 'bases.id', 'users.base_id')
       .where('users.username', username);
 
-    data = this.createContactNumberArray(data);
+    data = this.createContactNumberArray<User>(data);
 
     return data;
   }
 
-  async getUserId(username: string): Promise<Pick<User, 'id'>> {
+  async getUserId(username: string): Promise<{ id: number }> {
     if (!username) {
       throw new Error('username is required');
     }
@@ -94,15 +74,11 @@ export class UserRepository extends Repository {
   }
 
   async getByCellEndpoint(endpoint: string): Promise<User[]> {
-    const data = await this.withUserInfo(this.qb)
+    const data: User[] = await this.withUserInfo(this.qb)
       .join('cells', 'cells.id', '=', 'users.cell_id')
       .where('cells.endpoint', endpoint);
 
-    data.forEach((item: User & DbUser) => {
-      this.createContactNumberArray(item);
-    });
-
-    return data;
+    return data.map(item => this.createContactNumberArray<User>(item));
   }
 
   async getProjectsById(userId: number): Promise<Project[]> {
