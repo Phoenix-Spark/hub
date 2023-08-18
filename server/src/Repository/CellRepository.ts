@@ -50,6 +50,18 @@ export class CellRepository extends Repository {
     return data.map(item => this.createContactNumberArray<Cell>(item));
   }
 
+  async getAllApproved(): Promise<Cell[]> {
+    const data: Cell[] = await this.withCellInfoSelect(this.qb).where('is_approved', 'yes');
+
+    return data.map(item => this.createContactNumberArray<Cell>(item));
+  }
+
+  async getAllUnapproved(): Promise<Cell[]> {
+    const data: Cell[] = await this.withCellInfoSelect(this.qb).where('is_approved', 'no');
+
+    return data.map(item => this.createContactNumberArray<Cell>(item));
+  }
+
   async getAllWithBases(): Promise<CellWithBase[]> {
     const data: CellFromDbWithBase[] = await this.withCellInfoSelect(this.qb)
       .select('bases.name as baseName', 'bases.id as baseId', 'bases.lat', 'bases.lng')
@@ -93,16 +105,39 @@ export class CellRepository extends Repository {
 
     const team = await this.getTeamByEndpoint(endpoint);
 
-    const currentProjects = await this.getProjectsByStatus(endpoint, ProjectStatus.Current);
+    const currentProjects = await this.getProjectsByStatusByEndpoint(
+      endpoint,
+      ProjectStatus.Current
+    );
 
-    const previousProjects = await this.getProjectsByStatus(endpoint, ProjectStatus.Completed);
+    const previousProjects = await this.getProjectsByStatusByEndpoint(
+      endpoint,
+      ProjectStatus.Completed
+    );
 
     const base = await this.getBaseByEndpoint(endpoint);
 
     return { cell, team, currentProjects, previousProjects, base };
   }
 
-  async getProjectsByStatus(endpoint: string, status: ProjectStatus): Promise<Project | undefined> {
+  async getDetailsById(cellId: string) {
+    const cell = await this.findById(parseInt(cellId, 10));
+
+    const team = await this.getTeamByEndpoint(cell.endpoint);
+
+    const currentProjects = await this.getProjectsByStatus(cellId, ProjectStatus.Current);
+
+    const previousProjects = await this.getProjectsByStatus(cellId, ProjectStatus.Completed);
+
+    const base = await this.getBaseByEndpoint(cell.endpoint);
+
+    return { cell, team, currentProjects, previousProjects, base };
+  }
+
+  async getProjectsByStatusByEndpoint(
+    endpoint: string,
+    status: ProjectStatus
+  ): Promise<Project | undefined> {
     let data;
     switch (status as string) {
       case ProjectStatus.Current:
@@ -123,6 +158,46 @@ export class CellRepository extends Repository {
         data = await this.withProjectInfo(this.qb)
           .join('projects', 'projects.cell_id', 'cells.id')
           .where('cells.endpoint', endpoint)
+          .andWhere('projects.is_approved', null);
+        break;
+      case ProjectStatus.Denied:
+        break;
+      default:
+        break;
+    }
+
+    return data;
+  }
+  async getProjectsByStatus(cellId: string, status: ProjectStatus): Promise<Project | undefined> {
+    let data;
+    switch (status as string) {
+      case ProjectStatus.Current:
+        data = await this.withProjectInfo(this.qb)
+          .select('users.first_name as users.firstName', 'users.last_name as users.lastName')
+          .from('projects')
+          // .join('projects', 'projects.cell_id', 'cells.id')
+          .join('users', 'projects.proposed_by', 'users.id')
+          .where('projects.cell_id', cellId)
+          .andWhere('projects.is_approved', true)
+          .andWhere('projects.is_complete', false);
+        break;
+      case ProjectStatus.Completed:
+        data = await this.withProjectInfo(this.qb)
+          .select('users.first_name as users.firstName', 'users.last_name as users.lastName')
+          .from('projects')
+          // .join('projects', 'projects.cell_id', 'cells.id')
+          .join('users', 'projects.proposed_by', 'users.id')
+          .where('projects.cell_id', cellId)
+          .andWhere('projects.is_approved', true)
+          .andWhere('projects.is_complete', true);
+        break;
+      case ProjectStatus.Pending:
+        data = await this.withProjectInfo(this.qb)
+          .select('users.first_name as users.firstName', 'users.last_name as users.lastName')
+          .from('projects')
+          // .join('projects', 'projects.cell_id', 'cells.id')
+          .join('users', 'projects.proposed_by', 'users.id')
+          .where('projects.cell_id', cellId)
           .andWhere('projects.is_approved', null);
         break;
       case ProjectStatus.Denied:
