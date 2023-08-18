@@ -16,6 +16,7 @@ export default function ProfileEditor() {
     photo: '',
     contactNumber1: '',
     contactNumber2: '',
+    contactNumbers: ['', ''],
     bio: '',
     baseId: user?.baseId ?? '',
     cellId: user?.cellId ?? '',

@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('category');
+    const data = await db.select('*').from('categories');
 
     res.status(200).json(data);
   } catch (e) {
@@ -17,11 +17,11 @@ router.get('/', async (req, res, next) => {
 router.get('/:categoryId', async (req, res, next) => {
   try {
     const data = await db
-      .select('post.*', 'users.username', 'users.photo_url')
-      .from('post')
-      .join('users', 'post.users_id', 'users.id')
-      .where('category_id', req.params.categoryId)
-      .orderBy('post.create_time', 'desc');
+      .select('posts.*', 'users.username', 'users.photo_url')
+      .from('posts')
+      .join('users', 'posts.user_id', 'users.id')
+      .where('posts.category_id', req.params.categoryId)
+      .orderBy('posts.create_time', 'desc');
 
     res.status(200).json(data);
   } catch (e) {
@@ -33,12 +33,12 @@ router.get('/:categoryId', async (req, res, next) => {
 router.get('/post/:postId/comments', async (req, res, next) => {
   try {
     const data = await db
-      .select('comment.*', 'users.username', 'users.photo_url')
-      .from('post')
-      .join('comment', 'post.id', 'comment.post_id')
-      .join('users', 'comment.users_id', 'users.id')
-      .where('post.id', req.params.postId)
-      .orderBy('comment.create_time');
+      .select('comments.*', 'users.username', 'users.photo_url')
+      .from('posts')
+      .join('comments', 'posts.id', 'comments.post_id')
+      .join('users', 'comments.user_id', 'users.id')
+      .where('posts.id', req.params.postId)
+      .orderBy('comments.create_time');
 
     res.status(200).json(data);
   } catch (e) {
@@ -50,12 +50,12 @@ router.get('/post/:postId/comments', async (req, res, next) => {
 router.get('/comment/:commentId/replies', async (req, res, next) => {
   try {
     const data = await db
-      .select('reply.*', 'users.username', 'users.photo_url')
-      .from('comment')
-      .join('reply', 'comment.id', 'reply.comment_id')
-      .join('users', 'reply.users_id', 'users.id')
-      .where('comment.id', req.params.commentId)
-      .orderBy('reply.create_time');
+      .select('replies.*', 'users.username', 'users.photo_url')
+      .from('comments')
+      .join('replies', 'comments.id', 'replies.comment_id')
+      .join('users', 'replies.user_id', 'users.id')
+      .where('comments.id', req.params.commentId)
+      .orderBy('replies.create_time');
 
     res.status(200).json(data);
   } catch (e) {
@@ -125,7 +125,7 @@ router.post('/reply', async (req, res, next) => {
 
 router.delete('/post/:postId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('post').where('id', req.params.postId).del();
+    const data = await db.select('*').from('posts').where('id', req.params.postId).del();
     res.status(200).json(data);
   } catch (e) {
     console.error(`DELETE /forum/post/:postId ERROR: ${e}`);
@@ -135,7 +135,7 @@ router.delete('/post/:postId', async (req, res, next) => {
 
 router.delete('/comment/:commentId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('comment').where('id', req.params.commentId).del();
+    const data = await db.select('*').from('comments').where('id', req.params.commentId).del();
     res.status(200).json(data);
   } catch (e) {
     console.error(`DELETE /forum/comment/:commentId ERROR: ${e}`);
@@ -145,7 +145,7 @@ router.delete('/comment/:commentId', async (req, res, next) => {
 
 router.delete('/reply/:replyId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('reply').where('id', req.params.replyId).del();
+    const data = await db.select('*').from('replies').where('id', req.params.replyId).del();
     res.status(200).json(data);
   } catch (e) {
     console.error(`DELETE /forum/reply/:replyId ERROR: ${e}`);

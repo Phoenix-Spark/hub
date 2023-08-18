@@ -111,7 +111,7 @@ export default function MapChart() {
       <Marker
         key={spark.id}
         coordinates={[spark.lng, spark.lat]}
-        onClick={() => navigate(`/cell/${spark.cell_endpoint}`)}
+        onClick={() => navigate(`/cell/${spark.endpoint}`)}
       >
         <OverlayTrigger
           placement={'top'}
@@ -121,12 +121,12 @@ export default function MapChart() {
                 <Col md="auto">
                   <img
                     style={{ height: '64px', width: '64px' }}
-                    src={spark.logo_url}
+                    src={spark.logoUrl}
                     alt=""
                   />
                 </Col>
                 <Col className="pl-5">
-                  {spark.cell_name} at {spark.base_name}
+                  {spark.name} at {spark.baseName}
                 </Col>
               </Row>
             </Tooltip>
