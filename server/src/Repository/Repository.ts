@@ -63,13 +63,11 @@ export class Repository {
   // eslint-disable-next-line class-methods-use-this
   createContactNumberArray<T extends ContactNumberArray>(item: T): T {
     const newItem = { ...item };
-    console.log('before', newItem);
     newItem.contactNumbers = [newItem.contactNumber1!, newItem.contactNumber2!];
 
     delete newItem.contactNumber1;
     delete newItem.contactNumber2;
 
-    console.log('after', newItem);
     return newItem;
   }
 }

@@ -22,22 +22,26 @@ export default function ProfileEditor() {
   });
 
   useEffect(() => {
-    fetch(`${server}/base_list`)
+    fetch(`${server}/base/list`)
       .then(response => response.json())
       .then(data => setBaseList(data))
       .catch(error => console.error('Error fetching base list:', error));
 
-    fetch(`${server}/cell_list`)
+    fetch(`${server}/cell/list`)
       .then(response => response.json())
-      .then(data => setCellList(data.filter(cell => cell.is_approved === 'yes')))
+      .then(data => setCellList(data))
       .catch(error => console.error('Error fetching cell list:', error));
   }, []);
 
   useEffect(() => {
     if (user) {
-      fetch(`${server}/userData/${user?.username}`)
+      // WHY ARE THESE CHAINED!! (╯°□°)╯︵ ┻━┻
+      fetch(`${server}/user/${user?.username}/profile`)
         .then(res => res.json())
-        .then(data => setUserData(data[0]))
+        .then(data => {
+          console.log('profile', data);
+          return setUserData(data);
+        })
         .catch(err => console.log(`Fetch failed. Error: ${err}`));
     }
   }, [server, user]);
@@ -173,7 +177,7 @@ export default function ProfileEditor() {
               <Form.Control
                 type="tel"
                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                value={`${userData?.contactNumber1}`}
+                value={`${userData?.contactNumbers[0]}`}
                 name="contactNumber1"
                 onChange={handleChange}
               ></Form.Control>
@@ -186,7 +190,7 @@ export default function ProfileEditor() {
               <Form.Control
                 type="tel"
                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                value={`${userData?.contactNumber2}`}
+                value={`${userData?.contactNumbers[1]}`}
                 name="contactNumber2"
                 onChange={handleChange}
               ></Form.Control>
@@ -232,7 +236,7 @@ export default function ProfileEditor() {
                   key={base.id}
                   value={base.id}
                 >
-                  {base.base_name}
+                  {base.name}
                 </option>
               ))}
             </Form.Select>
@@ -254,7 +258,7 @@ export default function ProfileEditor() {
                   key={cell.id}
                   value={cell.id}
                 >
-                  {cell.cell_name}
+                  {cell.name}
                 </option>
               ))}
             </Form.Select>

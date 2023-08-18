@@ -21,20 +21,20 @@ const CellDetails = () => {
   const [baseList, setBaseList] = useState([]);
 
   const resetValues = data => {
-    setNameValue(data.cell_name);
-    setBaseValue(data.base_id);
-    setEndpointValue(data.cell_endpoint);
-    setWebsiteValue(data.external_website);
-    setMissionValue(data.cell_mission);
-    setContact1Value(data.contact_number1);
-    setContact2Value(data.contact_number2);
-    setEmailValue(data.email);
+    setNameValue(data.cell.name);
+    setBaseValue(data.cell.baseId);
+    setEndpointValue(data.cell.endpoint);
+    setWebsiteValue(data.cell.externalWebsite);
+    setMissionValue(data.cell.mission);
+    setContact1Value(data.cell.contactNumbers[0]);
+    setContact2Value(data.cell.contactNumbers[1]);
+    setEmailValue(data.cell.email);
     // logoFileField.current.value = '';
     idField.current.value = data.id;
   };
 
   useEffect(() => {
-    fetch(`${server}/base_list`)
+    fetch(`${server}/base/list`)
       .then(response => response.json())
       .then(data => setBaseList(data))
       .catch(error => console.error('Error fetching base list:', error));
@@ -125,7 +125,7 @@ const CellDetails = () => {
             >
               <Form.Label>Base</Form.Label>
               <Form.Select
-                name="base_name"
+                name="baseName"
                 value={baseValue}
                 onChange={e => {
                   setBaseValue(e.target.value);
@@ -138,7 +138,7 @@ const CellDetails = () => {
                     key={base.id}
                     value={base.id}
                   >
-                    {base.base_name}
+                    {base.name}
                   </option>
                 ))}
               </Form.Select>

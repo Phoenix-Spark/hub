@@ -62,13 +62,20 @@ router.patch('/:cellId/approve', async (req, res, next) => {
 router.get(
   '/list',
   async (
-    req: Request<never, (Cell[] & Base[]) | Cell[] | undefined, never, { include: string }>,
+    req: Request<
+      never,
+      (Cell[] & Base[]) | Cell[] | undefined,
+      never,
+      { include: string; approved: string }
+    >,
     res,
     next
   ) => {
     try {
       let data: (Cell[] & Base[]) | Cell[] | undefined;
-      if (req.query.include) {
+      if (req.query.approved) {
+        data = await cellRepository.getAllUnapproved();
+      } else if (req.query.include) {
         const includeQueries = req.query.include.split('+');
         if (includeQueries.includes('bases')) {
           console.log('getting bases');
@@ -76,7 +83,7 @@ router.get(
         }
       } else {
         console.log('no includes');
-        data = await cellRepository.getAll();
+        data = await cellRepository.getAllApproved();
       }
       res.status(200).json(data);
     } catch (e) {
@@ -89,7 +96,8 @@ router.get(
 // eslint-disable-next-line consistent-return
 router.get('/:cellEndpoint', async (req, res, next) => {
   try {
-    if (req.params.cellEndpoint) {
+    console.log('string or int', Number.isNaN(parseInt(req.params.cellEndpoint, 10)));
+    if (Number.isNaN(parseInt(req.params.cellEndpoint, 10))) {
       const endpoint = req.params.cellEndpoint;
 
       const {
@@ -99,6 +107,26 @@ router.get('/:cellEndpoint', async (req, res, next) => {
         previousProjects,
         base: baseData,
       } = await cellRepository.getDetailsByEndpoint(endpoint);
+
+      const data = {
+        cell,
+        team,
+        currentProjects,
+        previousProjects,
+        baseData,
+      };
+
+      res.status(200).json(data);
+    } else {
+      const cellId = req.params.cellEndpoint;
+      console.log('cellid is int', cellId);
+      const {
+        cell,
+        team,
+        currentProjects,
+        previousProjects,
+        base: baseData,
+      } = await cellRepository.getDetailsById(cellId);
 
       const data = {
         cell,

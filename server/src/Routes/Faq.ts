@@ -5,7 +5,7 @@ const router = express.Router();
 // routes:
 router.get('/', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('faq').whereNot('answer', null);
+    const data = await db.select('*').from('faqs').whereNot('answer', null);
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /faq ERROR: ${e}`);
@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const data = await db('faq').insert({
+    const data = await db('faqs').insert({
       question: req.body.question,
       answer: null,
       asked_by: req.body.userId,
@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
 
 router.patch('/:faqId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('faq').where('id', req.params.faqId).update({
+    const data = await db.select('*').from('faqs').where('id', req.params.faqId).update({
       question: req.body.question,
       answer: req.body.answer,
       asked_by: req.body.userId,
@@ -45,7 +45,7 @@ router.patch('/:faqId', async (req, res, next) => {
 
 router.get('/new', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('faq').where('answer', null);
+    const data = await db.select('*').from('faqs').where('answer', null);
     res.status(200).json(data);
   } catch (e) {
     console.error(`GET /faq/new ERROR: ${e}`);
@@ -55,7 +55,7 @@ router.get('/new', async (req, res, next) => {
 
 router.delete('/:faqId', async (req, res, next) => {
   try {
-    const data = await db.select('*').from('faq').where('id', req.params.faqId).del();
+    const data = await db.select('*').from('faqs').where('id', req.params.faqId).del();
     res.status(200).json(data);
   } catch (e) {
     console.error(`DELETE /faq/:faqId ERROR: ${e}`);
