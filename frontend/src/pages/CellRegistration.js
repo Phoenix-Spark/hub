@@ -7,15 +7,16 @@ export default function CellRegistration() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [baseList, setBaseList] = useState([]);
   const [formData, setFormData] = useState({
-    base_name: '',
-    cell_name: '',
-    external_website: '',
-    cell_mission: '',
+    baseName: '',
+    cellName: '',
+    externalWebsite: '',
+    mission: '',
     contact_number1: '',
     contact_number2: '',
+    contactNumbers: ['', ''],
     email: '',
-    logo_url: null,
-    is_approved: 'no',
+    logoUrl: null,
+    isApproved: 'no',
   });
 
   useEffect(() => {
@@ -118,23 +119,23 @@ export default function CellRegistration() {
   const handleSubmit = event => {
     event.preventDefault();
 
-    const selectedBase = baseList.find(base => base.base_name === formData.base_name);
+    const selectedBase = baseList.find(base => base.baseName === formData.baseName);
     const selectedBaseId = selectedBase ? selectedBase.id : null;
 
     const cellObject = {
-      base_id: selectedBaseId,
-      cell_name: formData.cell_name,
-      cell_endpoint: generateSuggestedEndpoint(selectedBase.base_name),
-      external_website: formData.external_website,
-      cell_mission: formData.cell_mission,
-      contact_number1: formData.contact_number1,
-      contact_number2: formData.contact_number2,
+      baseId: selectedBaseId,
+      cellName: formData.cellName,
+      endpoint: generateSuggestedEndpoint(selectedBase.baseName),
+      externalWebsite: formData.externalWebsite,
+      mission: formData.mission,
+      contact_number1: formData.contactNumbers[0],
+      contact_number2: formData.contactNumbers[1],
       email: formData.email,
-      logo_url: formData.logo_url,
-      is_approved: 'no',
+      logoUrl: formData.logoUrl,
+      isApproved: 'no',
     };
     console.log(cellObject);
-    fetch(`${server}/cell_list`, {
+    fetch(`${server}/cell`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -167,8 +168,8 @@ export default function CellRegistration() {
           <Form.Group controlId="baseName">
             <Form.Label className="mt-1">Base Name</Form.Label>
             <Form.Select
-              name="base_name"
-              value={formData.base_name}
+              name="baseName"
+              value={formData.baseName}
               onChange={handleChange}
               required
             >
@@ -176,9 +177,9 @@ export default function CellRegistration() {
               {baseList.map(base => (
                 <option
                   key={base.id}
-                  value={base.base_name}
+                  value={base.name}
                 >
-                  {base.base_name}
+                  {base.name}
                 </option>
               ))}
             </Form.Select>
@@ -190,9 +191,9 @@ export default function CellRegistration() {
             <Form.Label className="mt-1">Cell Name</Form.Label>
             <Form.Control
               type="text"
-              name="cell_name"
+              name="cellName"
               placeholder="Something Spark"
-              value={formData.cell_name}
+              value={formData.cellName}
               onChange={handleChange}
               required
             />
@@ -206,9 +207,9 @@ export default function CellRegistration() {
             <Form.Label className="mt-3">External Website (optional)</Form.Label>
             <Form.Control
               type="url"
-              name="external_website"
+              name="externalWebsite"
               placeholder="your-site.mil"
-              value={formData.external_website}
+              value={formData.externalWebsite}
               onChange={handleChange}
             />
           </Form.Group>
@@ -219,9 +220,9 @@ export default function CellRegistration() {
         <Form.Label className="mt-3">Cell Mission (optional)</Form.Label>
         <Form.Control
           as="textarea"
-          name="cell_mission"
+          name="mission"
           placeholder="Tell your users what your primary mission is!"
-          value={formData.cell_mission}
+          value={formData.mission}
           onChange={handleChange}
         />
       </Form.Group>
@@ -232,10 +233,10 @@ export default function CellRegistration() {
             <Form.Label className="mt-3">Contact Number 1</Form.Label>
             <Form.Control
               type="tel"
-              name="contact_number1"
+              name="contactNumbers"
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               placeholder="555-555-5555"
-              value={formData.contact_number1}
+              value={formData.contactNumbers[0]}
               onChange={handleChange}
               required
             />
@@ -246,10 +247,10 @@ export default function CellRegistration() {
             <Form.Label className="mt-3">Contact Number 2 (optional)</Form.Label>
             <Form.Control
               type="tel"
-              name="contact_number2"
+              name="contactNumbers"
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               placeholder="555-555-5555"
-              value={formData.contact_number2}
+              value={formData.contactNumbers[1]}
               onChange={handleChange}
             />
           </Form.Group>

@@ -2,9 +2,7 @@ import { Col, ListGroup, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
-import {firstSentence} from '../../utils/index.js';
-
-
+import { firstSentence } from '../../utils/index.js';
 
 function ProjectList({ projects }) {
   return (

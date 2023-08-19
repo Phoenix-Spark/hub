@@ -110,7 +110,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
           : `${process.env.PUBLIC_URL}/images/placeholder_logo.svg`;
         return (
           <Card
-            key={`${project.id}-${project.cell_id}`}
+            key={`${project.id}-${project.cellId}`}
             className="mb-3"
           >
             <Card.Header className="h4">{project.name}</Card.Header>

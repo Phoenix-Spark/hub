@@ -26,10 +26,10 @@ const ViewProfileModal = () => {
 
   useEffect(() => {
     setProfileImage(
-      profileData.photo
-        ? profileData.photo.startsWith('https')
-          ? profileData.photo
-          : `${frontendUrl}/uploads/${profileData.photo}`
+      profileData.photoUrl
+        ? profileData.photoUrl.startsWith('https')
+          ? profileData.photoUrl
+          : `${frontendUrl}/uploads/${profileData.photoUrl}`
         : `../images/placeholder_logo.svg`
     );
   }, [profileData]);

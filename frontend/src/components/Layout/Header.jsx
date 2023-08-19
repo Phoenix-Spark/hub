@@ -29,11 +29,13 @@ export default function Header() {
         }
       }
       if (user) {
-      setImgUrl(user.photo
-        ? user.photo.startsWith('https')
-          ? user.photo
-          : `${frontendUrl}/uploads/${user.photo}`
-        : `../images/placeholder_logo.svg`);
+        setImgUrl(
+          user.photoUrl
+            ? user.photoUrl.startsWith('https')
+              ? user.photoUrl
+              : `${frontendUrl}/uploads/${user.photoUrl}`
+            : `../images/placeholder_logo.svg`
+        );
       }
     };
 
@@ -45,28 +47,32 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-      if (user) {
-      setImgUrl(user.photo
-        ? user.photo.startsWith('https')
-          ? user.photo
-          : `${frontendUrl}/uploads/${user.photo}`
-        : `../images/placeholder_logo.svg`);
-      }
-  }, [user])
+    if (user) {
+      setImgUrl(
+        user.photoUrl
+          ? user.photoUrl.startsWith('https')
+            ? user.photoUrl
+            : `${frontendUrl}/uploads/${user.photoUrl}`
+          : `../images/placeholder_logo.svg`
+      );
+    }
+  }, [user]);
 
   useEffect(() => {
     if (location.pathname === '/signup') {
       setShowLogin(false);
     } else {
       setShowLogin(true);
-    }  
+    }
     if (user) {
-    setImgUrl(user.photo
-      ? user.photo.startsWith('https')
-        ? user.photo
-        : `${frontendUrl}/uploads/${user.photo}`
-      : `../images/placeholder_logo.svg`);
-  }
+      setImgUrl(
+        user.photoUrl
+          ? user.photoUrl.startsWith('https')
+            ? user.photoUrl
+            : `${frontendUrl}/uploads/${user.photo}`
+          : `../images/placeholder_logo.svg`
+      );
+    }
   }, [location]);
 
   async function handleLogout() {
