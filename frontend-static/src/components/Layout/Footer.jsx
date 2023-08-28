@@ -1,7 +1,6 @@
 import React from 'react';
-import { Navbar, Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
-import './Footer.scss';
 
 function Footer() {
   return (
