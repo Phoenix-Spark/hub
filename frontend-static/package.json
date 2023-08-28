@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "homepage": "https://phoenix-spark.github.io/hub/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -26,7 +27,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "serve:dev": "npm run build && npx serve -l 8000 -s build",
-    "serve": "npx serve -s build"
+    "serve": "npx serve -s build",
+    "predeploy": "REACT_APP_FRONTEND_URL=\"https://phoenix-spark.github.io/hub\" npm run build",
+    "deploy": " gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +59,7 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "prettier": "^3.0.0",
     "react-scripts": "^5.0.1",
-    "sass": "^1.64.1"
+    "sass": "^1.64.1",
+    "gh-pages": "^6.0.0"
   }
 }
