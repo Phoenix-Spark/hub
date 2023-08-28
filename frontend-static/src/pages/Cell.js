@@ -41,26 +41,42 @@ export default function Cell() {
   const { cellId } = useParams();
   const localCellPath = './cells.json';
 
-  const { data: cellData, isLoading, error} = useFetch(localCellPath);
+  const { data: cellData, isLoading, error } = useFetch(localCellPath);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error loading cell data</div>;
-  }
+  // if (error) {
+  //   return <div>Error loading cell data</div>;
+  // }
 
   return (
     <>
       <Row>
         <Col>
-          <h1 className="my-3">Welcome to {cellData.cell?.name}!</h1>
-          <h4>Located at {cellData.baseData?.name}</h4>
+          <h1 className="my-3">Welcome to {cellData?.cell?.name}!</h1>
+          <h4>Located at {cellData?.baseData?.name}</h4>
         </Col>
       </Row>
-      <Row className="my-3">
-        <Col md={8}>
+      <Row className="my-3 row-gap-3">
+        <Col
+          sm={12}
+          lg={4}
+          className="order-md-0"
+        >
+          <Card className="h-100">
+            <Card.Header as="h5">Project Proposal</Card.Header>
+            <Card.Body className="d-flex flex-column justify-content-center h-100">
+              <Button variant="success">Submit New Proposal</Button>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col
+          lg={8}
+          sm={12}
+          // className="order-md-first"
+        >
           <Card className="h-100">
             <Card.Header
               as="h5"
@@ -77,38 +93,36 @@ export default function Cell() {
                     alt=""
                   />
                 </Col>
-                <Col>{cellData.cell?.mission || 'No mission yet.'}</Col>
+                <Col>{cellData?.cell?.mission || 'No mission yet.'}</Col>
               </Row>
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
+        <Col
+          lg={4}
+          sm={12}
+          // className="order-md-last"
+        >
           <Card className="h-100">
-            <Card.Header as="h5">Project Proposal</Card.Header>
-            <Card.Body className="d-flex flex-column justify-content-center h-100">
-              <Button variant="success">Submit New Proposal</Button>
+            <Card.Header as="h5">Contact the Team</Card.Header>
+            <Card.Body className="d-flex flex-column h-100">
+              {cellData?.cell?.email}
+              <br />
+              {cellData?.cell?.contactNumbers[0]}
+              <br />
+              {cellData?.cell?.contactNumbers[1]}
             </Card.Body>
           </Card>
         </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col md={8}>
+        <Col
+          lg={8}
+          sm={12}
+          className=""
+        >
           <Card>
             <Card.Header as="h5">Meet the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
               <HorizontalTeamList teamList={cellData?.team}></HorizontalTeamList>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4}>
-          <Card className="h-100">
-            <Card.Header as="h5">Contact the Team</Card.Header>
-            <Card.Body className="d-flex flex-column h-100">
-              {cellData.cell?.email}
-              <br />
-              {cellData.cell?.contactNumbers[0]}
-              <br />
-              {cellData.cell?.contactNumbers[1]}
             </Card.Body>
           </Card>
         </Col>
@@ -117,7 +131,8 @@ export default function Cell() {
   );
 }
 
-{/* <>
+{
+  /* <>
 <Row>
   <Col>
     <h1 className="my-3">Welcome to {data.cell?.name}!</h1>
@@ -178,4 +193,5 @@ export default function Cell() {
     </Card>
   </Col>
 </Row>
-</> */}
+</> */
+}
