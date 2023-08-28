@@ -8,17 +8,17 @@ import AppContext from './AppContext.js';
 
 import './App.scss';
 
-const server = process.env.REACT_APP_SERVER_ADDRESS || 'http://localhost:8080';
+// const server = process.env.REACT_APP_SERVER_ADDRESS || 'http://localhost:8080';
 const frontendUrl = process.env.REACT_APP_FRONTEND_URL || 'https://capstone.apps.jmidd.dev';
 
 export default function App() {
-  const [sparkList, setSparkList] = useState([]);
+  // const [sparkList, setSparkList] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [profileModal, setProfileModal] = useState({ show: false, userId: 0 });
 
   const ContextObject = {
-    server,
-    sparkList,
+    // server,
+    // sparkList,
     isDarkMode,
     setIsDarkMode,
     profileModal,
@@ -26,27 +26,27 @@ export default function App() {
     frontendUrl,
   };
 
-  useEffect(() => {
-    let ignore = false;
-
-    const fetchSparkList = async () => {
-      try {
-        const response = await fetch(`${server}/cell/list?include=bases`);
-        const data = await response.json();
-        if (!ignore) {
-          setSparkList(data);
-        }
-      } catch (e) {
-        console.error('Fetch failed. ', e);
-      }
-    };
-
-    fetchSparkList();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  // useEffect(() => {
+  //   let ignore = false;
+  //
+  //   const fetchSparkList = async () => {
+  //     try {
+  //       const response = await fetch(`${server}/cell/list?include=bases`);
+  //       const data = await response.json();
+  //       if (!ignore) {
+  //         setSparkList(data);
+  //       }
+  //     } catch (e) {
+  //       console.error('Fetch failed. ', e);
+  //     }
+  //   };
+  //
+  //   // fetchSparkList();
+  //
+  //   return () => {
+  //     ignore = true;
+  //   };
+  // }, []);
 
   return (
     <AppContext.Provider value={ContextObject}>

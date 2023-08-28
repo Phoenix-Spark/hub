@@ -1,28 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-function useFetch(filePath) {
-	const [data, setData] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+const localCellPath = 'http://localhost:3000/cells.json';
+const localUserPath = 'http://localhost:3000/user.json';
 
-	useEffect(() => {
-		async function fetchData() {
-			try {
-				const response = await fetch(filePath);
-				const jsonData = await response.json();
-				setData(jsonData);
-				setIsLoading(false);
-			} catch (err)	{
-				setError(err);
-				setIsLoading(false);
-			}
-		}
+const fetchData = async path => {
+  const response = await fetch(path);
+  return await response.json();
+};
 
-		fetchData();
-	}, [filePath]);
-	
-	return { data, isLoading, error };
+export function useFetchCellData({ cellEndpoint }) {
+  const fetchCallback = useCallback(fetchData, []);
 
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetchCellData = async () => {
+      try {
+        const [cellData, userData] = await Promise.all([fetchCallback(localCellPath), fetchCallback(localUserPath)]);
+        let temp = cellData?.find(cells => cells.endpoint === cellEndpoint);
+
+        temp = { ...temp, team: userData?.filter(user => user.cellId === temp.id) };
+
+        if (!ignore) {
+          setData(temp);
+          setIsLoading(false);
+        }
+      } catch (e) {
+        setError(e);
+        setIsLoading(false);
+      }
+    };
+
+    fetchCellData();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  return { data, isLoading, error };
 }
 
-export default useFetch;
+export function useFetchCells() {
+  const fetchCallback = useCallback(fetchData, []);
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let ignore = false;
+    try {
+      const fetchCells = async () => {
+        const cells = await fetchCallback(localCellPath);
+
+        if (!ignore) {
+          setData(cells);
+          setIsLoading(false);
+        }
+      };
+
+      fetchCells();
+    } catch (e) {
+      setError(e);
+      setIsLoading(false);
+    }
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  return [data, isLoading, error];
+}

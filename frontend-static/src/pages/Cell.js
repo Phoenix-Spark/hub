@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import AppContext from '../AppContext.js';
 import HorizontalTeamList from '../components/Cell/HorizontalTeamList.jsx';
 
-import cells from './cells.json';
-import useFetch from './useFetch.js';
+import { useFetchCellData } from './useFetch.js';
 
 export default function Cell() {
   // const { cellEndpoint } = useParams();
@@ -38,25 +36,25 @@ export default function Cell() {
   //   };
   // }, [server, cellEndpoint]);
 
-  const { cellId } = useParams();
-  const localCellPath = './cells.json';
+  const { cellEndpoint } = useParams();
 
-  const { data: cellData, isLoading, error} = useFetch(localCellPath);
+  const { data: cellData, isLoading, error } = useFetchCellData({ cellEndpoint, getTeam: true });
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error loading cell data</div>;
+    console.log(error);
+    return <div>Error loading cell data.</div>;
   }
 
   return (
     <>
       <Row>
         <Col>
-          <h1 className="my-3">Welcome to {cellData.cell?.name}!</h1>
-          <h4>Located at {cellData.baseData?.name}</h4>
+          <h1 className="my-3">Welcome to {cellData?.name}!</h1>
+          <h4>Located at {cellData?.base?.name}</h4>
         </Col>
       </Row>
       <Row className="my-3">
@@ -77,7 +75,7 @@ export default function Cell() {
                     alt=""
                   />
                 </Col>
-                <Col>{cellData.cell?.mission || 'No mission yet.'}</Col>
+                <Col>{cellData?.mission || 'No mission yet.'}</Col>
               </Row>
             </Card.Body>
           </Card>
@@ -104,11 +102,11 @@ export default function Cell() {
           <Card className="h-100">
             <Card.Header as="h5">Contact the Team</Card.Header>
             <Card.Body className="d-flex flex-column h-100">
-              {cellData.cell?.email}
+              {cellData?.email}
               <br />
-              {cellData.cell?.contactNumbers[0]}
+              {cellData?.contactNumbers[0]}
               <br />
-              {cellData.cell?.contactNumbers[1]}
+              {cellData?.contactNumbers[1]}
             </Card.Body>
           </Card>
         </Col>
@@ -117,7 +115,8 @@ export default function Cell() {
   );
 }
 
-{/* <>
+{
+  /* <>
 <Row>
   <Col>
     <h1 className="my-3">Welcome to {data.cell?.name}!</h1>
@@ -178,4 +177,5 @@ export default function Cell() {
     </Card>
   </Col>
 </Row>
-</> */}
+</> */
+}

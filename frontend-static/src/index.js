@@ -17,7 +17,7 @@ const router = createBrowserRouter(
         element={<Hub />}
       />
       <Route
-        path="/cell/:cell_endpoint"
+        path="/cell/:cellEndpoint"
         element={<Cell />}
       />
       <Route

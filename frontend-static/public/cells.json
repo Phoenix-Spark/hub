@@ -1,0 +1,56 @@
+   [
+        {
+            "id": 1,
+            "baseId": 1,
+            "name": "Phoenix Spark",
+            "endpoint": "travis",
+            "externalWebsite": "https://cell1website.com",
+            "mission": "Empowering Phoenix Spark Cell to be the driving force behind disruptive innovation, leveraging emerging technologies and novel approaches to propel the Air Force's capabilities forward. Together, we ignite a spark of ingenuity that shapes the future of aerospace and national defense.",
+            "email": "cell1@cell1.com",
+            "logoUrl": "/images/travis.png",
+            "isApproved": "yes",
+            "contactNumbers": [
+                "768-555-4321",
+                "123-555-9876"
+            ],
+            "base": {
+                "name": "Travis AFB"
+            }
+        },
+        {
+            "id": 2,
+            "baseId": 2,
+            "name": "The Forge",
+            "endpoint": "patrick",
+            "externalWebsite": "https://cell2website.com",
+            "mission": "Uniting the talents and expertise of The Forge Spark Cell to foster a culture of collaboration, where guardians from diverse backgrounds come together to co-create transformative solutions. Our mission is to amplify collective intelligence, accelerating the pace of progress and ensuring the Space Force remains at the forefront of cutting-edge advancements",
+            "email": "cell2@cell2.com",
+            "logoUrl": "/images/placeholder_logo.svg",
+            "isApproved": "yes",
+            "contactNumbers": [
+                "987-555-2109",
+                "876-555-5432"
+            ],
+            "base": {
+                "name": "Patrick SFB"
+            }
+        },
+        {
+            "id": 3,
+            "baseId": 3,
+            "name": "Buckner Spark",
+            "endpoint": "buckner",
+            "externalWebsite": "https://cell3website.com",
+            "mission": "Embracing adaptability and forward-thinking, Buckner Spark Cell is committed to driving continuous improvement and operational excellence across the Air and Space Force. Through rapid experimentation and iterative problem-solving, we spark the flames of agility, ensuring the Air and Space Forces maintain their unrivaled position in national defense.",
+            "email": "cell3@cell3.com",
+            "logoUrl": "/images/placeholder_logo.svg",
+            "isApproved": "yes",
+            "contactNumbers": [
+                "234-555-6789",
+                "345-555-9012"
+            ],
+            "base": {
+                "name": "Colorado Springs"
+            }
+        }
+    ]

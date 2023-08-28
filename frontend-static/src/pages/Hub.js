@@ -4,9 +4,10 @@ import { Card, Col, Row } from 'react-bootstrap';
 import AppContext from '../AppContext.js';
 import MapChart from '../components/Hub/MapChart.jsx';
 import SparkyList from '../components/Hub/SparkyList.jsx';
+import { useFetchCells } from './useFetch.js';
 
 function Hub() {
-  const { sparkList } = useContext(AppContext);
+  // const { sparkList } = useContext(AppContext);
   // const [searchQuery, setSearchQuery] = useState('');
 
   // const handleSearchInputChange = event => {
@@ -14,6 +15,15 @@ function Hub() {
   // };
 
   // const filteredSparkList = sparkList.filter(spark => spark.baseName.toLowerCase().includes(searchQuery.toLowerCase())) || [];
+  const [data, isLoading, error] = useFetchCells();
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="alert">There was an error.</p>;
+  }
 
   return (
     <>
@@ -57,7 +67,7 @@ function Hub() {
             <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
               <SparkyList
                 className="h-100"
-                sparkList={sparkList}
+                sparkList={data}
               />
             </Card.Body>
           </Card>
@@ -74,7 +84,7 @@ function Hub() {
       </Row>
       <Row>
         <Col>
-          <MapChart />
+          <MapChart sparkList={data} />
         </Col>
       </Row>
     </>

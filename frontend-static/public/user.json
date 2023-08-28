@@ -1,0 +1,26 @@
+[
+    {
+      "id": 1,
+      "username": "jon",
+      "firstName": "Jon",
+      "lastName": "M",
+      "email": "some@email.com",
+      "photoUrl": "https://avatars.githubusercontent.com/u/68055479",
+      "bio": "With 12 years of dedicated service in the Air Force, Jon has been a driving force for innovation and technology integration within his squadrons. His passion for Spark Cells lies in exploring unmanned aerial systems (UAS) for reconnaissance and surveillance, and he actively seeks opportunities to collaborate with fellow airmen to optimize UAS capabilities. When not in uniform, Jon enjoys tinkering with DIY electronics and is an avid drone enthusiast.",
+      "baseId": 1,
+      "cellId": 1,
+      "contactNumbers": ["123-555-6789", "456-555-9876"]
+    },
+    {
+      "id": 2,
+      "username": "kyle",
+      "firstName": "Kyle",
+      "lastName": "K",
+      "email": "some@email.com",
+      "photoUrl": "https://avatars.githubusercontent.com/u/67831403",
+      "bio": "With 8 years of experience in the Space Force, Kyle is a skilled data analyst specializing in satellite communication systems. His interest in Spark Cells revolves around utilizing artificial intelligence and machine learning algorithms to enhance space-based data processing and decision-making capabilities. Off-duty, Kyle is an adventure seeker, often seen exploring national parks and capturing breathtaking landscapes through photography.",
+      "baseId": 1,
+      "cellId": 1,
+      "contactNumbers": ["987-555-4321", "654-555-7890"]
+    }
+  ]
