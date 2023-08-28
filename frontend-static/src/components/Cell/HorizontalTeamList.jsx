@@ -1,12 +1,8 @@
 import { Col, Image, Row } from 'react-bootstrap';
-import { useContext } from 'react';
-import AppContext from '../../AppContext.js';
 
 import './HorizontalTeamList.scss';
 
-function HorizontalTeamList({ teamList }) {
-  const { setProfileModal, frontendUrl } = useContext(AppContext);
-
+function HorizontalTeamList({ teamList, setProfileModal, frontendUrl }) {
   return (
     <Row
       className="justify-content-around"

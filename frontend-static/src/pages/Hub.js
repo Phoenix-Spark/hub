@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 
-import AppContext from '../AppContext.js';
 import MapChart from '../components/Hub/MapChart.jsx';
 import SparkyList from '../components/Hub/SparkyList.jsx';
 
 function Hub() {
-  const { sparkList } = useContext(AppContext);
+  const sparkList = [];
   // const [searchQuery, setSearchQuery] = useState('');
 
   // const handleSearchInputChange = event => {
@@ -28,7 +27,7 @@ function Hub() {
           lg={8}
           className="mb-3"
         >
-          <MapChart />
+          <MapChart sparkList={sparkList} />
         </Col>
         <Col
           className="mb-3"
