@@ -51,12 +51,11 @@ export default function Header() {
     <Navbar
       id="header"
       fixed="top"
-      className="header-css"
+      className="bg-body-tertiary"
+      collapseOnSelect
+      expand="lg"
     >
-      <Container
-        fluid
-        id="HeaderWrapper"
-      >
+      <Container fluid>
         <Navbar.Brand
           as={Link}
           to="/"
@@ -67,8 +66,8 @@ export default function Header() {
             width={90}
           />
         </Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto links">
             <Nav.Link
               as={NavLink}
@@ -96,21 +95,21 @@ export default function Header() {
                 placeholder="Search"
               />
               <Button
-                // variant={!isDarkMode ? 'outline-dark' : 'outline-light'}
-                variant="outline-light"
+                variant={!isDarkMode ? 'outline-dark' : 'outline-light'}
+                //variant="outline-light"
                 type="submit"
               >
                 <Search />
               </Button>
             </InputGroup>
+            <Button
+              variant={isDarkMode ? 'light' : 'dark'}
+              onClick={toggleDarkMode}
+              className={`col-2 button-fade-animation ${fadeAnimation ? 'button-fade-out' : ''}`}
+            >
+              {isDarkMode ? <MoonStars /> : <SunFill />}
+            </Button>
           </Form>
-          <Button
-            variant={isDarkMode ? 'light' : 'dark'}
-            onClick={toggleDarkMode}
-            className={`me-5 button-fade-animation ${fadeAnimation ? 'button-fade-out' : ''}`}
-          >
-            {isDarkMode ? <MoonStars /> : <SunFill />}
-          </Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>

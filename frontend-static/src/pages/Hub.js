@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 
-import AppContext from '../AppContext.js';
 import MapChart from '../components/Hub/MapChart.jsx';
 import SparkyList from '../components/Hub/SparkyList.jsx';
 
 function Hub() {
-  const { sparkList } = useContext(AppContext);
+  const sparkList = [];
   // const [searchQuery, setSearchQuery] = useState('');
 
   // const handleSearchInputChange = event => {
@@ -20,6 +19,34 @@ function Hub() {
       <Row>
         <Col>
           <h1 className="display-3 m-3">Welcome to Spark Hub!</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col
+          sm={12}
+          lg={8}
+          className="mb-3"
+        >
+          <MapChart sparkList={sparkList} />
+        </Col>
+        <Col
+          className="mb-3"
+          // style={{ maxHeight: '400px', minHeight: '400px' }}
+        >
+          <Card className="h-100">
+            <Card.Header
+              as="h5"
+              className="justify-content-between"
+            >
+              Spark List
+            </Card.Header>
+            <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
+              <SparkyList
+                className="h-100"
+                sparkList={sparkList}
+              />
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
       <Row>
@@ -38,43 +65,6 @@ function Hub() {
               </Card.Text>
             </Card.Body>
           </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col
-          sm={12}
-          md={6}
-          className="mb-3"
-          style={{ maxHeight: '400px', minHeight: '400px' }}
-        >
-          <Card className="h-100">
-            <Card.Header
-              as="h5"
-              className="justify-content-between"
-            >
-              Spark List
-            </Card.Header>
-            <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
-              <SparkyList
-                className="h-100"
-                sparkList={sparkList}
-              />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col
-          className="mb-3"
-          style={{ maxHeight: '400px', minHeight: '400px' }}
-        >
-          <Card style={{ height: '100%' }}>
-            <Card.Header as="h5">News</Card.Header>
-            <Card.Body className="d-flex flex-column h-75"></Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <MapChart />
         </Col>
       </Row>
     </>

@@ -1,24 +1,46 @@
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/variables-dark";
-@import "~bootstrap/scss/mixins";
+@use 'sass:map';
 
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/variables-dark';
+@import '~bootstrap/scss/mixins';
 
-#Header .nav-link{
+#Header .nav-link {
   $tab-links-color: $white;
-  
+
   color: RGBA(to-rgb($tab-links-color), 1) !important;
   -webkit-text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
   text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
 }
 
 @include color-mode(dark) {
-  #Header .nav-link{
-
+  #Header .nav-link {
     $tab-links-color: $gray-300;
-  
+
     color: RGBA(to-rgb($tab-links-color), var(--bs-link-opacity, 1)) !important;
     -webkit-text-decoration-color: RGBA(to-rgb($tab-links-color), var(--bs-link-underline-opacity, 1)) !important;
     text-decoration-color: RGBA(to-rgb($tab-links-color), var(--bs-link-underline-opacity, 1)) !important;
+  }
+
+  @media (min-width: map.get($container-max-widths, 'lg')) {
+    #header {
+      //background-color: #868686; /*#5c6468 for dark mode... TODO*/
+      /* color: white; */
+      height: 105px;
+      background: linear-gradient(to top, #000000a0, #00000020),
+        linear-gradient(to right, #4c4946, #d8dee0 40%, #787876 60%, #babcbb 85%, #474543);
+      box-shadow: inset 0px 0px 10px 0px #ffffff80;
+    }
+  }
+}
+
+#header {
+  border-bottom: 1px solid #6b6b6b;
+}
+
+/** Less than 720px **/
+@media (max-width: map.get($container-max-widths, 'lg')) {
+  #header {
+    box-shadow: inset 0px 0px 20px 0px rgba(255, 255, 255, 0.2);
   }
 }

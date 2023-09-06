@@ -41,14 +41,6 @@ $my-color: $red-800;
   background-color: rgba(211, 115, 26, 0.75) !important;
 }
 
-.header-css {
-  //background-color: #868686; /*#5c6468 for dark mode... TODO*/
-  /* color: white; */
-  height: 105px;
-  background: linear-gradient(to top, #000000A0,  #00000020),
-              linear-gradient(to right, #4c4946, #d8dee0 40%, #787876 60%, #babcbb 85%, #474543);
-  box-shadow: inset 0px 0px 10px 0px #FFFFFF80;
-}
 
 /* .header-css.scrolled {
   background-color: #868686;

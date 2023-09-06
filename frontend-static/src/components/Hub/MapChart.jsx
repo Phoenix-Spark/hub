@@ -1,16 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { DashLg, PlusLg } from 'react-bootstrap-icons';
 import { ComposableMap, Geographies, Geography, Marker, Sphere, ZoomableGroup } from 'react-simple-maps';
 import { useNavigate } from 'react-router-dom';
 
-import AppContext from '../../AppContext.js';
-
 const geoUrl = 'https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json';
 
-export default function MapChart() {
+export default function MapChart({ sparkList }) {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
-  const { sparkList } = useContext(AppContext);
   const navigate = useNavigate();
 
   let delayFunction;
