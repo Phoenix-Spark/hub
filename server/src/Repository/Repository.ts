@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import type { Knex } from 'knex';
 import { ContactNumberArray } from '../types';
 

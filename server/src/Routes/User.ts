@@ -67,7 +67,7 @@ export async function signUpHandler(req: Request, res: Response) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     console.error('There was an error. ', e);
-    return res.status(500).send({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 }
 

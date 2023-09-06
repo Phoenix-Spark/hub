@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { Cell } from '../types';
 import { Repository } from './Repository.js';
 

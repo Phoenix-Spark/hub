@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { Knex } from 'knex';
 import { Base, Cell, CellAndBase, Project, Role, User, UserWithBaseAndCellName } from '../types';
 import { Repository } from './Repository.js';

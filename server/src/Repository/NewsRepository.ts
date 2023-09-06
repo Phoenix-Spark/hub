@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import type { NewsStory } from '../types';
 import { Repository } from './Repository.js';
 

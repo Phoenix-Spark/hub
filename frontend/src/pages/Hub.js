@@ -22,6 +22,26 @@ function Hub() {
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, []);
 
+  const handleClick = async () => {
+    try {
+      const response = await fetch(`${server}/json/generateJSON`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'bases' }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error('Error executing export:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   // const handleSearchInputChange = event => {
   //   setSearchQuery(event.target.value);
   // };
@@ -32,7 +52,8 @@ function Hub() {
     <>
       <Row>
         <Col>
-          <h1 className="display-3 m-3">Welcome to Spark Hub!</h1>
+          <h1 className="display-3 m-3">Welcome to Spark Hub! &nbsp;
+          <Button onClick={handleClick}>Generate JSON</Button></h1> 
         </Col>
       </Row>
       <Row>
