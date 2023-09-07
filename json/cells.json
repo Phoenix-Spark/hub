@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "base_id": 1,
+    "name": "Phoenix Spark",
+    "endpoint": "travis",
+    "external_website": "https://travisspark.com",
+    "mission": "Empowering Phoenix Spark Cell to be the driving force behind disruptive innovation, leveraging emerging technologies and novel approaches to propel the Air Force's capabilities forward. Together, we ignite a spark of ingenuity that shapes the future of aerospace and national defense.",
+    "contact_number1": "707-424-8920",
+    "contact_number2": "",
+    "email": "phoenix@travisspark.com",
+    "logo_url": "/images/travis.png",
+    "is_approved": "yes",
+    "competencies": ["3D Printing", "Software", "Power Apps"]
+  }
+]
