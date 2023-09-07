@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import db from '../index.js';
+import db from './index.js';
 
 async function exportDataToJson(table: string): Promise<void> {
   try {
@@ -11,7 +11,15 @@ async function exportDataToJson(table: string): Promise<void> {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
 
-    const outputDirectory = path.join(__dirname, 'JsonFiles');
+    const outputDirectory = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'frontend-static',
+      'public',
+      'JsonFiles'
+    );
     const filePath = path.join(outputDirectory, `${table}.json`);
 
     fs.writeFileSync(filePath, jsonContent);
@@ -21,14 +29,14 @@ async function exportDataToJson(table: string): Promise<void> {
     console.error('Error exporting data:', error);
   }
 }
-// /home/kyle/projects/hub/server/src/Database/JsonDB/JsonFiles
-// /home/kyle/projects/hub/server/dist/Database/JsonDB/JsonFiles/bases.json
+
 export default exportDataToJson;
+
 // tables to export \/
-exportDataToJson('bases');
-exportDataToJson('cells');
-exportDataToJson('users');
-exportDataToJson('faqs');
+// exportDataToJson('bases');
+// exportDataToJson('cells');
+// exportDataToJson('users');
+// exportDataToJson('faqs');
 // exportDataToJson('permissions');
 // exportDataToJson('projects');
 // exportDataToJson('project_users');
@@ -40,4 +48,3 @@ exportDataToJson('faqs');
 // exportDataToJson('posts');
 // exportDataToJson('comments');
 // exportDataToJson('replies');
-

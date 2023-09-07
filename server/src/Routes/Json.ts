@@ -1,6 +1,6 @@
 import express from 'express';
 // import db from '../Database/index.js';
-import exportDataToJson from '../Database/JsonDB/exportDataToJson.js';
+import exportDataToJson from '../Database/exportDataToJson.js';
 
 const router = express.Router();
 
