@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Card, Container, Form, Row } from 'react-bootstrap';
+import { Button, Card, Container, Form } from 'react-bootstrap';
 
 import AppContext from '../../AppContext.js';
 
@@ -15,19 +15,19 @@ function ProposedCells() {
   }, []);
 
   const fetchUnapprovedCells = () => {
-    fetch(`${server}/cell_list`)
+    fetch(`${server}/cell/list?approved=no`)
       .then(response => response.json())
       .then(cells => {
-        const unapproved = cells.filter(cell => cell.is_approved === 'no');
-        setUnapprovedCells(unapproved);
+        // const unapproved = cells.filter(cell => cell.is_approved === 'no');
+        setUnapprovedCells(cells);
       })
       .catch(error => {
         console.error('Error fetching cell list:', error);
       });
   };
 
-  const fetchBaseInfo = (baseId) => {
-    fetch(`${server}/base_list`)
+  const fetchBaseInfo = baseId => {
+    fetch(`${server}/base/list`)
       .then(response => response.json())
       .then(data => {
         console.log('fetch base', data);
@@ -51,18 +51,18 @@ function ProposedCells() {
 
   const handleApproval = cellId => {
     const cellToUpdate = unapprovedCells.find(cell => cell.id === cellId);
-  
+
     if (!cellToUpdate) {
       console.error(`Cell with id ${cellId} not found in unapprovedCells.`);
       return;
     }
-  
+
     const updates = {
       is_approved: 'yes',
       cell_endpoint: cellToUpdate.cell_endpoint,
     };
-  
-    fetch(`${server}/cell_list/${cellId}`, {
+
+    fetch(`${server}/cell/${cellId}/approve`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -78,10 +78,9 @@ function ProposedCells() {
         console.error('Error approving cell:', error);
       });
   };
-  
 
   const handleDenial = cellId => {
-    fetch(`${server}/cell_list/${cellId}`, {
+    fetch(`${server}/cell/${cellId}/delete`, {
       method: 'DELETE',
     })
       .then(response => response.json())
@@ -106,34 +105,33 @@ function ProposedCells() {
             className="mb-3"
           >
             <Card.Body>
-              <Card.Title>{cell?.cell_name}</Card.Title>
+              <Card.Title>{cell?.name}</Card.Title>
               <Card.Text>
-                Located at: {baseInfo[cell?.base_id - 1]?.base_name} {/*TODO this will break as we continue messing with the db- make a more robust way to call data*/}
-
-                External website: {cell?.external_website || 'Not Provided'}
+                Located at: {baseInfo[cell?.baseId - 1]?.baseName}{' '}
+                {/*TODO this will break as we continue messing with the db- make a more robust way to call data*/}
+                External website: {cell?.externalWebsite || 'Not Provided'}
                 <br />
-                Cell mission: {cell?.cell_mission || 'Not Provided'}
+                Cell mission: {cell?.mission || 'Not Provided'}
                 <br />
-                Contact number 1: {cell?.contact_number1}
+                Contact number 1: {cell?.contactNumbers[0]}
                 <br />
-                Contact number 2: {cell?.contact_number2 || 'Not Provided'}
+                Contact number 2: {cell?.contactNumbers[1] || 'Not Provided'}
                 <br />
                 Email: {cell?.email}
                 <br />
-                Logo URL: {cell?.logo_url || 'Not Provided'}
-              </Card.Text>              
+                Logo URL: {cell?.logoUrl || 'Not Provided'}
+              </Card.Text>
               <Form.Group className="mb-3 d-flex align-items-baseline align-middle">
                 <Form.Label className="me-3 text-nowrap">Suggested Endpoint: </Form.Label>
                 <Form.Control
                   type="text"
-                  value={cell?.cell_endpoint}
-                  style={{ width: `${Math.max(cell?.cell_endpoint.length * .6)}vw`, minWidth: '10vw' }}
-                  onChange={(e) => handleEndpointChange(cell?.id, e.target.value)}
+                  value={cell?.endpoint}
+                  style={{ width: `${Math.max(cell?.endpoint.length * 0.6)}vw`, minWidth: '10vw' }}
+                  onChange={e => handleEndpointChange(cell?.id, e.target.value)}
                 />
               </Form.Group>
-
             </Card.Body>
-            <Card.Footer className="d-flex justify-content-between">              
+            <Card.Footer className="d-flex justify-content-between">
               <Button
                 variant="success"
                 onClick={() => handleApproval(cell?.id)}
@@ -147,7 +145,7 @@ function ProposedCells() {
               >
                 Deny
               </Button>
-              </Card.Footer>
+            </Card.Footer>
           </Card>
         ))
       )}

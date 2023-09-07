@@ -3,14 +3,14 @@ import * as jose from 'jose';
 import { Outlet } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
-import { Header, Footer } from './components/index.js';
+import { Footer, Header } from './components/index.js';
 import ViewProfileModal from './components/Modals/ViewProfile/ViewProfileModal.jsx';
 import AppContext from './AppContext.js';
 
 import './App.scss';
 
-const server = process.env.REACT_APP_SERVER_STRING || 'http://localhost:8080';
-const frontendUrl = 'http://localhost:3000';
+const server = process.env.REACT_APP_SERVER_ADDRESS || 'http://localhost:8080';
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL || 'https://capstone.apps.jmidd.dev';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -30,7 +30,7 @@ export default function App() {
     setIsDarkMode,
     profileModal,
     setProfileModal,
-    frontendUrl
+    frontendUrl,
   };
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function App() {
 
     const fetchSparkList = async () => {
       try {
-        const response = await fetch(`${server}/spark_list`);
+        const response = await fetch(`${server}/cell/list?include=bases`);
         const data = await response.json();
         if (!ignore) {
           setSparkList(data);

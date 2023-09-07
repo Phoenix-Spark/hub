@@ -1,13 +1,23 @@
 {
-  "name": "server",
+  "name": "@phoenix-spark/hub-server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js",
-    "migrate_seed_start": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run && DEBUG=express-session  nodemon server.js"
+    "start": "nodemon dist/server.js",
+    "dev": "npx tsc --watch",
+    "build": "npm run format && npm run lint:fix && npx tsc",
+    "migrate": "npx knex --knexfile ./dist/Database/knexfile.js migrate:latest",
+    "migrate:rollback": "npx knex --knexfile ./dist/Database/knexfile.js migrate:rollback",
+    "seed": "npx knex --knexfile ./dist/Database/knexfile.js seed:run",
+    "migrate_seed_start": "npm run migrate:rollback && npm run migrate && npm run seed && DEBUG=express-session nodemon dist/server.js",
+    "serve": "npm run serve:prep && node src/server.ts",
+    "serve:prep": "npm run migrate:rollback && npm run migrate && npm run seed",
+    "type:check": "npx tsc",
+    "format": "prettier --write \"src/**/*.{js,ts}\"",
+    "lint": "eslint \"src/**/*.{js,ts}\"",
+    "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
   "license": "ISC",
@@ -22,19 +32,33 @@
     "jsonwebtoken": "^9.0.1",
     "knex": "^2.5.1",
     "morgan": "^1.10.0",
-    "nodemon": "^3.0.1",
     "pg": "^8.11.1",
     "redis": "^4.6.7",
     "uuid": "^9.0.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "@faker-js/faker": "^8.0.2"
   },
   "devDependencies": {
+    "@types/node": "^20.4.2",
+    "@types/uuid": "^9.0.2",
+    "@types/express": "^4.17.17",
+    "@types/express-session": "^1.17.7",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/multer": "^1.4.7",
+    "@types/pg": "^8.10.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.13",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@types/morgan": "^1.9.4",
+    "@typescript-eslint/parser": "^6.1.0",
+    "nodemon": "^3.0.1",
     "eslint": "^8.45.0",
-    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.2.3",
     "prettier": "^3.0.0",
-    "@faker-js/faker": "^8.0.2"
+    "typescript": "^5.1.6"
   }
 }

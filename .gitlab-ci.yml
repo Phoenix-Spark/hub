@@ -1,0 +1,165 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+image: node:latest
+services:
+- postgres:latest
+- redis:latest
+cache:
+  paths:
+  - node_modules/
+  - server/node_modules/
+  - frontend/node_modules/
+stages:
+- build
+- test
+- review
+- deploy
+docker-build-server:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - "if [[ \"$CI_COMMIT_BRANCH\" == \"$CI_DEFAULT_BRANCH\" ]]; then\n    tag=\"\"\n
+    \   echo \"Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'\"\n
+    \   \nelse\n    tag=\":$CI_COMMIT_REF_SLUG\"\n    echo \"Running on branch '$CI_COMMIT_BRANCH':
+    tag = $tag\"\nfi\n"
+  - |
+    image_tag="$CI_REGISTRY_IMAGE/server${tag}"
+    echo "Using this image tag: $image_tag"
+  - docker build -f ./server/Dockerfile --pull -t "${image_tag}" ./server
+  - docker push "${image_tag}"
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+      != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+    exists:
+    - Dockerfile
+  - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+docker-build-frontend:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - "if [[ \"$CI_COMMIT_BRANCH\" == \"$CI_DEFAULT_BRANCH\" ]]; then\n    tag=\"\"\n
+    \   echo \"Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'\"\n
+    \   \nelse\n    tag=\":$CI_COMMIT_REF_SLUG\"\n    echo \"Running on branch '$CI_COMMIT_BRANCH':
+    tag = $tag\"\nfi\n"
+  - |
+    image_tag="$CI_REGISTRY_IMAGE/frontend${tag}"
+    echo "Using this image tag: $image_tag"
+  - docker build -f ./frontend/Dockerfile --pull -t "${image_tag}" ./frontend
+  - docker push "${image_tag}"
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+      != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+    exists:
+    - Dockerfile
+  - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+deploy_review:
+  stage: review
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  - docker run --detach --publish-all --name $CONTAINER_NAME --label "traefik.http.routers.$CI_ENVIRONMENT_SLUG-review.rule=Host(\`$CI_ENVIRONMENT_SLUG.review.apps.techpulse.us\`)"
+    --network=traefik-network $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    url: http://$CI_ENVIRONMENT_SLUG.review.apps.techpulse.us
+    on_stop: stop_review
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+      != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+  tags:
+  - shell
+  - app-review
+  - deploy
+stop_review:
+  stage: review
+  before_script:
+  - ''
+  script:
+  - docker stop $CONTAINER_NAME
+  - docker rm $CONTAINER_NAME
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  when: manual
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+      != "develop" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME != $CI_DEFAULT_BRANCH
+  tags:
+  - shell
+  - app-review
+  - deploy
+deploy-dev:
+  stage: deploy
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - tag="develop"
+  - docker pull $CI_REGISTRY_IMAGE:${tag}
+  - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_dev -f
+    dev.yml up -d --build
+  environment:
+    name: dev
+    url: http://capstone.dev.apps.techpulse.us
+  tags:
+  - shell
+  - app-review
+  - deploy
+  rules:
+  - if: $CI_COMMIT_BRANCH == "develop"
+deploy-staging:
+  stage: deploy
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - tag="latest"
+  - docker pull $CI_REGISTRY_IMAGE/server:${tag}
+  - docker pull $CI_REGISTRY_IMAGE/frontend:${tag}
+  - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_staging
+    -f staging.yml up -d --build
+  environment:
+    name: staging
+    url: http://capstone.staging.apps.techpulse.us
+  tags:
+  - shell
+  - app-review
+  - deploy
+  rules:
+  - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+deploy-prod:
+  stage: deploy
+  before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+  - docker pull $CI_REGISTRY_IMAGE/server:latest
+  - docker pull $CI_REGISTRY_IMAGE/frontend:latest
+  - COMMIT_SLUG=${tag} IMAGE=$CI_REGISTRY_IMAGE docker compose -p capstone_prod -f
+    production.yml up -d --build
+  environment:
+    name: production
+    url: https://capstone.apps.jmidd.dev
+  tags:
+  - shell
+  - deploy-prod
+  when: manual
+  only:
+  - main
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml

@@ -28,6 +28,7 @@ export default function Header() {
           header.classList.remove('scrolled');
         }
       }
+
       if (user) {
       setImgUrl(user.photo
         ? user.photo.startsWith('https')
@@ -44,6 +45,7 @@ export default function Header() {
     };
   }, []);
 
+
   useEffect(() => {
       if (user) {
       setImgUrl(user.photo
@@ -59,14 +61,14 @@ export default function Header() {
       setShowLogin(false);
     } else {
       setShowLogin(true);
-    }  
+    }
     if (user) {
-    setImgUrl(user.photo
-      ? user.photo.startsWith('https')
-        ? user.photo
-        : `${frontendUrl}/uploads/${user.photo}`
-      : `../images/placeholder_logo.svg`);
-  }
+        setImgUrl(user.photo
+            ? user.photo.startsWith('https')
+                ? user.photo
+                : `${ frontendUrl }/uploads/${ user.photo }`
+            : `../images/placeholder_logo.svg`);
+    }
   }, [location]);
 
   async function handleLogout() {

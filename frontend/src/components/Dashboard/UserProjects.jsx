@@ -62,23 +62,28 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
       {editSuccess && <Alert variant="success">Project edited successfully!</Alert>}
       {projectList.length === 0 && 'No Projects to show'}
       {projectList.map(project => {
-        const approvalStatus = !project.is_approved ? (project.is_approved === null ? 'Awaiting Approval' : 'Denied') : 'Approved';
+        const approvalStatus = !project.isApproved ? (project.isApproved === null ? 'Awaiting Approval' : 'Denied') : 'Approved';
         const subtitleClasses = ` alert px-3 py-2 mx-0 my-2 ${
-          !project.is_approved ? (project.is_approved === null ? 'alert-info' : 'alert-danger') : 'alert-success'
+          !project.isApproved ? (project.isApproved === null ? 'alert-info' : 'alert-danger') : 'alert-success'
         }`;
         return (
           <Card
-            key={`${project.id}-${project.cell_id}`}
+            key={`${project.id}-${project.cellId}`}
             className="mb-3"
           >
             <Card.Body>
               <Card.Title>{project.name}</Card.Title>
               <Card.Subtitle className={subtitleClasses}>{approvalStatus}</Card.Subtitle>
-              {project.is_approved === false && (<Card.Text><strong>Reason: </strong>{project?.comments}</Card.Text>)}
+              {project.isApproved === false && (
+                <Card.Text>
+                  <strong>Reason: </strong>
+                  {project?.comments}
+                </Card.Text>
+              )}
             </Card.Body>
-            {project.is_approved !== false && (
+            {project.isApproved !== false && (
               <Card.Footer>
-                {project.is_approved && (
+                {project.isApproved && (
                   <Button
                     type="button"
                     variant="success"
@@ -88,7 +93,7 @@ const ProposedProjects = ({ refreshProjectList, setRefreshProjectList }) => {
                     View Project
                   </Button>
                 )}
-                
+
                 <Button
                   type="button"
                   onClick={() => {

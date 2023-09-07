@@ -79,7 +79,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
     let ignore = false;
     const getProposedProjects = async () => {
       try {
-        const response = await fetch(`${server}/cell/${cell}/proposed_projects`, {
+        const response = await fetch(`${server}/cell/${cell}/proposed-projects`, {
           credentials: 'include',
         });
 
@@ -110,7 +110,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
           : `${process.env.PUBLIC_URL}/images/placeholder_logo.svg`;
         return (
           <Card
-            key={`${project.id}-${project.cell_id}`}
+            key={`${project.id}-${project.cellId}`}
             className="mb-3"
           >
             <Card.Header className="h4">{project.name}</Card.Header>
@@ -126,7 +126,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
                     type="button"
                     className="btn btn-link fw-normal m-0 p-0"
                     onClick={() => {
-                      setProfileModal({ show: true, userId: project.user_id });
+                      setProfileModal({ show: true, userId: project.proposedBy });
                     }}
                   >
                     <img
@@ -135,7 +135,7 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
                       className="mx-2 rounded-circle"
                       alt="User Profile"
                     />
-                    {`${project.user_first_name} ${project.user_last_name}`}
+                    {`${project['users.firstName']} ${project['users.lastName']}`}
                   </button>
                 </small>
               </Card.Title>
@@ -172,7 +172,8 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
           <Modal.Title>Deny Project</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Control as="textarea"
+          <Form.Control
+            as="textarea"
             rows={5} // You can adjust the number of rows to increase or decrease the height
             value={feedbackComment}
             onChange={e => setFeedbackComment(e.target.value)}
@@ -197,8 +198,6 @@ const ProposedProjects = ({ cell, refreshProjectList, setRefreshProjectList }) =
       </Modal>
     </Container>
   );
-  };
-
-
+};
 
 export default ProposedProjects;

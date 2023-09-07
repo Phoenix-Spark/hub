@@ -22,21 +22,42 @@ function Hub() {
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, []);
 
+  const handleClick = async () => {
+    try {
+      const response = await fetch(`${server}/json/generateJSON`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'bases' }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error('Error executing export:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   // const handleSearchInputChange = event => {
   //   setSearchQuery(event.target.value);
   // };
 
-  const filteredSparkList = sparkList.filter(spark => spark.base_name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
+  const filteredSparkList = sparkList.filter(spark => spark.baseName.toLowerCase().includes(searchQuery.toLowerCase())) || [];
 
   return (
     <>
       <Row>
         <Col>
-          <h1 className="display-3 m-3">Welcome to Spark Hub!</h1>
+          <h1 className="display-3 m-3">Welcome to Spark Hub! &nbsp;
+          <Button onClick={handleClick}>Generate JSON</Button></h1> 
         </Col>
       </Row>
       <Row>
-        <Col className='mb-3'>
+        <Col className="mb-3">
           <Card>
             <Card.Header as="h5">Mission</Card.Header>
             <Card.Body style={{ borderRadius: '10px' }}>
@@ -57,7 +78,7 @@ function Hub() {
         <Col
           sm={12}
           md={6}
-          className='mb-3'
+          className="mb-3"
           style={{ maxHeight: '400px', minHeight: '400px' }}
         >
           <Card className="h-100">
@@ -67,21 +88,28 @@ function Hub() {
             >
               Spark List
               {user && (
-              <Button
-                as={Link}
-                variant="secondary"
-                to="/cell-registration"
-                className=""
-              >
-                Register your cell
-              </Button>)}
+                <Button
+                  as={Link}
+                  variant="secondary"
+                  to="/cell-registration"
+                  className=""
+                >
+                  Register your cell
+                </Button>
+              )}
             </Card.Header>
             <Card.Body style={{ borderRadius: '10px', height: '75%' }}>
-              <SparkyList className='h-100' sparkList={filteredSparkList} />
+              <SparkyList
+                className="h-100"
+                sparkList={filteredSparkList}
+              />
             </Card.Body>
           </Card>
         </Col>
-        <Col className='mb-3' style={{ maxHeight: '400px', minHeight: '400px' }}>
+        <Col
+          className="mb-3"
+          style={{ maxHeight: '400px', minHeight: '400px' }}
+        >
           <Card style={{ height: '100%' }}>
             <Card.Header as="h5">News</Card.Header>
             <Card.Body className="d-flex flex-column h-75">
