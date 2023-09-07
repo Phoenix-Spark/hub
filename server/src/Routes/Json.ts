@@ -1,6 +1,5 @@
 import express from 'express';
-// import db from '../Database/index.js';
-import exportDataToJson from '../Database/exportDataToJson.js';
+import exportDataToJson from '../Services/TableExportService.js';
 
 const router = express.Router();
 
@@ -10,7 +9,7 @@ router.post('/generateJSON', async (req, res, next) => {
     await exportDataToJson(table);
     res.json({ message: 'Export executed successfully' });
   } catch (e) {
-    console.error(`Fuck: ${e}`);
+    console.error(`Error: ${e}`);
     next(e);
   }
 });

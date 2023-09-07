@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import db from './index.js';
+import db from '../Database/index.js';
 
 async function exportDataToJson(table: string): Promise<void> {
   try {
@@ -31,20 +31,3 @@ async function exportDataToJson(table: string): Promise<void> {
 }
 
 export default exportDataToJson;
-
-// tables to export \/
-// exportDataToJson('bases');
-// exportDataToJson('cells');
-// exportDataToJson('users');
-// exportDataToJson('faqs');
-// exportDataToJson('permissions');
-// exportDataToJson('projects');
-// exportDataToJson('project_users');
-// exportDataToJson('project_photo');
-// exportDataToJson('tags');
-// exportDataToJson('project_tag');
-// exportDataToJson('news');
-// exportDataToJson('categories');
-// exportDataToJson('posts');
-// exportDataToJson('comments');
-// exportDataToJson('replies');
