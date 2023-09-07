@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -8,19 +8,31 @@ function Footer() {
       <Row className="row-cols-2 justify-content-between">
         <Col className="text-nowrap me-5 col-sm">
           <h5>Contact Us</h5>
-          <p>Email: example@example.com</p>
-          <p>Phone: (123) 456-7890</p>
+          <p>Email: phoenix@travisspark.com</p>
+          <p>Phone: (707) 424-8920</p>
         </Col>
         <Col className="col-md">
           <h5>Follow Us</h5>
           <div>
-            <a href="https://www.facebook.com">
+            <a
+              href="https://www.facebook.com/PhoenixSparkLab/"
+              target="_blank"
+              rel="noreferrer"
+            >
               <FaFacebook className="me-3" />
             </a>
-            <a href="https://www.twitter.com">
-              <FaTwitter className="me-3" />
+            <a
+              href="https://www.linkedin.com/company/phoenixsparktravis/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <FaLinkedin className="me-3" />
             </a>
-            <a href="https://www.instagram.com">
+            <a
+              href="https://www.instagram.com/phoenixsparklab/"
+              target="_blank"
+              rel="noreferrer"
+            >
               <FaInstagram />
             </a>
           </div>

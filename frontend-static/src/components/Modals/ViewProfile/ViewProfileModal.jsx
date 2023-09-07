@@ -1,38 +1,35 @@
 import { useContext, useEffect, useState } from 'react';
 import { Button, Col, Image, Modal, Row, Spinner } from 'react-bootstrap';
 import AppContext from '../../../AppContext.js';
+import { useFetchUser } from '../../../utils/useFetch.js';
 
 const ViewProfileModal = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const { frontendUrl, server, profileModal, setProfileModal } = useContext(AppContext);
-  const [profileData, setProfileData] = useState({});
+  // const [isLoading, setIsLoading] = useState(true);
+  const { profileModal, setProfileModal } = useContext(AppContext);
   const [profileImage, setProfileImage] = useState('');
+  const [cellLogo, setCellLogo] = useState('');
 
-  useEffect(() => {
-    if (profileModal.userId !== 0) {
-      setIsLoading(true);
-      fetch(`${server}/user/${profileModal.userId}/profile`)
-        .then(res => {
-          console.log(res);
-          return res.json();
-        })
-        .then(data => setProfileData(data))
-        .catch(err => console.log(`Fetch failed. Error: ${err}`))
-        .finally(() => setIsLoading(false));
-    } else {
-      setProfileImage('');
-    }
-  }, [server, profileModal]);
+  let data, isLoading, error;
+  [data, isLoading, error] = useFetchUser(profileModal);
 
   useEffect(() => {
     setProfileImage(
-      profileData.photoUrl
-        ? profileData.photoUrl.startsWith('https')
-          ? profileData.photoUrl
-          : `${frontendUrl}/uploads/${profileData.photoUrl}`
-        : `../images/placeholder_logo.svg`
+      data?.photo_url
+        ? data.photo_url.startsWith('https')
+          ? data.photo_url
+          : `${window.location.origin}/hub${data.photo_url}`
+        : `${window.location.origin}/hub/images/placeholder_logo.svg`
     );
-  }, [profileData]);
+    setCellLogo(
+      data?.cell.logo_url
+        ? data.cell.logo_url.startsWith('https')
+          ? data.cell.logo_url
+          : `${window.location.origin}/hub${data.cell.logo_url}`
+        : `${window.location.origin}/hub/images/placeholder_logo.svg`
+    );
+  }, [data]);
+
+  if (error) console.error(error);
 
   return (
     <Modal
@@ -69,29 +66,29 @@ const ViewProfileModal = () => {
                 <Row className="d-flex align-items-center">
                   <Col md="auto">
                     <Image
-                      src={profileData.cellLogoUrl}
+                      src={cellLogo}
                       style={{ height: '75px', width: '75px' }}
                     />
                   </Col>
                   <Col>
-                    <h4>{profileData.cellName}</h4>
+                    <h4>{data.cell.name}</h4>
                   </Col>
                 </Row>
                 <Row>
                   <h1>
-                    {profileData.firstName} {profileData.lastName}
+                    {data.first_name} {data.last_name}
                   </h1>
                 </Row>
                 <Row>
-                  <h2>@{profileData.username}</h2>
+                  <h2>@{data.username}</h2>
                 </Row>
                 <Row>
                   <Col className="text-center">
-                    <a href={`mailto:${profileData.email}`}>{decodeURIComponent(profileData.email)}</a>
+                    <a href={`mailto:${data.email}`}>{decodeURIComponent(data.email)}</a>
                     <br />
-                    <a href={`tel:${profileData.contactNumbers[0]}`}>{profileData?.contactNumbers[0]}</a>
+                    <a href={`tel:${data.contact_number1}`}>{data?.contact_number1}</a>
                     <br />
-                    <a href={`tel:${profileData.contactNumbers[1]}`}>{profileData?.contactNumbers[1]}</a>
+                    <a href={`tel:${data.contact_number2}`}>{data?.contact_number2}</a>
                     <br />
                   </Col>
                 </Row>
@@ -99,7 +96,7 @@ const ViewProfileModal = () => {
             </Row>
             <Row className="m-4">
               <Col>
-                <p className="text-break">{profileData.bio}</p>
+                <p className="text-break">{data.bio}</p>
               </Col>
             </Row>
           </>

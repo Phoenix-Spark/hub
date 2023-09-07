@@ -11,6 +11,13 @@
   color: RGBA(to-rgb($tab-links-color), 1) !important;
   -webkit-text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
   text-decoration-color: RGBA(to-rgb($tab-links-color), 1) !important;
+
+
+}
+@media (min-width: map.get($container-max-widths, 'lg')) {
+  #header {
+    height: 105px;
+  }
 }
 
 @include color-mode(dark) {
@@ -27,9 +34,9 @@
       //background-color: #868686; /*#5c6468 for dark mode... TODO*/
       /* color: white; */
       height: 105px;
-      background: linear-gradient(to top, #000000a0, #00000020),
-        linear-gradient(to right, #4c4946, #d8dee0 40%, #787876 60%, #babcbb 85%, #474543);
-      box-shadow: inset 0px 0px 10px 0px #ffffff80;
+      //background: linear-gradient(to top, #000000a0, #00000020),
+      //  linear-gradient(to right, #4c4946, #d8dee0 40%, #787876 60%, #babcbb 85%, #474543);
+      //box-shadow: inset 0px 0px 10px 0px #ffffff80;
     }
   }
 }

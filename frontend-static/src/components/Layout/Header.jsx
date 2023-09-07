@@ -60,11 +60,7 @@ export default function Header() {
           as={Link}
           to="/"
         >
-          <Image
-            src={`${frontendUrl}/images/travis.png`}
-            alt="Spark Hub Logo"
-            width={90}
-          />
+          Spark Connect
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
@@ -77,15 +73,10 @@ export default function Header() {
             </Nav.Link>
             <Nav.Link
               as={NavLink}
-              to="/"
+              to="https://forms.office.com/r/TPv5X54zVA"
+              target="_blank"
             >
-              Submit New Idea
-            </Nav.Link>
-            <Nav.Link
-              as={NavLink}
-              to="/faq"
-            >
-              FAQ
+              Submit New Cell
             </Nav.Link>
           </Nav>
           <Form className="d-flex">

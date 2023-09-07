@@ -104,10 +104,16 @@ export default function MapChart({ sparkList }) {
   );
 
   function MarkerWithTooltip({ spark, onClick }) {
+    const imgUrl = spark.logo_url
+      ? spark.logo_url.startsWith('https')
+        ? spark.logo_url
+        : `${window.location.origin}/hub${spark.logo_url}`
+      : `${window.location.origin}/hub/images/placeholder_logo.svg`;
+
     return (
       <Marker
         key={spark.id}
-        coordinates={[spark.lng, spark.lat]}
+        coordinates={[spark.base.lng, spark.base.lat]}
         onClick={() => navigate(`/cell/${spark.endpoint}`)}
       >
         <OverlayTrigger
@@ -118,12 +124,12 @@ export default function MapChart({ sparkList }) {
                 <Col md="auto">
                   <img
                     style={{ height: '64px', width: '64px' }}
-                    src={spark.logoUrl}
+                    src={imgUrl}
                     alt=""
                   />
                 </Col>
                 <Col className="pl-5">
-                  {spark.name} at {spark.baseName}
+                  {spark.name} at {spark.base.name}
                 </Col>
               </Row>
             </Tooltip>

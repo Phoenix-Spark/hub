@@ -8,7 +8,7 @@ import AppContext from './AppContext.js';
 
 import './App.scss';
 
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL || 'https://capstone.apps.jmidd.dev';
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL || 'http://localhost:3000/hub';
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
