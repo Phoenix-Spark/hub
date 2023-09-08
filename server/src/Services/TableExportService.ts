@@ -18,7 +18,7 @@ async function exportDataToJson(table: string): Promise<void> {
       '..',
       'frontend-static',
       'public',
-      'JsonFiles'
+      'json'
     );
     const filePath = path.join(outputDirectory, `${table}.json`);
 
