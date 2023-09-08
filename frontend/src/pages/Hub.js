@@ -22,26 +22,31 @@ function Hub() {
       .catch(err => console.log(`Fetch failed. Error: ${err}`));
   }, []);
 
-  const handleClick = async () => {
-    try {
-      const response = await fetch(`${server}/json/generateJSON`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'bases' }),
-      });
+  const tablesToCall = ['bases', 'cells', 'users', 'faqs']; // THIS IS WHERE WE UPDATE WHAT JSON WE WANT TO GENERATE
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      } else {
-        console.error('Error executing export:', response.statusText);
+  const handleClick = async () => {
+    for (const tableName of tablesToCall) {
+      try {
+        const response = await fetch(`${server}/json/generateJSON`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: tableName }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.error(`Error executing export for ${tableName}:`, response.statusText);
+        }
+      } catch (error) {
+        console.error(`Error for ${tableName}:`, error);
       }
-    } catch (error) {
-      console.error('Error:', error);
     }
   };
+  
   // const handleSearchInputChange = event => {
   //   setSearchQuery(event.target.value);
   // };
